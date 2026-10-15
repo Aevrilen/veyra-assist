@@ -2,7 +2,6 @@ import { BrowserWindow } from 'electron'
 import { observable, reaction, runInAction } from 'mobx'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { AkariAuxWindow } from '../aux-window/window'
 import { BaseAkariWindow } from '../base-akari-window'
 import { AkariOpggWindow } from './window'
 
@@ -125,92 +124,4 @@ describe('retired OP.GG window with saved enabled flags', () => {
     expect(BrowserWindow).not.toHaveBeenCalled()
     expect(f.storageSet).not.toHaveBeenCalled()
   })
-})
-
-class TestAuxWindow extends AkariAuxWindow {
-  attach(window: any) {
-    this._window = window
-  }
-}
-
-it('preserves automatic and manual Mini entry while retired OP.GG settings are true', async () => {
-  const f = createContext()
-  const window = new TestAuxWindow(f.context as any)
-  await window.onInit()
-  let visible = false
-  const native = {
-    isVisible: () => visible,
-    isMinimized: () => false,
-    show: vi.fn(() => (visible = true)),
-    showInactive: vi.fn(() => (visible = true)),
-    hide: vi.fn(() => (visible = false)),
-    focus: vi.fn()
-  }
-  window.attach(native)
-  runInAction(() => window.state.setReady(true))
-  expect(native.showInactive).toHaveBeenCalledOnce()
-  expect(native.hide).not.toHaveBeenCalled()
-  expect(window.settings.autoShow).toBe(true)
-  runInAction(() => window.settings.setAutoShow(false))
-  window.hide()
-  window.showOrRestore()
-  expect(native.show).toHaveBeenCalledOnce()
-  expect(window.state.show).toBe(true)
-  runInAction(() => {
-    f.context.leagueClient.data.gameflow.phase = 'Lobby'
-    window.settings.setAutoShow(true)
-  })
-  expect(window.state.show).toBe(true)
-  expect(f.context.windowManager.opggWindow.settings.enabled).toBe(true)
-  expect(f.storageSet).not.toHaveBeenCalled()
-})
-
-it('deduplicates automatic Mini only for actually visible bench buttons and restores the fallback', async () => {
-  const f = createContext()
-  const window = new TestAuxWindow(f.context as any)
-  await window.onInit()
-  let visible = false
-  const native = {
-    isVisible: () => visible,
-    isMinimized: () => false,
-    show: vi.fn(() => (visible = true)),
-    showInactive: vi.fn(() => (visible = true)),
-    hide: vi.fn(() => (visible = false)),
-    focus: vi.fn()
-  }
-  window.attach(native)
-  runInAction(() => window.state.setReady(true))
-  expect(visible).toBe(true)
-  window.setBenchCandidateButtonsVisible(true)
-  expect(visible).toBe(false)
-  window.setBenchCandidateButtonsVisible(false)
-  expect(visible).toBe(true)
-  expect(native.focus).not.toHaveBeenCalled()
-  expect(native.show).not.toHaveBeenCalled()
-})
-
-it('preserves manual Mini through bench visibility changes and does not suppress lobby Mini', async () => {
-  const f = createContext()
-  const window = new TestAuxWindow(f.context as any)
-  await window.onInit()
-  let visible = false
-  const native = {
-    isVisible: () => visible,
-    isMinimized: () => false,
-    show: vi.fn(() => (visible = true)),
-    showInactive: vi.fn(() => (visible = true)),
-    hide: vi.fn(() => (visible = false)),
-    focus: vi.fn()
-  }
-  window.attach(native)
-  runInAction(() => window.state.setReady(true))
-  window.showOrRestore()
-  window.setBenchCandidateButtonsVisible(true)
-  expect(visible).toBe(true)
-  expect(native.hide).not.toHaveBeenCalled()
-  window.setBenchCandidateButtonsVisible(false)
-  expect(visible).toBe(true)
-  runInAction(() => (f.context.leagueClient.data.gameflow.phase = 'Lobby'))
-  window.setBenchCandidateButtonsVisible(true)
-  expect(visible).toBe(true)
 })

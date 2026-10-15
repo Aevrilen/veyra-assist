@@ -432,6 +432,7 @@ const targetDefinitions = [
   },
   {
     id: 'multi-window.aux',
+    terminalId: 'multi-window.mayhem',
     route: { tab: 'multi-window' },
     labelKey: 'settings.multiWindow.auxWindow.title',
     searchable: false
@@ -451,6 +452,8 @@ const targetDefinitions = [
   },
   {
     id: 'multi-window.aux.enabled',
+    terminalId: 'multi-window.mayhem',
+    searchable: false,
     route: { tab: 'multi-window' },
     parentId: 'multi-window.aux',
     labelKey: 'settings.multiWindow.auxWindow.enabled.label',
@@ -458,6 +461,8 @@ const targetDefinitions = [
   },
   {
     id: 'multi-window.aux.auto-show',
+    terminalId: 'multi-window.mayhem',
+    searchable: false,
     route: { tab: 'multi-window' },
     parentId: 'multi-window.aux',
     labelKey: 'settings.multiWindow.auxWindow.autoShow.label',
@@ -465,6 +470,8 @@ const targetDefinitions = [
   },
   {
     id: 'multi-window.aux.opacity',
+    terminalId: 'multi-window.mayhem',
+    searchable: false,
     route: { tab: 'multi-window' },
     parentId: 'multi-window.aux',
     labelKey: 'settings.multiWindow.auxWindow.opacity.label',
@@ -472,6 +479,8 @@ const targetDefinitions = [
   },
   {
     id: 'multi-window.aux.reset-position',
+    terminalId: 'multi-window.mayhem',
+    searchable: false,
     route: { tab: 'multi-window' },
     parentId: 'multi-window.aux',
     labelKey: 'settings.multiWindow.auxWindow.resetWindowPosition.label',
@@ -479,14 +488,14 @@ const targetDefinitions = [
   },
   {
     id: 'multi-window.opgg',
-    terminalId: 'multi-window.aux',
+    terminalId: 'multi-window.mayhem',
     searchable: false,
     route: { tab: 'multi-window' },
     labelKey: 'settings.multiWindow.opggWindow.title'
   },
   {
     id: 'multi-window.opgg.enabled',
-    terminalId: 'multi-window.aux',
+    terminalId: 'multi-window.mayhem',
     searchable: false,
     route: { tab: 'multi-window' },
     parentId: 'multi-window.opgg',
@@ -495,7 +504,7 @@ const targetDefinitions = [
   },
   {
     id: 'multi-window.opgg.auto-show',
-    terminalId: 'multi-window.aux',
+    terminalId: 'multi-window.mayhem',
     searchable: false,
     route: { tab: 'multi-window' },
     parentId: 'multi-window.opgg',
@@ -504,7 +513,7 @@ const targetDefinitions = [
   },
   {
     id: 'multi-window.opgg.shortcut',
-    terminalId: 'multi-window.aux',
+    terminalId: 'multi-window.mayhem',
     searchable: false,
     route: { tab: 'multi-window' },
     parentId: 'multi-window.opgg',
@@ -513,7 +522,7 @@ const targetDefinitions = [
   },
   {
     id: 'multi-window.opgg.opacity',
-    terminalId: 'multi-window.aux',
+    terminalId: 'multi-window.mayhem',
     searchable: false,
     route: { tab: 'multi-window' },
     parentId: 'multi-window.opgg',
@@ -522,7 +531,7 @@ const targetDefinitions = [
   },
   {
     id: 'multi-window.opgg.skin-selector',
-    terminalId: 'multi-window.aux',
+    terminalId: 'multi-window.mayhem',
     searchable: false,
     route: { tab: 'multi-window' },
     parentId: 'multi-window.opgg',
@@ -531,7 +540,7 @@ const targetDefinitions = [
   },
   {
     id: 'multi-window.opgg.reset-position',
-    terminalId: 'multi-window.aux',
+    terminalId: 'multi-window.mayhem',
     searchable: false,
     route: { tab: 'multi-window' },
     parentId: 'multi-window.opgg',

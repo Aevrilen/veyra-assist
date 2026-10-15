@@ -1,13 +1,11 @@
-import { i18next } from '@main/i18n'
 import icon from '@resources/LA_ICON.ico?asset&asarUnpack'
-import { Notification } from 'electron'
-import { compareShallow, computed, observable, runInAction } from 'mobx'
 import { z } from 'zod'
 
 import { BaseAkariWindow } from '../base-akari-window'
 import type { WindowManagerMainContext } from '../context'
-import { repositionToAlignLeagueClientUx } from '../window-position-service'
 import { AuxWindowSettings, AuxWindowState } from './state'
+
+const WINDOW_RETIRED = { result: 'retired', reason: 'WindowRetired' } as const
 
 export class AkariAuxWindow extends BaseAkariWindow<AuxWindowState, AuxWindowSettings> {
   static readonly NAMESPACE_SUFFIX = 'aux-window'
@@ -18,37 +16,10 @@ export class AkariAuxWindow extends BaseAkariWindow<AuxWindowState, AuxWindowSet
   static readonly MIN_WIDTH = 340
   static readonly MIN_HEIGHT = 420
 
-  static readonly QUICK_CLOSE_TIP_STORAGE_KEY = 'quickCloseTip'
-
-  private readonly _benchButtonsVisible = observable.box(false)
-  private readonly _openedManually = observable.box(false)
-
-  setBenchCandidateButtonsVisible(visible: boolean) {
-    runInAction(() => this._benchButtonsVisible.set(visible))
-  }
-
-  override showOrRestore(inactive = false) {
-    runInAction(() => this._openedManually.set(true))
-    super.showOrRestore(inactive)
-  }
-
-  override show(inactive = false) {
-    runInAction(() => this._openedManually.set(true))
-    super.show(inactive)
-  }
-
-  override toggleMinimizedAndFocused() {
-    runInAction(() => this._openedManually.set(true))
-    super.toggleMinimizedAndFocused()
-  }
-
-  override hide() {
-    runInAction(() => this._openedManually.set(false))
-    super.hide()
-  }
-
   constructor(_context: WindowManagerMainContext) {
     const state = new AuxWindowState()
+    state.setShow(false)
+    state.setFocus('blurred')
     const settings = new AuxWindowSettings()
 
     super(_context, AkariAuxWindow.NAMESPACE_SUFFIX, state, settings, {
@@ -77,129 +48,43 @@ export class AkariAuxWindow extends BaseAkariWindow<AuxWindowState, AuxWindowSet
     })
   }
 
-  private _watchAuxWindow() {
-    const showTiming = computed(() => {
-      if (!this.settings.autoShow) {
-        return 'ignore'
-      }
-
-      if (!this.state.ready) {
-        return 'ignore'
-      }
-
-      switch (this._leagueClient.data.gameflow.phase) {
-        case 'ChampSelect':
-          if (this._leagueClient.data.champSelect.session?.isSpectating) {
-            return 'ignore'
-          }
-
-          if (this._benchButtonsVisible.get()) {
-            return this._openedManually.get() ? 'ignore' : 'hide'
-          }
-
-          return 'show'
-        case 'Lobby':
-        case 'Matchmaking':
-        case 'ReadyCheck':
-          return 'show'
-      }
-
-      return 'hide'
-    })
-
-    // normally show & hide
-    this._mobxUtils.reaction(
-      () => showTiming.get(),
-      (timing) => {
-        if (timing === 'ignore') {
-          return
-        }
-
-        if (timing === 'show') {
-          // Automatic fallback must not steal client focus while button visibility is settling.
-          super.showOrRestore(true)
-        } else {
-          this.hide()
-        }
-      },
-      { fireImmediately: true }
-    )
-
-    this._mobxUtils.reaction(
-      () => [this.settings.enabled, this._windowManager.state.isManagerFinishedInit] as const,
-      ([enabled, finishedInit]) => {
-        if (!finishedInit) {
-          return
-        }
-
-        if (enabled) {
-          this.createWindow()
-        } else {
-          this.close(true)
-        }
-      },
-      { fireImmediately: true, delay: 500, equals: compareShallow }
-    )
-
-    this._mobxUtils.reaction(
-      () => this._leagueClient.state.connectionState,
-      (state) => {
-        if (state !== 'connected') {
-          this.hide()
-        }
-      }
-    )
-
-    // 快速关闭会提供提示
-    this._settingService._getFromStorage(AkariAuxWindow.QUICK_CLOSE_TIP_STORAGE_KEY).then((tip) => {
-      if (!tip) {
-        let _lastShow = -Infinity
-        let inARow = 0
-        let cb: Function | null = null
-        cb = this._mobxUtils.reaction(
-          () => this.state.show,
-          (show) => {
-            if (show) {
-              _lastShow = Date.now()
-            } else {
-              if (Date.now() - _lastShow < 1000) {
-                inARow++
-
-                if (inARow < 5) {
-                  return
-                }
-
-                new Notification({
-                  title: i18next.t('window-manager-main.aux-window.quickClose.title'),
-                  body: i18next.t('window-manager-main.aux-window.quickClose.body'),
-                  icon: icon
-                }).show()
-
-                this._settingService._saveToStorage(
-                  AkariAuxWindow.QUICK_CLOSE_TIP_STORAGE_KEY,
-                  true
-                )
-                cb?.()
-              } else {
-                inARow = 0
-              }
-            }
-          }
-        )
-      }
-    })
-
-    this._ipc.onCall(this._namespace, 'repositionToAlignLeagueClientUx', (_, placement) => {
-      if (this._window) {
-        repositionToAlignLeagueClientUx(this._window, placement)
-      }
-    })
-  }
-
+  // Keep legacy settings and renderer sync compatible, but never create the retired Mini UI.
+  // Saved enabled/autoShow values are ignored rather than rewriting the user's configuration.
   override async onInit() {
     await super.onInit()
+    this._ipc.onCall(this._namespace, 'repositionToAlignLeagueClientUx', () => WINDOW_RETIRED)
+    this._logger.info(
+      'Legacy Mini window retired: automatic/manual entry disabled; saved settings preserved'
+    )
+  }
 
-    this._watchAuxWindow()
+  protected override _createWindow() {
+    return WINDOW_RETIRED
+  }
+
+  override createWindow() {
+    return WINDOW_RETIRED
+  }
+
+  override show(_inactive = false) {
+    return WINDOW_RETIRED
+  }
+
+  override showOrRestore(_inactive = false) {
+    return WINDOW_RETIRED
+  }
+
+  override toggleMinimizedAndFocused() {
+    return WINDOW_RETIRED
+  }
+
+  override toggleDevtools() {
+    return WINDOW_RETIRED
+  }
+
+  // Candidate-button visibility still publishes here; it must no longer revive a Mini fallback.
+  setBenchCandidateButtonsVisible(_visible: boolean) {
+    return WINDOW_RETIRED
   }
 
   protected override getSettingPropKeys() {

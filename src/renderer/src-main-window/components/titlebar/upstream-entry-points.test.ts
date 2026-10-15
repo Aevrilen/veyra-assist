@@ -94,7 +94,7 @@ vi.mock('@renderer-shared/components/HorizontalExpand.vue', async () => {
   }
 })
 
-it('renders titlebar, home and sidebar without upstream announcement, update or contact entries', async () => {
+it('renders titlebar, home and sidebar without retired Mini or upstream entry points', async () => {
   const html = await renderToString(
     createSSRApp(
       defineComponent({
@@ -102,7 +102,7 @@ it('renders titlebar, home and sidebar without upstream announcement, update or 
       })
     )
   )
-  expect(html).toContain('titlebar.actions.auxWindow')
+  expect(html).not.toContain('titlebar.actions.auxWindow')
   expect(html).toContain('vcandidate')
   expect(html).toContain('navigation.sidebar.status.settings')
   expect(html).not.toMatch(

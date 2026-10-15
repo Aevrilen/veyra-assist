@@ -11,8 +11,6 @@ export class TrayMenuController {
   private _contextMenu: Menu | null = null
 
   mainWindowDevTrayItem!: MenuItem
-  auxWindowTrayItem!: MenuItem
-  auxWindowDevTrayItem!: MenuItem
   ongoingGameWindowDevTrayItem!: MenuItem
   cdTimerWindowDevTrayItem!: MenuItem
   quitTrayItem!: MenuItem
@@ -23,21 +21,6 @@ export class TrayMenuController {
   build() {
     const { ipc, windowManager } = this.context
     this._trayIcon = new Tray(this._createTrayIcon())
-
-    this.auxWindowTrayItem = new MenuItem({
-      label: i18next.t('tray.auxWindow'),
-      type: 'normal',
-      click: () => windowManager.auxWindow.showOrRestore(),
-      enabled: windowManager.auxWindow.settings.enabled
-    })
-
-    this.auxWindowDevTrayItem = new MenuItem({
-      id: 'aux-window-dev',
-      label: i18next.t('tray.dev.toggleAuxWindowDevtools'),
-      type: 'normal',
-      click: () => windowManager.auxWindow.toggleDevtools(),
-      enabled: windowManager.auxWindow.settings.enabled
-    })
 
     this.mainWindowDevTrayItem = new MenuItem({
       label: i18next.t('tray.dev.toggleMainWindowDevtools'),
@@ -64,7 +47,6 @@ export class TrayMenuController {
       type: 'normal',
       click: () => {
         windowManager.mainWindow.repositionWindowIfInvisible()
-        windowManager.auxWindow.repositionWindowIfInvisible()
         windowManager.ongoingGameWindow.repositionWindowIfInvisible()
         windowManager.cdTimerWindow.repositionWindowIfInvisible()
       }
@@ -90,7 +72,6 @@ export class TrayMenuController {
         type: 'submenu',
         submenu: Menu.buildFromTemplate([
           this.mainWindowDevTrayItem,
-          this.auxWindowDevTrayItem,
           this.ongoingGameWindowDevTrayItem,
           this.cdTimerWindowDevTrayItem,
           {
@@ -102,7 +83,6 @@ export class TrayMenuController {
       {
         type: 'separator'
       },
-      this.auxWindowTrayItem,
       this.quitTrayItem
     ])
 

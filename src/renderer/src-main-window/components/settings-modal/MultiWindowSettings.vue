@@ -31,79 +31,6 @@
         </SettingsRow>
       </SettingsSection>
       <SettingsSection
-        setting-id="multi-window.aux"
-        :title="t('settings.multiWindow.auxWindow.title')"
-      >
-        <SettingsRow
-          setting-id="multi-window.aux.enabled"
-          :label="t('settings.multiWindow.auxWindow.enabled.label')"
-          :label-width="400"
-        >
-          <template #labelDescription>
-            <div>{{ t('settings.multiWindow.auxWindow.enabled.description') }}</div>
-            <div>
-              <TranslationComponent
-                :translation="t('settings.multiWindow.auxWindow.enabled.descriptionWithIcon')"
-              >
-                <template #icon>
-                  <NIcon class="inline-block size-4 align-middle text-black dark:text-white">
-                    <Window24FilledIcon />
-                  </NIcon>
-                </template>
-              </TranslationComponent>
-            </div>
-          </template>
-          <NSwitch
-            size="small"
-            :value="aws.settings.enabled"
-            @update:value="(val) => wm.auxWindow.setEnabled(val)"
-          />
-        </SettingsRow>
-        <SettingsRow
-          setting-id="multi-window.aux.auto-show"
-          :label="t('settings.multiWindow.auxWindow.autoShow.label')"
-          :label-description="t('settings.multiWindow.auxWindow.autoShow.description')"
-          :label-width="400"
-        >
-          <NSwitch
-            size="small"
-            :value="aws.settings.autoShow"
-            @update:value="(val) => wm.auxWindow.setAutoShow(val)"
-          />
-        </SettingsRow>
-        <SettingsRow
-          setting-id="multi-window.aux.opacity"
-          :label="t('settings.multiWindow.auxWindow.opacity.label')"
-          :label-description="t('settings.multiWindow.auxWindow.opacity.description')"
-          :label-width="400"
-        >
-          <NSlider
-            class="w-48!"
-            size=""
-            :min="0.3"
-            :max="1"
-            :step="0.01"
-            :format-tooltip="(v) => `${(v * 100).toFixed()}%`"
-            @update:value="(val) => wm.auxWindow.setOpacity(val)"
-            :value="aws.settings.opacity"
-          ></NSlider>
-        </SettingsRow>
-        <SettingsRow
-          setting-id="multi-window.aux.reset-position"
-          :label="t('settings.multiWindow.auxWindow.resetWindowPosition.label')"
-          :label-description="t('settings.multiWindow.auxWindow.resetWindowPosition.description')"
-          :label-width="400"
-        >
-          <NButton
-            size="small"
-            type="warning"
-            secondary
-            @click="() => wm.auxWindow.resetPosition()"
-            >{{ t('settings.multiWindow.auxWindow.resetWindowPosition.button') }}</NButton
-          >
-        </SettingsRow>
-      </SettingsSection>
-      <SettingsSection
         setting-id="multi-window.ongoing-game"
         :title="
           as.isElevated
@@ -263,13 +190,11 @@ import { useAppCommonStore } from '@renderer-shared/shards/app-common/store'
 import { AkariCdTimerWindow, WindowManagerRenderer } from '@renderer-shared/shards/window-manager'
 import { AkariOngoingGameWindow } from '@renderer-shared/shards/window-manager'
 import {
-  useAuxWindowStore,
   useCdTimerWindowStore,
   useOngoingGameWindowStore
 } from '@renderer-shared/shards/window-manager/store'
-import { Window24Filled as Window24FilledIcon } from '@vicons/fluent'
-import { TranslationComponent, useTranslation } from 'i18next-vue'
-import { NButton, NIcon, NRadio, NRadioGroup, NScrollbar, NSlider, NSwitch, NText } from 'naive-ui'
+import { useTranslation } from 'i18next-vue'
+import { NButton, NRadio, NRadioGroup, NScrollbar, NSwitch, NText } from 'naive-ui'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 
 import ShortcutSelector from '@main-window/components/ShortcutSelector.vue'
@@ -279,7 +204,6 @@ defineProps<{ embedded?: boolean }>()
 const { t } = useTranslation()
 
 const as = useAppCommonStore()
-const aws = useAuxWindowStore()
 const ogws = useOngoingGameWindowStore()
 const ctws = useCdTimerWindowStore()
 

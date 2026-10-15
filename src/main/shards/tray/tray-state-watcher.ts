@@ -10,28 +10,9 @@ export class TrayStateWatcher {
   ) {}
 
   watch() {
-    this._watchAuxWindow()
     this._watchOngoingGameWindow()
     this._watchCdTimerWindow()
     this._watchLocale()
-  }
-
-  private _watchAuxWindow() {
-    const { mobxUtils, windowManager } = this.context
-
-    mobxUtils.reaction(
-      () => [windowManager.auxWindow.settings.enabled, windowManager.auxWindow.state.ready],
-      ([enabled, ready]) => {
-        if (enabled && ready) {
-          this.menuController.auxWindowDevTrayItem.enabled = true
-          this.menuController.auxWindowTrayItem.enabled = true
-        } else {
-          this.menuController.auxWindowDevTrayItem.enabled = false
-          this.menuController.auxWindowTrayItem.enabled = false
-        }
-      },
-      { fireImmediately: true, equals: compareShallow }
-    )
   }
 
   private _watchOngoingGameWindow() {

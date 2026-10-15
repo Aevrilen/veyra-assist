@@ -1,0 +1,25 @@
+{
+  "version": "1.5.2-beta.2-mini-fix.20261015",
+  "originalSourceCommit": "5abfbe3cd46d25440e5d473dd597c0d1cbe21933",
+  "originalBaseCommit": "543a8d4a11da94f11ec46d20650363c99c7199ab",
+  "publicBaseCommit": "be7391d17b87ddb77fc3b0dc5b4aed0ed8bb00d0",
+  "patchSourceFiles": 12,
+  "privateHistoryImported": false,
+  "publicNpmPrivateGuardRetained": true,
+  "validation": {
+    "focusedOfflineTests": 284,
+    "failed": 0,
+    "skipped": 0,
+    "testFiles": 17,
+    "nodeTypecheck": "passed",
+    "webTypecheck": "passed",
+    "productionBuild": "passed",
+    "packagedGuiStarted": false,
+    "realGameTested": false
+  },
+  "archive": {
+    "name": "VeyraAssist-1.5.2-beta.2-mini-fix.20261015-5abfbe3c-Windows-x64.zip",
+    "bytes": 320798643,
+    "sha256": "a383a007d40878582a622ba232e487209c85f808b6970d08496906444fbddfd6"
+  }
+}

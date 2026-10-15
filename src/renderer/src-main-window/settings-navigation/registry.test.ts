@@ -24,23 +24,29 @@ import {
 import { createSettingsNavigationTargetStepKey } from './useSettingsNavigationTarget'
 
 describe('Settings navigation registry', () => {
-  test('removes retired OP.GG from search and redirects old window-setting links to Mini settings', () => {
+  test('removes retired Mini and OP.GG from search and redirects old links to active window settings', () => {
     expect(
-      searchableSettingsNavigationTargets.some((target) =>
-        target.id.startsWith('multi-window.opgg')
+      searchableSettingsNavigationTargets.some(
+        (target) =>
+          target.id.startsWith('multi-window.opgg') || target.id.startsWith('multi-window.aux')
       )
     ).toBe(false)
     for (const id of [
+      'multi-window.aux',
+      'multi-window.aux.enabled',
+      'multi-window.aux.auto-show',
+      'multi-window.aux.opacity',
+      'multi-window.aux.reset-position',
       'multi-window.opgg',
       'multi-window.opgg.enabled',
       'multi-window.opgg.shortcut'
     ]) {
       const target = getSettingsNavigationTarget(id)!
       expect(target.id).toBe(id)
-      expect(target.terminalId).toBe('multi-window.aux')
+      expect(target.terminalId).toBe('multi-window.mayhem')
       expect(target.route).toEqual({ tab: 'multi-window' })
       expect(createSettingsNavigationPath(target).at(-1)?.key).toBe(
-        createSettingsNavigationTargetStepKey('multi-window.aux')
+        createSettingsNavigationTargetStepKey('multi-window.mayhem')
       )
     }
   })
