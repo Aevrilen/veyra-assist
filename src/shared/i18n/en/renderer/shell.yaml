@@ -1,0 +1,276 @@
+notices:
+  modal:
+    title: Notice
+    close: Close
+    read: I have read
+    updatedAt: Updated {{time}}
+    noNoticeMd: |
+      ***No notice***
+    contacts:
+      open: Open
+      openChannel: Open {{name}}
+      password: 'Password: {{password}}'
+      platforms:
+        qq: QQ
+        telegram: Telegram
+        discord: Discord
+        email: Email
+        website: Website
+        other: Other
+legal:
+  declaration:
+    title: Declaration
+    isFree: is free
+    ok: I acknowledge this software {isFree} and agree to the disclaimer
+    quit: Quit
+    newContent: |
+      <div class="akari-disclaimer">
+
+      <style>
+      .akari-disclaimer{
+        background-color:#ffffff;
+        color:#333333;
+        line-height:1.65;
+        padding:1.75rem 2rem;
+        box-shadow:0 2px 6px rgba(0,0,0,.15);
+      }
+      .akari-disclaimer h1,
+      .akari-disclaimer h2{
+        color:#d97706;
+        margin-top:1.5rem;
+        margin-bottom:.75rem;
+        line-height:1.25;
+      }
+      .akari-disclaimer h1{font-size:1.6rem;}
+      .akari-disclaimer h2{font-size:1.25rem;}
+      .akari-disclaimer ul{margin-left:1.5rem;}
+      .akari-disclaimer li{margin-bottom:.65rem;}
+      .akari-disclaimer a{color:#2563eb;text-decoration:none;}
+      .akari-disclaimer a:hover{text-decoration:underline;}
+      [data-theme='dark'] .akari-disclaimer{
+        background-color:#1e1e1e;
+        color:#e6e6e6;
+        box-shadow:0 2px 6px rgba(0,0,0,.35);
+      }
+      [data-theme='dark'] .akari-disclaimer h1,
+      [data-theme='dark'] .akari-disclaimer h2{
+        color:#ffd866;
+      }
+      [data-theme='dark'] .akari-disclaimer a{
+        color:#8ab4f8;
+      }
+      </style>
+
+      # $t(common:appName) User Guide & Disclaimer
+
+      > **Before downloading, installing, or using this software, please read and fully understand this guide and disclaimer.**
+      > Once you start using it, you are deemed to have fully understood and agreed to all the following terms.
+
+      ---
+
+      ## I. Nature of the Software & Acquisition
+      - **$t(common:appName)i** is entirely open-source and free; all features are provided “as-is.”
+      - This software is not sold in any form of paid, bundled, or profit-making manner. If you encounter any form of reselling, bundling, or other profit-making activities, please do not purchase it. If you purchase it, please **immediately refund**.
+
+      ## II. Risk Notice & Limitation of Liability
+      - Using this software **may** result in (including but not limited to):
+        1. Your game account being suspended or permanently banned;
+        2. Loss, corruption, or inconsistency of game data with server data;
+        3. Client crashes, performance degradation, or other poor game experiences.
+      - For any direct, indirect, incidental, special, or consequential damages arising from using or being unable to use this software, the **$t(common:appName)** development team and all contributors assume no liability; all related risks are borne by the user.
+
+      > Please refer to the **Game Info Tracking Improvements** section in [Patch 25.17 Notes](https://www.leagueoflegends.com/en-us/news/game-updates/patch-25-17-notes/).
+
+      ## III. Server Compatibility Statement
+      - **Effective from the release of this statement, $t(common:appName) will no longer provide any form of support for Tencent Game servers.**
+      - Using this software in Tencent server environments is highly likely to violate Tencent Games’ user agreements, management regulations, or technical protection measures; any account bans, data loss, or other adverse consequences are solely the user’s responsibility.
+
+      ## IV. Information Collection & Privacy Protection
+      - To improve product quality, analyze errors, and conduct security statistics, the software collects **necessary and limited** system information and crash logs during operation.
+      - The collected information **does not** contain personally identifiable data, will not be uploaded to any third-party server, and will not be used for commercial purposes.
+
+      ## V. Other
+      - Clicking the confirm button three times in a row, can quickly close this modal. By doing this, it is deemed that you have read and agreed to this guide and disclaimer.
+
+      ---
+
+      > **If you have any questions about this guide and disclaimer, or need further information about the software, please visit**
+      > <https://github.com/LeagueAkari/LeagueAkari> .
+
+      </div>
+titlebar:
+  automation:
+    trigger_one: Automation ({{count}})
+    trigger_other: Automations ({{count}})
+    title: Enabled Automations
+    configuredModes_one: Configured for {{count}} mode
+    configuredModes_other: Configured for {{count}} modes
+    configuredChampions_one: '{{count}} champion configured'
+    configuredChampions_other: '{{count}} champions configured'
+    scheduledFriends_one: Waiting for {{count}} friend
+    scheduledFriends_other: Waiting for {{count}} friends
+    items:
+      autoAccept: Automatic ready check
+      autoHonor: Automatic honor
+      playAgain: Automatic return to lobby
+      autoMatchmaking: Automatic matchmaking
+      autoReconnect: Automatic reconnect
+      autoSkipLeader: Automatic lobby leadership transfer
+      autoHandleInvitations: Automatic lobby invitation handling
+      aramTeamSide: Automatic map-side message
+      autoPickBan: Automatic champion selection and banning
+      autoTrade: Automatic champion trade handling
+      autoChampConfig: Automatic champion setup
+      autoReply: Automatic reply
+      scheduledInvitation: Scheduled friend invitation
+      lockOffline: Keep offline status
+      resetStatusMessage: Reset chat status on login
+      resetRankedStatus: Reset displayed rank on login
+  search:
+    open: Search
+    summoner: Summoner Search
+    settings: Settings Search
+    streamerModeTitle: Streamer Mode
+    streamerModeWarning: Searching for players will expose sensitive information, continue?
+    continue: Continue
+    cancel: Cancel
+  actions:
+    notice: Notice
+    noticeSummary: Notice Summary
+    noticeOk: Got it
+    noticeSeeMore: See More
+    github: Project GitHub
+    auxWindow: Auxiliary Window
+    opggWindow: Champion Data
+    backgroundTasks: Background Tasks
+    themeSelector:
+      title: Theme Palette
+      groups:
+        workspace: Workspace themes
+        system: System
+        brightBuiltin: Light
+        darkBuiltin: Dark
+      tone:
+        light: Light
+        dark: Dark
+      presets:
+        followSystem: Follow System
+        light: Cool Gray
+        blue-gray: Blue Gray
+        mist-violet: Mist Violet
+        dark: Dark
+        graphite: Graphite
+        cyber: Cyber Neon
+        sakura: Sakura Pink
+        mint: Mint Green
+        aurora: Aurora Violet
+        butter: Butter Yellow
+    toggleTheme:
+      toLight: Switch to Light
+      toDark: Switch to Dark
+  windowControls:
+    minimize: Minimize
+    maximize: Maximize
+    restore: Restore
+    close: Close
+window:
+  closeConfirm:
+    title: Quit $t(common:appName)
+    options:
+      minimize-to-tray: Minimize to tray
+      quit: Quit
+    remember: Remember
+    ok: OK
+    cancel: Cancel
+navigation:
+  workspace:
+    match: Match
+    history: History
+    appearance: Appearance
+    customAppearance: Custom appearance
+    playerSearch: Summoner search
+    functionSearch: Feature search
+    settings: Settings
+    openTestPage: Open test page
+    appearanceDescription: Switch between four themes directly. Adjust background images, display modes, and overlays.
+    backgroundSettings: Background image settings
+    settingsGroups:
+      data: Data
+      notifications: Notifications
+      window: Windows
+      maintenance: Help and repair
+    toolkitGroups:
+      social: Social
+      rewards: Rewards and lobby
+    unsaved:
+      title: Unsaved changes
+      autoReply: The automatic reply has not been saved. Leaving will discard your changes.
+      discard: Discard and leave
+      continueEditing: Continue editing
+  sidebar:
+    label: Main navigation
+    expand: Expand sidebar
+    collapse: Collapse sidebar
+    groups:
+      match: Play
+      tools: Tools
+    menu:
+      first-run: First use
+      match-history: Match History
+      ongoing-game: Ongoing Game
+      automation: Automation
+      toolkit: Toolkit
+      test: Test
+    status:
+      respawned: Respawned
+      respawnedContent: You have respawned in the game, have fun!
+      currentConnected: Connected
+      launchedClients: Launched Clients
+      noClientTitle: No Available Client
+      noClient: No available client, please start the game
+      settings: Settings
+      notConnected: Not Connected
+      inConnectionLoop: Connecting...
+      unknown: Unknown
+      connectedClient: Connected Client
+      launchedClientPlaceholder: Launched Client {{index}}
+      update:
+        available: Download update
+        downloading: Downloading {{progress}}%
+        retry: Retry download
+        ready: Restart to update
+      respawnTimer:
+        detail: Respawn in {{seconds}} s ({{totalSeconds}} s)
+startup:
+  quickLaunch:
+    title: Launch your game client
+    description: Choose a game mode in the client after launch. Matchmaking will not start automatically.
+    start: Launch game
+    modify: Change setup
+    configureTitle: Set up game launch
+    configureDescription: Choose a detected client or select its installation file. Once saved, you can launch the client directly.
+    manual: Choose an installation manually
+    clientType: Client type
+    path: Client installation file
+    pathPlaceholder: Enter or select the client installation file
+    browse: Choose file
+    cancel: Cancel
+    saveAndLaunch: Save and launch client
+    invalidPath: The installation file is missing, inaccessible, or does not match the selected client. Update the setup.
+    unsupportedPlatform: This system does not support the selected client. Choose another client.
+    alreadyStarting: A client launch request is already in progress. Please wait.
+    started: 'Client launch requested: {{name}}.'
+    pathHint:
+      tcls: Choose Client.exe in the League of Legends Launcher folder.
+      wegame: Choose WeGame.exe or launcher.exe in the League of Legends WeGameLauncher folder.
+      riot: Choose RiotClientServices.exe, or Riot Client.app on macOS.
+  launcher:
+    tcls: TCLS Client
+    weGame: WeGame
+    riotClient: Riot Client
+    successMessage: 'Client launch requested: {{name}}'
+    failedMessage: 'Failed to launch {{name}}: {{reason}}'
+    newVersionAvailable: New
+backgroundTasks:
+  taskTitle: Ongoing Tasks ({{count}})
+  emptyPlaceholder: No background tasks

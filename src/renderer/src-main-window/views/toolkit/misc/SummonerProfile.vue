@@ -1,0 +1,393 @@
+<template>
+  <SettingsSection :title="t('toolkit.summonerProfile.title')">
+    <NModal
+      class="w-fit!"
+      preset="card"
+      size="small"
+      :title="t('toolkit.summonerProfile.skinSelectModal.title')"
+      v-model:show="isModalShow"
+    >
+      <div class="mb-2 flex w-85 max-w-full gap-1">
+        <div class="min-w-0 flex-1">
+          <NSelect
+            class="w-full! max-w-full"
+            filterable
+            :options="championOptions"
+            v-model:value="currentChampionId"
+            :render-label="renderLabel"
+            size="small"
+            :filter="(a, b) => isNameMatch(a, b.label as string, b.value as number)"
+          ></NSelect>
+        </div>
+        <NButton
+          type="primary"
+          size="small"
+          @click="handleApplyToProfile"
+          :disabled="!currentSkinId"
+          :loading="isProceeding"
+        >
+          {{ t('toolkit.summonerProfile.skinSelectModal.button') }}
+        </NButton>
+      </div>
+      <NSelect
+        class="mb-2 w-85! max-w-full"
+        filterable
+        :options="skinOptions"
+        :render-option="renderOption"
+        v-model:value="currentSkinId"
+        size="small"
+        :filter="(a, b) => isNameMatch(a, b.label as string)"
+      />
+      <NSelect
+        class="w-85! max-w-full"
+        filterable
+        :render-option="renderOption"
+        v-if="currentAugmentOptions.length >= 1"
+        :options="currentAugmentOptions"
+        v-model:value="currentAugmentId"
+        size="small"
+      />
+    </NModal>
+    <SettingsRow
+      :label="t('toolkit.summonerProfile.profileBackground.label')"
+      :label-description="t('toolkit.summonerProfile.profileBackground.description')"
+      :label-width="260"
+    >
+      <NButton size="small" type="primary" @click="isModalShow = true" :disabled="!lcs.isConnected">
+        {{ t('toolkit.summonerProfile.profileBackground.button') }}
+      </NButton>
+    </SettingsRow>
+    <SettingsRow
+      :label="t('toolkit.summonerProfile.bannerAccent.label')"
+      :label-description="t('toolkit.summonerProfile.bannerAccent.description')"
+      :label-width="260"
+    >
+      <NButton
+        :disabled="!lcs.isConnected"
+        @click="handleUpdatePr"
+        :loading="isUpdating"
+        size="small"
+      >
+        {{ t('toolkit.summonerProfile.bannerAccent.button') }}
+      </NButton>
+    </SettingsRow>
+    <SettingsRow
+      :label-description="t('toolkit.summonerProfile.emotes.description')"
+      :label="t('toolkit.summonerProfile.emotes.label')"
+      :label-width="260"
+    >
+      <NButton
+        :disabled="!lcs.isConnected"
+        @click="handleClearEmotes"
+        :loading="isClearingEmotes"
+        size="small"
+      >
+        {{ t('toolkit.summonerProfile.emotes.button') }}
+      </NButton>
+    </SettingsRow>
+  </SettingsSection>
+</template>
+
+<script setup lang="tsx">
+import LcuImage from '@renderer-shared/components/LcuImage.vue'
+import SettingsRow from '@renderer-shared/components/SettingsRow.vue'
+import SettingsSection from '@renderer-shared/components/SettingsSection.vue'
+import { useComponentName } from '@renderer-shared/composables/useComponentName'
+import { useInstance } from '@renderer-shared/shards'
+import { LeagueClientRenderer } from '@renderer-shared/shards/league-client'
+import { useLeagueClientStore } from '@renderer-shared/shards/league-client/store'
+import { championIconUri } from '@renderer-shared/shards/league-client/game-data-assets'
+import { LoggerRenderer } from '@renderer-shared/shards/logger'
+import { AugmentOverlay, ChampSkin } from '@shared/types/league-client/game-data'
+import { useTranslation } from 'i18next-vue'
+import { NButton, NModal, NSelect, NTooltip, SelectOption, useMessage } from 'naive-ui'
+import { VNode, computed, ref, watch } from 'vue'
+
+import { useChampionNameMatch } from '@main-window/composables/useChampionNameMatch'
+
+const { t } = useTranslation()
+const componentName = useComponentName()
+
+const lcs = useLeagueClientStore()
+const lc = useInstance(LeagueClientRenderer)
+const logger = useInstance(LoggerRenderer)
+
+const { match: isNameMatch } = useChampionNameMatch()
+
+const currentChampionId = ref<number>()
+const currentSkinId = ref<number>()
+const currentAugmentId = ref<string>()
+const championOptions = computed(() => {
+  const list = Object.values(lcs.gameData.champions).reduce((arr, current) => {
+    if (current.id === -1) {
+      return arr
+    }
+
+    arr.push({
+      label: current.name,
+      value: current.id
+    })
+    return arr
+  }, [] as SelectOption[])
+
+  list.sort((a, b) => (a.label as string).localeCompare(b.label as string, 'zh-Hans-CN'))
+
+  return list
+})
+
+const skinList = ref<ChampSkin[]>([])
+const skinOptions = computed(() => {
+  const arr: {
+    label: string
+    value: number
+    imgUrl: string
+    augments?: { label: string; value: string; imgUrl: string; overlays: AugmentOverlay[] }[]
+  }[] = []
+
+  const skinSet = new Set<number>()
+  skinList.value.forEach((v) => {
+    const augOptions1: {
+      label: string
+      value: string
+      imgUrl: string
+      overlays: AugmentOverlay[]
+    }[] = []
+    if (v.skinAugments && v.skinAugments.augments) {
+      for (const au of v.skinAugments.augments) {
+        if (au.overlays) {
+          augOptions1.push({
+            label: `${t('toolkit.summonerProfile.skinSelectModal.augment')} ${au.contentId}`,
+            imgUrl: v.uncenteredSplashPath,
+            value: au.contentId,
+            overlays: au.overlays
+          })
+        }
+      }
+    }
+
+    if (augOptions1.length) {
+      augOptions1.unshift({
+        label: t('toolkit.summonerProfile.skinSelectModal.unset'),
+        value: '',
+        imgUrl: '',
+        overlays: []
+      })
+    }
+
+    arr.push({
+      label: v.name,
+      value: v.id,
+      imgUrl: v.uncenteredSplashPath,
+      augments: augOptions1
+    })
+
+    skinSet.add(v.id)
+
+    // 收集任务皮肤特殊挂件
+    if (v.questSkinInfo && v.questSkinInfo.tiers) {
+      v.questSkinInfo.tiers.forEach((ti) => {
+        if (!skinSet.has(ti.id)) {
+          const augOptions2: {
+            label: string
+            value: string
+            imgUrl: string
+            overlays: AugmentOverlay[]
+          }[] = []
+          if (ti.skinAugments && ti.skinAugments.augments) {
+            for (const au of ti.skinAugments.augments) {
+              if (au.overlays) {
+                augOptions2.push({
+                  label: `${t('toolkit.summonerProfile.skinSelectModal.augment')} ${au.contentId}`,
+                  value: au.contentId,
+                  imgUrl: ti.uncenteredSplashPath,
+                  overlays: au.overlays
+                })
+              }
+            }
+          }
+
+          if (augOptions2.length) {
+            augOptions2.unshift({
+              label: t('toolkit.summonerProfile.skinSelectModal.unset'),
+              value: '',
+              imgUrl: '',
+              overlays: []
+            })
+          }
+
+          arr.push({
+            label: ti.name,
+            value: ti.id,
+            imgUrl: ti.uncenteredSplashPath,
+            augments: augOptions2
+          })
+          skinSet.add(ti.id)
+        }
+      })
+    }
+  })
+
+  return arr
+})
+
+const currentAugmentOptions = computed(() => {
+  if (!currentSkinId.value) {
+    return []
+  }
+
+  const s = skinOptions.value.find((s) => s.value === currentSkinId.value)
+
+  return s?.augments || []
+})
+
+const renderLabel = (option: SelectOption) => {
+  if (option.type === 'group') {
+    return <span>{option.label as string}</span>
+  }
+
+  return (
+    <div class="flex items-center gap-2">
+      <LcuImage src={championIconUri(option.value as number)} class="h-5 w-5" />
+      <span>{option.label as string}</span>
+    </div>
+  )
+}
+
+const renderOption = ({ option, node }: { node: VNode; option: SelectOption }) => {
+  return (
+    <NTooltip placement="right" delay={300} animated raw disabled={!option.imgUrl}>
+      {{
+        trigger: () => node,
+        default: () => (
+          <div class="relative h-40 min-w-70 overflow-hidden rounded bg-black/30 shadow-sm">
+            <LcuImage
+              {...({
+                src: option.imgUrl as string,
+                cache: false,
+                class: 'absolute inset-0 h-full w-full overflow-hidden object-cover'
+              } as any)}
+            />
+            {((option.overlays as AugmentOverlay[]) || []).map((o) => (
+              <LcuImage
+                {...({
+                  src: o.uncenteredLCOverlayPath,
+                  cache: false,
+                  class: 'absolute inset-0 h-full w-full overflow-hidden object-cover'
+                } as any)}
+              />
+            ))}
+          </div>
+        )
+      }}
+    </NTooltip>
+  )
+}
+
+watch(
+  () => currentChampionId.value,
+  async (id) => {
+    if (!id) {
+      return
+    }
+
+    const details = (await lc.api.gameData.getChampDetails(id)).data
+
+    if (details.id !== currentChampionId.value) {
+      return
+    }
+
+    skinList.value = details.skins
+    if (details.skins.length) {
+      currentAugmentId.value = undefined
+      currentSkinId.value = details.skins[0].id
+    }
+  }
+)
+
+const isModalShow = ref(false)
+const message = useMessage()
+const isProceeding = ref(false)
+
+const handleApplyToProfile = async () => {
+  if (!currentSkinId.value || isProceeding.value) {
+    return
+  }
+
+  isProceeding.value = true
+  try {
+    await lc.api.summoner.setSummonerBackgroundSkin(currentSkinId.value)
+    if (currentAugmentId.value !== undefined) {
+      await lc.api.summoner.setSummonerBackgroundAugments(currentAugmentId.value)
+    }
+    message.success(() => t('toolkit.summonerProfile.commonSuccess'), { duration: 1000 })
+  } catch (error) {
+    logger.warn(componentName, 'Failed to apply profile background', error)
+    message.warning(() => t('toolkit.summonerProfile.commonFailed'), { duration: 1000 })
+  } finally {
+    isProceeding.value = false
+  }
+}
+
+const BANNER_ACCENT_A = '2'
+
+const isUpdating = ref(false)
+const handleUpdatePr = async () => {
+  if (isUpdating.value) {
+    return
+  }
+
+  try {
+    isUpdating.value = true
+    await lc.api.challenges.updatePlayerPreferences({ bannerAccent: BANNER_ACCENT_A })
+    message.success(() => t('toolkit.summonerProfile.commonSuccess'))
+  } catch (error) {
+    logger.warn(componentName, 'Failed to update profile banner accent', error)
+    message.warning(() => t('toolkit.summonerProfile.commonFailed'))
+  } finally {
+    isUpdating.value = false
+  }
+}
+
+const isClearingEmotes = ref(false)
+const handleClearEmotes = async () => {
+  if (isClearingEmotes.value) {
+    return
+  }
+
+  try {
+    isClearingEmotes.value = true
+
+    const { data } = await lc.api.loadouts.getAccountScopeLoadouts()
+
+    if (!data.length) {
+      message.warning(() => t('toolkit.summonerProfile.commonFailed'))
+      return
+    }
+
+    const loadoutId = data[0].id
+
+    await lc.api.loadouts.setEmotes(loadoutId, {
+      EMOTES_ACE: -1,
+      EMOTES_FIRST_BLOOD: -1,
+      EMOTES_VICTORY: -1,
+      EMOTES_WHEEL_CENTER: -1,
+      EMOTES_WHEEL_UPPER: -1,
+      EMOTES_WHEEL_RIGHT: -1,
+      EMOTES_WHEEL_UPPER_RIGHT: -1,
+      EMOTES_WHEEL_UPPER_LEFT: -1,
+      EMOTES_WHEEL_LOWER: -1,
+      EMOTES_START: -1,
+      EMOTES_WHEEL_LEFT: -1,
+      EMOTES_WHEEL_LOWER_RIGHT: -1,
+      EMOTES_WHEEL_LOWER_LEFT: -1
+    })
+
+    message.success(() => t('toolkit.summonerProfile.commonSuccess'))
+  } catch (error) {
+    logger.warn(componentName, 'Failed to clear emotes', error)
+    message.warning(() => t('toolkit.summonerProfile.commonFailed'))
+  } finally {
+    isClearingEmotes.value = false
+  }
+}
+</script>

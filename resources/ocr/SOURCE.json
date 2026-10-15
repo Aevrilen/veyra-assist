@@ -1,0 +1,29 @@
+{
+  "retrievedAt": "2026-10-11T22:12:30.139Z",
+  "repository": "https://github.com/tesseract-ocr/tessdata_best",
+  "commit": "e12c65a915945e4c28e237a9b52bc4a8f39a0cec",
+  "originalModel": {
+    "name": "chi_sim.traineddata",
+    "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_best/e12c65a915945e4c28e237a9b52bc4a8f39a0cec/chi_sim.traineddata",
+    "status": 200,
+    "bytes": 13077423,
+    "sha256": "4fef2d1306c8e87616d4d3e4c6c67faf5d44be3342290cf8f2f0f6e3aa7e735b"
+  },
+  "transformation": {
+    "command": "combine_tessdata -c chi_sim.traineddata",
+    "tool": "Tesseract 5.5.0",
+    "performedAt": "2026-10-11T22:14:50.976Z",
+    "documentation": "https://github.com/tesseract-ocr/tesseract/blob/main/doc/combine_tessdata.1.asc"
+  },
+  "bundledModel": {
+    "name": "chi_sim.traineddata",
+    "bytes": 2471033,
+    "sha256": "9784f7c917c546424b690fcde708ce1f604a4393d08bb51ddab146d7d7c794e6"
+  },
+  "license": {
+    "url": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_best/e12c65a915945e4c28e237a9b52bc4a8f39a0cec/LICENSE",
+    "status": 200,
+    "bytes": 10173,
+    "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9"
+  }
+}

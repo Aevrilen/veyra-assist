@@ -1,0 +1,725 @@
+{
+  "scope": "Direct package declarations from isolated frozen-lockfile install; not a full transitive or binary redistribution clearance",
+  "packages": [
+    {
+      "name": "@babel/runtime",
+      "kind": "dependencies",
+      "requested": "^8.0.0",
+      "installed": "8.0.0",
+      "license": "MIT",
+      "repository": "https://github.com/babel/babel.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "@dnd-kit/abstract",
+      "kind": "devDependencies",
+      "requested": "^0.5.0",
+      "installed": "0.5.0",
+      "license": "MIT",
+      "repository": "https://github.com/clauderic/dnd-kit",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "@dnd-kit/dom",
+      "kind": "devDependencies",
+      "requested": "^0.5.0",
+      "installed": "0.5.0",
+      "license": "MIT",
+      "repository": "https://github.com/clauderic/dnd-kit",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "@dnd-kit/vue",
+      "kind": "devDependencies",
+      "requested": "^0.5.0",
+      "installed": "0.5.0",
+      "license": "MIT",
+      "repository": "https://github.com/clauderic/dnd-kit",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "@electron-toolkit/preload",
+      "kind": "dependencies",
+      "requested": "^3.0.2",
+      "installed": "3.0.2",
+      "license": "MIT",
+      "repository": "git+https://github.com/alex8088/electron-toolkit.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "@electron-toolkit/tsconfig",
+      "kind": "devDependencies",
+      "requested": "^2.0.0",
+      "installed": "2.0.0",
+      "license": "MIT",
+      "repository": "git+https://github.com/alex8088/electron-toolkit.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "@electron-toolkit/utils",
+      "kind": "dependencies",
+      "requested": "^4.0.0",
+      "installed": "4.0.0",
+      "license": "MIT",
+      "repository": "git+https://github.com/alex8088/electron-toolkit.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "@electron/notarize",
+      "kind": "devDependencies",
+      "requested": "^3.1.1",
+      "installed": "3.1.1",
+      "license": "MIT",
+      "repository": "git+https://github.com/electron/notarize.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "@modyfi/vite-plugin-yaml",
+      "kind": "devDependencies",
+      "requested": "^1.1.1",
+      "installed": "1.1.1",
+      "license": "MIT",
+      "repository": "git+https://github.com/Modyfi/vite-plugin-yaml.git",
+      "noticeFiles": []
+    },
+    {
+      "name": "@storybook/vue3-vite",
+      "kind": "devDependencies",
+      "requested": "^10.5.5",
+      "installed": "10.5.5",
+      "license": "MIT",
+      "repository": "https://github.com/storybookjs/storybook.git",
+      "noticeFiles": []
+    },
+    {
+      "name": "@swc/core",
+      "kind": "devDependencies",
+      "requested": "^1.15.47",
+      "installed": "1.15.47",
+      "license": "Apache-2.0",
+      "repository": "git+https://github.com/swc-project/swc.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "@tailwindcss/vite",
+      "kind": "devDependencies",
+      "requested": "^4.3.3",
+      "installed": "4.3.3",
+      "license": "MIT",
+      "repository": "https://github.com/tailwindlabs/tailwindcss.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "@trivago/prettier-plugin-sort-imports",
+      "kind": "devDependencies",
+      "requested": "^6.0.2",
+      "installed": "6.0.2",
+      "license": "Apache-2.0",
+      "repository": "https://github.com/trivago/prettier-plugin-sort-imports",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "@types/lodash",
+      "kind": "devDependencies",
+      "requested": "^4.17.25",
+      "installed": "4.17.25",
+      "license": "MIT",
+      "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "@types/luaparse",
+      "kind": "devDependencies",
+      "requested": "^0.2.13",
+      "installed": "0.2.13",
+      "license": "MIT",
+      "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "@types/node",
+      "kind": "devDependencies",
+      "requested": "^26.1.2",
+      "installed": "26.1.2",
+      "license": "MIT",
+      "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "@types/semver",
+      "kind": "devDependencies",
+      "requested": "^7.8.0",
+      "installed": "7.8.0",
+      "license": "MIT",
+      "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "@types/ws",
+      "kind": "devDependencies",
+      "requested": "^8.18.1",
+      "installed": "8.18.1",
+      "license": "MIT",
+      "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "@vicons/antd",
+      "kind": "devDependencies",
+      "requested": "^0.13.0",
+      "installed": "0.13.0",
+      "license": "MIT",
+      "repository": null,
+      "noticeFiles": []
+    },
+    {
+      "name": "@vicons/carbon",
+      "kind": "devDependencies",
+      "requested": "^0.13.0",
+      "installed": "0.13.0",
+      "license": "Apache 2.0",
+      "repository": null,
+      "noticeFiles": ["License.d.ts", "License.js"]
+    },
+    {
+      "name": "@vicons/fa",
+      "kind": "devDependencies",
+      "requested": "^0.13.0",
+      "installed": "0.13.0",
+      "license": "CC BY 4.0",
+      "repository": null,
+      "noticeFiles": []
+    },
+    {
+      "name": "@vicons/fluent",
+      "kind": "devDependencies",
+      "requested": "^0.13.0",
+      "installed": "0.13.0",
+      "license": "MIT",
+      "repository": null,
+      "noticeFiles": []
+    },
+    {
+      "name": "@vicons/ionicons5",
+      "kind": "devDependencies",
+      "requested": "^0.13.0",
+      "installed": "0.13.0",
+      "license": "MIT",
+      "repository": null,
+      "noticeFiles": []
+    },
+    {
+      "name": "@vicons/material",
+      "kind": "devDependencies",
+      "requested": "^0.13.0",
+      "installed": "0.13.0",
+      "license": "Apache 2.0",
+      "repository": null,
+      "noticeFiles": []
+    },
+    {
+      "name": "@vicons/tabler",
+      "kind": "devDependencies",
+      "requested": "^0.13.0",
+      "installed": "0.13.0",
+      "license": "MIT",
+      "repository": null,
+      "noticeFiles": ["License.d.ts", "License.js"]
+    },
+    {
+      "name": "@vitejs/plugin-vue",
+      "kind": "devDependencies",
+      "requested": "^6.0.8",
+      "installed": "6.0.8",
+      "license": "MIT",
+      "repository": "git+https://github.com/vitejs/vite-plugin-vue.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "@vitejs/plugin-vue-jsx",
+      "kind": "devDependencies",
+      "requested": "^5.1.6",
+      "installed": "5.1.6",
+      "license": "MIT",
+      "repository": "git+https://github.com/vitejs/vite-plugin-vue.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "@vue/compiler-dom",
+      "kind": "devDependencies",
+      "requested": "^3.5.40",
+      "installed": "3.5.40",
+      "license": "MIT",
+      "repository": "git+https://github.com/vuejs/core.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "@vue/devtools-api",
+      "kind": "devDependencies",
+      "requested": "^8.2.1",
+      "installed": "8.2.1",
+      "license": "MIT",
+      "repository": "git+https://github.com/vuejs/devtools.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "@vue/test-utils",
+      "kind": "devDependencies",
+      "requested": "^2.4.11",
+      "installed": "2.4.11",
+      "license": "MIT",
+      "repository": "git+https://github.com/vuejs/test-utils.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "@vueuse/components",
+      "kind": "devDependencies",
+      "requested": "^14.4.0",
+      "installed": "14.4.0",
+      "license": "MIT",
+      "repository": "git+https://github.com/vueuse/vueuse.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "@vueuse/core",
+      "kind": "devDependencies",
+      "requested": "^14.4.0",
+      "installed": "14.4.0",
+      "license": "MIT",
+      "repository": "git+https://github.com/vueuse/vueuse.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "@vueuse/router",
+      "kind": "devDependencies",
+      "requested": "^14.4.0",
+      "installed": "14.4.0",
+      "license": "MIT",
+      "repository": "git+https://github.com/vueuse/vueuse.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "axios",
+      "kind": "devDependencies",
+      "requested": "^1.19.0",
+      "installed": "1.19.0",
+      "license": "MIT",
+      "repository": "https://github.com/axios/axios.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "axios-retry",
+      "kind": "dependencies",
+      "requested": "^4.5.0",
+      "installed": "4.5.0",
+      "license": "Apache-2.0",
+      "repository": "git+https://github.com/softonic/axios-retry.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "better-sqlite3",
+      "kind": "dependencies",
+      "requested": "^13.0.2",
+      "installed": "13.0.2",
+      "license": "MIT",
+      "repository": "git://github.com/WiseLibs/better-sqlite3.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "chart.js",
+      "kind": "devDependencies",
+      "requested": "^4.5.1",
+      "installed": "4.5.1",
+      "license": "MIT",
+      "repository": "https://github.com/chartjs/Chart.js.git",
+      "noticeFiles": ["LICENSE.md"]
+    },
+    {
+      "name": "chartjs-plugin-datalabels",
+      "kind": "devDependencies",
+      "requested": "^2.2.0",
+      "installed": "2.2.0",
+      "license": "MIT",
+      "repository": "https://github.com/chartjs/chartjs-plugin-datalabels.git",
+      "noticeFiles": ["LICENSE.md"]
+    },
+    {
+      "name": "dayjs",
+      "kind": "devDependencies",
+      "requested": "^1.11.21",
+      "installed": "1.11.21",
+      "license": "MIT",
+      "repository": "https://github.com/iamkun/dayjs.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "electron",
+      "kind": "devDependencies",
+      "requested": "^43.2.0",
+      "installed": "43.2.0",
+      "license": "MIT",
+      "repository": "https://github.com/electron/electron",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "electron-builder",
+      "kind": "devDependencies",
+      "requested": "26.15.7",
+      "installed": "26.15.7",
+      "license": "MIT",
+      "repository": "git+https://github.com/electron-userland/electron-builder.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "electron-vite",
+      "kind": "devDependencies",
+      "requested": "6.0.0-beta.1",
+      "installed": "6.0.0-beta.1",
+      "license": "MIT",
+      "repository": "git+https://github.com/alex8088/electron-vite.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "i18next",
+      "kind": "devDependencies",
+      "requested": "^26.3.6",
+      "installed": "26.3.6",
+      "license": "MIT",
+      "repository": "https://github.com/i18next/i18next.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "i18next-vue",
+      "kind": "devDependencies",
+      "requested": "^5.4.0",
+      "installed": "5.4.0",
+      "license": "MIT",
+      "repository": "git+https://github.com/i18next/i18next-vue.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "league-akari-native-win32",
+      "kind": "optionalDependencies",
+      "requested": "workspace:*",
+      "installed": "0.0.0",
+      "license": "MIT",
+      "repository": null,
+      "noticeFiles": []
+    },
+    {
+      "name": "lodash",
+      "kind": "devDependencies",
+      "requested": "^4.18.1",
+      "installed": "4.18.1",
+      "license": "MIT",
+      "repository": "lodash/lodash",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "luaparse",
+      "kind": "dependencies",
+      "requested": "^0.3.1",
+      "installed": "0.3.1",
+      "license": "MIT",
+      "repository": "https://github.com/fstirlitz/luaparse.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "markdown-it",
+      "kind": "devDependencies",
+      "requested": "^15.0.0",
+      "installed": "15.0.0",
+      "license": "MIT",
+      "repository": "markdown-it/markdown-it",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "mime-types",
+      "kind": "dependencies",
+      "requested": "^3.0.2",
+      "installed": "3.0.2",
+      "license": "MIT",
+      "repository": "jshttp/mime-types",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "mitt",
+      "kind": "devDependencies",
+      "requested": "^3.0.1",
+      "installed": "3.0.1",
+      "license": "MIT",
+      "repository": "developit/mitt",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "mobx",
+      "kind": "dependencies",
+      "requested": "^7.0.0",
+      "installed": "7.0.0",
+      "license": "MIT",
+      "repository": "git+https://github.com/mobxjs/mobx.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "monaco-editor",
+      "kind": "devDependencies",
+      "requested": "^0.56.0",
+      "installed": "0.56.0",
+      "license": "MIT",
+      "repository": "https://github.com/microsoft/monaco-editor",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "motion-v",
+      "kind": "devDependencies",
+      "requested": "^2.3.0",
+      "installed": "2.3.0",
+      "license": "MIT",
+      "repository": "https://github.com/motiondivision/motion-vue.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "naive-ui",
+      "kind": "devDependencies",
+      "requested": "^2.44.1",
+      "installed": "2.44.1",
+      "license": "MIT",
+      "repository": "https://github.com/tusen-ai/naive-ui",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "p-queue",
+      "kind": "devDependencies",
+      "requested": "^9.3.3",
+      "installed": "9.3.3",
+      "license": "MIT",
+      "repository": "sindresorhus/p-queue",
+      "noticeFiles": ["license"]
+    },
+    {
+      "name": "pinia",
+      "kind": "devDependencies",
+      "requested": "^4.0.2",
+      "installed": "4.0.2",
+      "license": "MIT",
+      "repository": "git+https://github.com/vuejs/pinia.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "pinyin-pro",
+      "kind": "devDependencies",
+      "requested": "^3.28.2",
+      "installed": "3.28.2",
+      "license": "MIT",
+      "repository": "git+https://github.com/zh-lx/pinyin-pro.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "prettier",
+      "kind": "devDependencies",
+      "requested": "^3.9.6",
+      "installed": "3.9.6",
+      "license": "MIT",
+      "repository": "prettier/prettier",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "prettier-plugin-tailwindcss",
+      "kind": "devDependencies",
+      "requested": "^0.8.1",
+      "installed": "0.8.1",
+      "license": "MIT",
+      "repository": "https://github.com/tailwindlabs/prettier-plugin-tailwindcss",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "quick-lru",
+      "kind": "devDependencies",
+      "requested": "^7.3.0",
+      "installed": "7.3.0",
+      "license": "MIT",
+      "repository": "sindresorhus/quick-lru",
+      "noticeFiles": ["license"]
+    },
+    {
+      "name": "reflect-metadata",
+      "kind": "dependencies",
+      "requested": "^0.2.2",
+      "installed": "0.2.2",
+      "license": "Apache-2.0",
+      "repository": "https://github.com/rbuckton/reflect-metadata.git",
+      "noticeFiles": ["AUTHORS.md", "LICENSE"]
+    },
+    {
+      "name": "regedit",
+      "kind": "dependencies",
+      "requested": "^5.1.4",
+      "installed": "5.1.4",
+      "license": "MIT",
+      "repository": "https://github.com/kessler/node-regedit",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "safe-stable-stringify",
+      "kind": "devDependencies",
+      "requested": "^2.5.0",
+      "installed": "2.5.0",
+      "license": "MIT",
+      "repository": "git+https://github.com/BridgeAR/safe-stable-stringify.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "semver",
+      "kind": "devDependencies",
+      "requested": "^7.8.5",
+      "installed": "7.8.5",
+      "license": "ISC",
+      "repository": "git+https://github.com/npm/node-semver.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "storybook",
+      "kind": "devDependencies",
+      "requested": "^10.5.5",
+      "installed": "10.5.5",
+      "license": "MIT",
+      "repository": "https://github.com/storybookjs/storybook.git",
+      "noticeFiles": []
+    },
+    {
+      "name": "tailwindcss",
+      "kind": "devDependencies",
+      "requested": "^4.3.3",
+      "installed": "4.3.3",
+      "license": "MIT",
+      "repository": "https://github.com/tailwindlabs/tailwindcss.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "tesseract.js",
+      "kind": "dependencies",
+      "requested": "7.0.0",
+      "installed": "7.0.0",
+      "license": "Apache-2.0",
+      "repository": "https://github.com/naptha/tesseract.js.git",
+      "noticeFiles": ["LICENSE.md"]
+    },
+    {
+      "name": "typeorm",
+      "kind": "dependencies",
+      "requested": "^1.1.0",
+      "installed": "1.1.0",
+      "license": "MIT",
+      "repository": "https://github.com/typeorm/typeorm.git",
+      "noticeFiles": []
+    },
+    {
+      "name": "typescript",
+      "kind": "devDependencies",
+      "requested": "^6.0.3",
+      "installed": "6.0.3",
+      "license": "Apache-2.0",
+      "repository": "https://github.com/microsoft/TypeScript.git",
+      "noticeFiles": ["LICENSE.txt"]
+    },
+    {
+      "name": "vfonts",
+      "kind": "devDependencies",
+      "requested": "^0.0.3",
+      "installed": "0.0.3",
+      "license": "MIT",
+      "repository": null,
+      "noticeFiles": []
+    },
+    {
+      "name": "vite",
+      "kind": "devDependencies",
+      "requested": "8.2.0",
+      "installed": "8.2.0",
+      "license": "MIT",
+      "repository": "git+https://github.com/vitejs/vite.git",
+      "noticeFiles": ["LICENSE.md"]
+    },
+    {
+      "name": "vite-plugin-vue-devtools",
+      "kind": "devDependencies",
+      "requested": "^8.2.1",
+      "installed": "8.2.1",
+      "license": "MIT",
+      "repository": "git+https://github.com/vuejs/devtools.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "vitest",
+      "kind": "devDependencies",
+      "requested": "^4.1.10",
+      "installed": "4.1.10",
+      "license": "MIT",
+      "repository": "git+https://github.com/vitest-dev/vitest.git",
+      "noticeFiles": ["LICENSE.md"]
+    },
+    {
+      "name": "vue",
+      "kind": "devDependencies",
+      "requested": "^3.5.40",
+      "installed": "3.5.40",
+      "license": "MIT",
+      "repository": "git+https://github.com/vuejs/core.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "vue-chartjs",
+      "kind": "devDependencies",
+      "requested": "^5.3.4",
+      "installed": "5.3.4",
+      "license": "MIT",
+      "repository": "git+ssh://git@github.com:apertureless/vue-chartjs.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "vue-router",
+      "kind": "devDependencies",
+      "requested": "^5.2.0",
+      "installed": "5.2.0",
+      "license": "MIT",
+      "repository": "git+https://github.com/vuejs/router.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "vue-tsc",
+      "kind": "devDependencies",
+      "requested": "^3.3.9",
+      "installed": "3.3.9",
+      "license": "MIT",
+      "repository": "https://github.com/vuejs/language-tools.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "winston",
+      "kind": "dependencies",
+      "requested": "^3.19.0",
+      "installed": "3.19.0",
+      "license": "MIT",
+      "repository": "https://github.com/winstonjs/winston.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "ws",
+      "kind": "dependencies",
+      "requested": "^8.21.1",
+      "installed": "8.21.1",
+      "license": "MIT",
+      "repository": "git+https://github.com/websockets/ws.git",
+      "noticeFiles": ["LICENSE"]
+    },
+    {
+      "name": "zod",
+      "kind": "dependencies",
+      "requested": "^4.4.3",
+      "installed": "4.4.3",
+      "license": "MIT",
+      "repository": "git+https://github.com/colinhacks/zod.git",
+      "noticeFiles": ["LICENSE"]
+    }
+  ]
+}

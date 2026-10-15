@@ -1,0 +1,18 @@
+{
+  "$comment": "内置用户开局模板，非网站统计。guardian-blade 对应既有战士/射手/物理刺客角色共识，guardian-horn 对应坦克。用户可在 preferences.json 的 equipment.roleDefaults / championOverrides 覆盖；[] 关闭模板，null 留待确认。既有用户文件不自动改写。",
+  "revision": 2,
+  "roleDefaults": {
+    "guardian-blade": [3177, 1036],
+    "guardian-horn": [2051, 1028]
+  },
+  "championOverrides": {
+    "887": [null, 1052]
+  },
+  "itemNames": {
+    "3177": "守护者之刃",
+    "1036": "长剑",
+    "2051": "守护者号角",
+    "1028": "红水晶",
+    "1052": "增幅典籍"
+  }
+}

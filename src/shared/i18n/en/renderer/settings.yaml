@@ -1,0 +1,662 @@
+settings:
+  modal:
+    title: Settings
+  commandPalette:
+    searchPlaceholder: Search settings
+    searchAriaLabel: Search settings
+    empty: No matching settings
+    openHint: Open
+    closeHint: Close
+  app:
+    title: Application
+    basic:
+      title: Basic
+      locale:
+        label: Language
+        description: Set the primary language for Veyra Assist
+      mainWindowCloseAction:
+        label: Main Window Close Action
+        description: The action to be executed when the main window is closed
+        options:
+          minimize-to-tray: Minimize to tray
+          quit: Quit
+          ask: Ask every time
+      preferredLolSource:
+        label: Preferred Data Source
+        description: Select the preferred League of Legends API data source
+        howToChoose: How to choose?
+        unsupported: 'Unsupported SGP API: {{server}}'
+        options:
+          sgp: SGP API
+          lcu: LCU API
+        tip:
+          sgp:
+            title: SGP API
+            feature1: Fast query performance with quick response
+            feature2: Provides more detailed match data
+            feature3: Supports cross-region match history lookup on mainland servers
+            warning: When using VPN/accelerator to play on foreign servers, connection may fail or be extremely slow
+          lcu:
+            title: LCU API (Client Local)
+            feature1: High stability, unaffected by network conditions
+            feature2: Reliable even when using VPN/accelerator
+            warning: 'Known issue: Querying match history during champion select may cause the game client to crash'
+      theme:
+        label: Theme Color
+        description: Theme color for $t(common:appName)
+        groups:
+          workspace: Workspace themes
+          system: System
+          brightBuiltin: Light
+          darkBuiltin: Dark
+        tone:
+          light: Light
+          dark: Dark
+        options:
+          default: Follow System
+          light: Cool Gray
+          blue-gray: Blue Gray
+          mist-violet: Mist Violet
+          dark: Dark
+          graphite: Graphite
+          cyber: Cyber Neon
+          sakura: Sakura Pink
+          mint: Mint Green
+          aurora: Aurora Violet
+          butter: Butter Yellow
+    selfUpdate:
+      title: Application Update
+      temporarilyUnsupported: In-app updates are not currently supported on this platform. Update checks and automatic updates are disabled.
+      autoCheckUpdates:
+        label: Auto Check Updates
+        description: Periodically check for new versions
+      autoDownloadUpdates:
+        label: Auto Download Updates
+        description: Automatically start the update process when a new release is detected
+      checkUpdates: Check Updates
+      currentRelease: Current Release
+      downloadRelease: Download Release
+      newRelease: New Release
+      cancelUpdate: Cancel Update
+      restartNow: Restart Now
+      updateProgress:
+        label: Update Process
+        description: The ongoing update process
+        downloading: Downloading update package
+        finished: Completed {{progress}}%
+        remain: Remaining {{time}}
+        downloadFailed: Download failed
+        waitingForRestart: Waiting for restart
+        waitingForRestartDescription: The auto-update process will be performed after closing the application
+      checkUpdatesResult:
+        no-updates: No new version available
+        new-updates: New version available
+        failed: Failed to check for updates {{reason}}
+      updateDir:
+        label: Update Directory
+        description: The current location of the downloaded update. If the complete auto-update process cannot be executed, manual update is required
+        open: Open
+    mainWindowUi:
+      title: Main Window UI
+      background:
+        label: Background
+        description: Set the main window background mode
+        options:
+          profileSkin: Champion Background
+          customImage: Custom Wallpaper
+          none: Default
+          system: System Material
+        tooltips:
+          profileSkin: Use the current player's profile background skin as the main window background
+          system: Uses Mica on Windows and native window blur on macOS. Falls back to the default solid background when unavailable or if activation fails
+      customBackground:
+        label: Custom Wallpaper
+        description: Use a fixed local image or video as the background. The wallpaper is center-cropped
+        filePath: File Path
+        filePlaceholder: No wallpaper file selected
+        browse: Browse
+        overlayStrength: Overlay Depth
+      backgroundMaterial:
+        label: Background Material
+        description: Set the background material of the application interface, requires specific system version support
+        options:
+          none: None
+          system: System Material
+          systemUnsupported: System Material (Unsupported)
+    lcConnection:
+      title: LCU Connection
+      autoConnect:
+        label: Auto Connect
+        description: Automatically connect to the client when there is a unique client
+      useWmi:
+        label: Use WMIC
+        description: Use WMIC to get client command line information instead of the default Win32 API method. Requires administrator privileges
+      rebuildWmi:
+        label: Rebuild WMI
+        description: If WMIC does not work properly, try this
+        rebuildButton: Rebuild WMI
+    httpProxy:
+      title: Network Proxy
+      strategy:
+        label: HTTP Proxy
+        description: Configure the proxy for network requests throughout the app, including data, images, and update downloads. Local client connections are unaffected
+        options:
+          fixed-servers: Manual Proxy
+          system: Follow System
+          direct: Off
+      host:
+        label: Proxy Host
+        description: The host of the proxy server
+      port:
+        label: Proxy Port
+        description: The port of the proxy server
+    misc:
+      title: Misc
+      logLevel:
+        label: Log Level
+        description: Set the log level of the application
+      disableHardwareAcceleration:
+        label: Disable UI rendering acceleration (restart required)
+        description: Disables hardware acceleration, which may solve some rendering issues, such as font blur
+      disableHardwareAccelerationDialog:
+        enableText: Enable Hardware Acceleration
+        disableText: Disable Hardware Acceleration
+        disableConfirmation: Will disable hardware acceleration, restart the application to apply changes
+        enableConfirmation: Will enable hardware acceleration, restart the application to apply changes
+        positiveText: Restart and Quit
+        negativeText: Cancel
+      uninstallApp:
+        label: Uninstall Application
+        description: Uninstall the application, which will delete all data and configurations
+        button: Uninstall Application
+        title: Uninstall Application
+        content: Are you sure you want to uninstall $t(common:appName)? This will also remove all application data.
+        positiveText: Uninstall
+        negativeText: Cancel
+  matchHistory:
+    title: Match History Tabs
+    refreshTabsAfterGameEnds:
+      label: Refresh Tabs After Game Ends
+      description: Automatically refresh the match history tabs after the game ends. Due to the latency of the remote server, the refresh may not be on time
+    loadCount:
+      label: Load Count
+      description: Number of matches to load for each match history tab.
+    showJunglePathing:
+      label: Enable Jungle Pathing
+      description: Show jungle pathing entry and analysis card on match history pages.
+  ongoingGame:
+    champSelectOverlay:
+      title: Champion Select Overlays
+      description: Shows candidate and teammate statistics. Information pauses when its position is unset or space is insufficient.
+      dataDescription: Missing or failed statistics show a dash. Ratings and hidden ranks are unavailable.
+      positionDescription: Origins are relative to the client's top-left corner in Electron DIPs. The reference crops do not establish the full-client origins; align them with the actual window. The initial 58.5 / 80 spacing only describes the reference at 100% size. Check spacing after client or display scaling changes.
+      opacity:
+        label: Background Opacity
+        description: Changes only the charcoal background alpha; text remains fully opaque.
+      candidateOrigin:
+        label: First Candidate Center X
+        description: Horizontal offset from the client's left edge. Unset hides the candidate band.
+      candidateStep:
+        label: Candidate Center Spacing
+        description: Horizontal distance between candidate portrait centers in DIPs. Below 54, the band pauses to keep text readable at 13px.
+      teammateOrigin:
+        label: First Teammate Center Y
+        description: Vertical offset from the client's top edge. Unset hides teammate groups.
+      teammateStep:
+        label: Teammate Row Spacing
+        description: Keeps the original LCU teammate row order, in DIPs.
+      unconfigured: Alignment pending
+    title: Ongoing Game
+    titleCommon: Ongoing Game
+    titlePlayerCard: Player Card
+    enabled:
+      label: Enable
+      description: Perform match analysis when entering champion selection or during a match.
+    autoRouteWhenGameStarts:
+      label: Auto Route to Ongoing-Game
+      description: Automatically switch to the ongoing-game page when entering the champion selection phase or when the game starts. Excluded in the lobby phase.
+    matchHistoryLoadCount:
+      label: Match History Load Count
+      description: Number of matches to fetch for analyzing each player's performance on the match page.
+    concurrency:
+      label: Concurrent Request Limit
+      description: Limits the total number of concurrent network requests during match analysis. This does not affect the concurrency limits of other modules.
+    matchHistoryTagPreference:
+      label: Queue Filter Preference
+      description: Queue filter preference when loading match history using the SGP API.
+      options:
+        all: All Modes
+        current: Current Mode
+    queryInLobbyPhase:
+      label: Query in Lobby Phase
+      description: In addition to champion select and in-game phases, you can now also view data for all members in the lobby.
+    premadeTeamInferMatchCountThreshold:
+      label: Premade Team Inference Match Count Threshold
+      description: Minimum number of games required to confirm premade teams.
+    gameDetailsLoadCount:
+      label: Game Details Load Count
+      description_one: Will additionally load the detailed information for the first {{count}} match for game analysis.
+      description_other: Will additionally load the detailed information for the first {{count}} matches for game analysis.
+    jungleAnalysisMatchHistoryLoadCount:
+      label: Jungle Analysis Match History Load Count
+      description_one: Jungle analysis can continue fetching match history until the first {{count}} game to satisfy the 20 current-champion and 50 overall jungle samples.
+      description_other: Jungle analysis can continue fetching match history until the first {{count}} games to satisfy the 20 current-champion and 50 overall jungle samples.
+    showRecentlyUsedChampions:
+      label: Show Recently Used Champions
+      description: Display the recently used champions in the player card.
+    showChampionUsage:
+      label: Show Champion Usage
+      description: Display the champion usage on the player card.
+      options:
+        none: None
+        recent: Recently Used
+        mastery: Mastery Level
+    showJunglePathing:
+      label: Enable Jungle Pathing
+      description: Show jungle pathing analysis in ongoing-game player cards.
+    showMatchHistoryItemBorder:
+      label: Show Match History Item Border
+      description: Display a border around the match history item.
+    playerCardTags:
+      label: Player Card Tags
+      description: These tags will be displayed on the player cards
+      tags:
+        showPremadeTeamTag:
+          label: Premade Team Text
+        showWinningStreakTag:
+          label: Winning Streak
+        showLosingStreakTag:
+          label: Losing Streak
+        showSoloKillsTag:
+          label: Average Solo Kills Per Game
+        showEasyGankTag:
+          label: Easy/Hard Gank Tag
+        showAverageTeamDamageTag:
+          label: Average Team Damage
+        showAverageTeamDamageTakenTag:
+          label: Average Team Damage Taken
+        showSuspiciousFlashPositionTag:
+          label: Flash Position Anomaly Detection
+        showAverageTeamGoldTag:
+          label: Average Team Gold
+        showAverageCsPerMinuteTag:
+          label: Average CS per Minute
+        showGreatPerformanceTag:
+          label: Outstanding Performance Tag
+        showMetTag:
+          label: Previously Encountered Players
+        showTaggedTag:
+          label: Tagged Players
+        showSelfTag:
+          label: Self Tag
+        showWinRateTeamTag:
+          label: High Win Rate Tag
+        showAverageDamageGoldEfficiencyTag:
+          label: Damage-Gold Efficiency Tag
+        showPrivacyTag:
+          label: Career Hidden Tag
+        showAverageEnemyMissingPingsTag:
+          label: Average Enemy Missing Pings
+        showAverageVisionScoreTag:
+          label: Average Vision Score
+        showAkariScoreTag:
+          label: Akari Score
+        showAverageKillDamageEfficiencyTag:
+          label: Average Kill Damage Efficiency
+  multiWindow:
+    mayhem:
+      title: In-game recognition
+      calibration:
+        label: In-game recognition calibration
+        description: First use requires three original screenshots (shop open, augment choices, and normal combat) and manual feature marking. Currently supports Windows at 2560×1440 with 100% scaling.
+        anchors: Champion-select anchors must be configured separately in their existing settings. This entry only calibrates shop and augment recognition.
+        button: Open calibration window
+        statusFailed: 'Could not read calibration status: {{error}}'
+        openFailed: 'Could not open calibration window: {{error}}'
+        status:
+          loading: Reading calibration status…
+          unavailable: Calibration status is unavailable.
+          unsupported: In-game recognition calibration supports Windows only.
+          uncalibrated: Not calibrated. Shop and augment overlays remain hidden.
+          calibrated: Calibration is saved. Recalibrate after changing display settings.
+    title: Multi-Window
+    auxWindow:
+      title: Auxiliary Window
+      enabled:
+        label: Enable Auxiliary Window
+        description: Use a small window during certain game phases to display status and provide additional actions.
+        descriptionWithIcon: Can be opened by clicking the quick icon on the right side of the title bar ({icon}) or by right-clicking the tray icon and selecting "Aux Window").
+      autoShow:
+        label: Auto Show and Close
+        description: Automatically show or close the auxiliary window during specific game phases.
+      opacity:
+        label: Window Opacity
+        description: Adjust the transparency level of the auxiliary window.
+      resetWindowPosition:
+        label: Reset Window Position
+        description: Reset the position of the auxiliary window to its default location in the center of the main screen.
+        button: Reset
+    opggWindow:
+      title: Champion Data Window
+      enabled:
+        label: Enable Champion Data
+        description: View champion data from OP.GG or 101 (CN)
+        descriptionWithIcon: Open it from the quick icon on the right side of the title bar ({icon}) or from "Champion Data Window" in the tray menu.
+      autoShow:
+        label: Auto Show and Close
+        description: Automatically show or close the champion data window during specific game phases.
+      opacity:
+        label: Window Opacity
+        description: Adjust the transparency level of the champion data window.
+      resetWindowPosition:
+        label: Reset Window Position
+        description: Reset the position of the champion data window to its default location in the center of the main screen.
+        button: Reset
+      showShortcut:
+        label: Show Shortcut
+        description: Use the shortcut key to show or hide the champion data window. If the game is in the foreground, it will automatically get pinned. Make sure the game is in borderless or windowed mode for this window to display correctly.
+      showSkinSelector:
+        label: Skin Selector
+        description: Display quick skin selection in the champion select assistant.
+    ongoingGameWindow:
+      title: Ongoing Game Overlay Window
+      titleRequireAdmin: Ongoing Game Overlay Window (Admin Required)
+      enabled:
+        label: Enable Ongoing Game Window
+        description: Display an overlay window during the game to show ongoing game information. This feature requires the game client to be in windowed or borderless mode.
+      showShortcut:
+        label: Show Shortcut
+        description: Hold the shortcut key to show the overlay window during the game
+    cdTimerWindow:
+      title: Timer Overlay Window
+      titleRequireAdmin: Timer Overlay Window (Admin Required)
+      description:
+        lineA: Enemy summoner spell timers are available only in supported modes
+        leftClick1: Left click
+        leftClick2: Start or stop this timer
+        rightDoubleClick1: Right double click
+        rightDoubleClick2: Send a started champion spell timer to in-game chat
+        wheel1: Wheel
+        wheel2: Adjust the time of a started timer
+      enabled:
+        label: Enable Timer Window
+        description: Display an overlay window during the game to show timers. This feature requires the game client to be in windowed or borderless mode.
+      showShortcut:
+        label: Show Shortcut
+        description: Use the shortcut key to show or hide the overlay window
+      resetWindowPosition:
+        label: Reset Window Position
+        description: Reset the timer window to the center of the main screen.
+        button: Reset
+      timerType:
+        label: Timer Type
+        description: Select the type of timer. The countdown mode will use the preset summoner spell time (has errors), while the count-up mode will start from 0. Note that the custom timers are always in countup mode.
+        options:
+          countdown: Countdown Mode
+          countup: Count-Up Mode
+      reverseAdjustmentDirection:
+        label: Reverse Adjustment Direction
+        description: Reverse the direction of the timer adjustment. When the wheel is moved up, the time decreases, and when the wheel is moved down, the time increases. This only takes effect when the timer type is count-up mode.
+  misc:
+    title: Misc
+    respawnTimer:
+      title: Respawn Timer
+      enabled:
+        label: Enable
+        description: Display an indicator in the side bar showing the remaining time until respawn.
+    streamerMode:
+      title: Streamer Mode
+      streamerMode:
+        label: Hide Sensitive Information
+        description: Hide sensitive information, such as the player's name, in the application interface.
+      useAkariStyledName:
+        label: Use Akari-Styled Name
+        description: Use the Akari-styled names in summoner placeholder.
+      contentProtection:
+        label: Content Protection
+        description: Enable content protection, which will prevent other applications from capturing the window content. Note that this may affect the normal use of some screen recording tools.
+  debug:
+    title: Debug
+    electron:
+      title: Akari's Electron
+      devTools:
+        label: Developer Tools
+        description: Toggle DevTools
+        button: Toggle DevTools
+      reload:
+        label: Reload Page
+        description: Refresh the $t(common:appName) user interface.
+        button: Reload Page
+    files:
+      title: File Directories
+      logs:
+        label: Logs Directory
+        description: Open the logs directory.
+        button: Logs Directory
+      appData:
+        label: Application Data Directory
+        popoverTrigger: Details
+        button: Open Directory
+        description:
+          full: Open the $t(common:appName) application data storage directory. This directory is created when the application is first launched. Deleting it will result in the loss of all stored content. {details}
+          part2: Contains user settings, marked players, and other information.
+          part3: Temporary files for upcoming automatic updates.
+          part4: Configurable setting files.
+          part5: Special configuration files.
+    lcuEvent:
+      label: Print LCU Events to Console
+      printAll: Print All Events
+      logAll: Log All Events Into File
+      addRule: Add Rule
+      empty: No Rules
+      enable: Enable
+      rule: Rule
+      delete: Delete
+      modal:
+        title: Add Rule
+        button: Add
+        placeholder: Enter a matching rule, such as /path/:name/to
+    lcuConnection:
+      titleConnected: LCU
+      titleDisconnected: LCU (Disconnected)
+      port: Port
+      pid: Process ID
+      auth: Auth Key
+      rsoPlatform: Platform
+      region: Region
+    gameflow:
+      title: Gameflow
+      unavailable: Unavailable (Disconnected)
+      Matchmaking: Matchmaking
+      ChampSelect: In Champion Select
+      ReadyCheck: In Ready Check
+      InProgress: Game In Progress
+      EndOfGame: Game End
+      Lobby: Lobby
+      GameStart: Game Start
+      None: None
+      Reconnect: Reconnecting
+      WaitingForStats: Waiting for Stats
+      PreEndOfGame: Before Game End
+      WatchInProgress: Spectating
+      TerminatedInError: Terminated in Error
+    inAdministrator:
+      description: $t(common:appName) is currently running with administrator privileges.
+    testPage:
+      label: Test Page
+      description: Enable the test page entry for developers to test features
+  storage:
+    title: Storage
+    tabs:
+      settings: Settings
+      tagged-players: Tagged Players
+  savedSettings:
+    title: Settings
+    export:
+      label: Export Settings
+      description: Export the current application settings to a JSON file
+      button: Export
+    import:
+      label: Import Settings
+      description: Import settings from a JSON file
+      dialogWarning: Importing settings will overwrite the current settings and restart the application. Continue?
+      dialogPositiveText: Import
+      dialogNegativeText: Cancel
+      button: Import
+    errorCode:
+      InvalidSettingsFile: Invalid settings file
+      InvalidDatabaseVersion: The target version of the settings file is not supported
+      importDefault: 'Failed to import settings: {{reason}}'
+    exported: 'Settings exported: {{path}}'
+    errorExport: 'Failed to export settings: {{reason}}'
+  taggedPlayers:
+    editModal:
+      title: Edit Tagged Player
+      inputPlaceholder: Edit this tag
+    columns:
+      tagger: Tagger
+      tagged: Tagged
+      tag: Tag
+      sgpServer: Server
+    refreshButton: Refresh
+    onlyCurrentAccountCheckbox: Only Current Account
+    na: (Unavailable) {{truncatedPuuid}}...
+    player: 'Player: {{puuid}}'
+    empty: (Empty)
+    naPopoverContent: Unable to retrieve information for this summoner due to the server being unavailable or not loaded
+    saveButton: Save
+    cancelButton: Cancel
+    editButton: Edit
+    deleteButton: Delete
+    importButton: Import
+    exportButton: Export
+    streamerModeWarning: Some sensitive information will be exposed
+    showButton: Show
+    deletePopconfirmContent: Confirm deletion? This operation cannot be undone
+    updated: Updated
+    updateFailed: Update failed {{reason}}
+    errorCode:
+      InvalidTaggedPlayersFile: Invalid file
+      InvalidDatabaseVersion: The target version of the file is not supported
+      importDefault: 'Failed to import tagged players: {{reason}}'
+    exported: 'Exported tagged players: {{path}}'
+    imported: 'Imported tagged players: {{path}}'
+    errorExport: 'Failed to export tagged players: {{reason}}'
+  about:
+    title: About
+    descriptionBefore: ' is an open-source software that focuses on providing some additional features to assist the game experience of League of Legends, almost all of its implementations rely on'
+    actions:
+      github: GitHub
+    stats:
+      stars: GitHub Stars
+      version: Version
+      license: License
+      loading: Loading
+      unknown: Unknown
+      rabiTag: Beta
+    copyright: © 2026 Hanxven. This software is open-source and follows the MIT license.
+  shortcutSelector:
+    title: Shortcut Recording
+    hint: Press keys to record the shortcut
+    clear: Clear
+    unset: Unset
+    tooComplicated: This shortcut combination is highly complex, please confirm
+    notRunAsAdministrator: Not running as administrator, cannot use shortcut key
+    nativeGlobalShortcutsWindowsOnly: Native global shortcuts require native addons. This build currently ships them only on Windows.
+    nativeInputInitializationFailed: Native input initialization failed, so shortcuts have been disabled. Check whether security software blocked or locked the component, then restart the application.
+    reservedShortcut: This shortcut combination is reserved
+    beingOccupied: This shortcut combination is already in use
+    unchanged: (Unchanged)
+    ok: Confirm
+    cancel: Cancel
+    select: Select
+
+veyraSettings:
+  developer: 'Developer options'
+  ordinary: 'General features'
+  developerDescription: 'For author diagnostics. Changing parameters may affect data loading and window display.'
+  searchScope: 'Search scope'
+  dataLoading: 'Match data loading'
+  dataLoadingDescription: 'Controls simultaneous match data requests only. Faster loading may increase service load; it does not speed up image recognition.'
+  loadingReduced: 'Load fewer at once'
+  loadingDefault: 'Default'
+  loadingFast: 'Load match data faster'
+  loadingCustom: 'Developer custom'
+  updateUnavailable: 'In-app updates are unavailable. Get the latest Veyra ZIP from the Veyra group.'
+  feedback: 'Report a problem'
+  feedbackUnavailable: 'The feedback destination is unavailable. Share the version, reproduction steps and necessary screenshots in the Veyra group.'
+  logs: 'Diagnostic files'
+  logsDescription: 'Technical logs stay local for author diagnostics. Opening the folder does not upload files.'
+  unavailable: 'Unavailable'
+  removal: 'Remove application'
+  removalUnavailable: 'ZIP builds do not provide in-app uninstall. Close the app before deleting its extracted folder. See Developer options for the configuration location.'
+  clientPath: 'Client path'
+  save: 'Save'
+  onlineHistory: 'Online match history'
+  clientHistory: 'Game client'
+  positionDescription: 'Adjust champion selection information positions in Developer options.'
+  positionNotice:
+    title: 'Champion selection overlays need positioning'
+    description: 'Prepare a selection preview now and mark the portraits later, without rushing the selection timer.'
+    open: 'First use · Prepare positioning'
+    candidates: 'Set candidate position'
+    teammates: 'Set teammate position'
+    openFailed: 'Could not open position settings. Try again, or search settings for the candidate or teammate origin.'
+  positionCalibration:
+    title: 'Champion selection positioning'
+    description: 'Keep one client preview, then mark its positions. Candidate information appears above the client and teammate information on its left.'
+    timing: 'Prepare now. One preview will be kept during the next selection without opening or focusing a window. Mark it after the countdown if needed. The first match may only provide the preview; positioning can take effect next match.'
+    missing: 'Positioning is incomplete. Existing settings are kept until you save.'
+    configured: 'Positions are saved. You can prepare another preview to adjust them. Positioning does not guarantee visibility.'
+    prepare: 'Prepare next selection preview'
+    retake: 'Prepare another preview'
+    cancel: 'Cancel / discard preview'
+    advanced: 'Advanced numeric settings'
+    clickHint: 'Click this position in the static preview:'
+    imageAlt: 'Local static champion selection preview; click portrait or teammate row centers'
+    spacingHint: 'Check that the markers align with every portrait or teammate row. If spacing differs, mark the second portrait or row. No calculations are needed.'
+    space: 'Candidate information needs space above the client, and teammate information needs space on its left. A group stays hidden when space is insufficient. Move the client to make room. Recalibrate after changing client size or zoom.'
+    spaceTight: 'Space above or to the left was insufficient when this preview was captured. The corresponding overlay may remain hidden. Calibration does not move the client.'
+    privacy: 'The preview stays in memory for this app session only. It is not uploaded or recorded continuously, and is discarded after saving, cancelling or exiting.'
+    reset: 'Clear points'
+    save: 'Save marked positions'
+    failed: 'The operation did not complete; existing positions were kept. Check the status and try again.'
+    candidateMarker: 'C{{index}}'
+    teammateMarker: 'T{{index}}'
+    points:
+      candidateFirst: '1. First candidate portrait center'
+      teammateFirst: '2. First teammate row center'
+      candidateNext: 'Optional: second candidate'
+      teammateNext: 'Optional: second teammate'
+    validation:
+      missing-points: 'Mark the first candidate portrait and first teammate row centers.'
+      invalid-points: 'Invalid point. Mark a position inside the preview.'
+      invalid-size: 'Unsupported preview size. Prepare another preview.'
+      invalid-spacing: 'Choose adjacent items from left to right and top to bottom. The current spacing cannot fit the overlay. Check the points or adjust client zoom and prepare again.'
+      outside: 'The marker sequence extends outside the client. Check the first and adjacent positions.'
+    reasons:
+      idle: 'Prepare a preview before your next selection.'
+      waiting-client: 'Prepared. Waiting for the client to connect.'
+      waiting-selection: 'Prepared. Waiting for the next champion selection.'
+      waiting-portraits: 'Waiting for public bench portraits and teammate rows. Modes without a public bench cannot complete this positioning.'
+      waiting-foreground: 'Waiting for a visible, foreground client. No window will be focused automatically.'
+      waiting-stable: 'Waiting for the client position to settle.'
+      capture-unavailable: 'A complete client preview was unavailable. Keep the client visible on one screen, then prepare again.'
+      unsupported: 'Preview positioning currently supports Windows only.'
+      source-changed: 'The client disconnected or its window was recreated. Prepare a new preview.'
+      geometry-changed: 'Client size or zoom differs from the calibration. The overlay is paused; prepare a new preview.'
+      save-failed: 'Positions were not saved. Existing settings remain. Retry or cancel.'
+      ready: 'The preview is retained. You can mark it now or after champion selection.'
+      saved: 'Positions saved and preview discarded. The next selection still requires matching client size and enough surrounding space.'
+  wmiConfirmation: 'Rebuilding WMI changes Windows management service configuration and may affect other programs. Use only for connection query failures. Continue?'
+  terminateConfirmation: 'This shortcut will forcibly end the game process and may interrupt your match. Enable it?'
+  confirm: 'Confirm'
+  cancel: 'Cancel'
+  experiments: 'Experimental features'
+  runtime: 'Runtime information'
+  groups:
+    connection: 'Connection and logs'
+    debug: 'Debug status'
+    position: 'Selection information positions'
+    data: 'Data loading parameters'
+    advanced: 'Advanced operations'

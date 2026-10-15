@@ -1,0 +1,50 @@
+<template>
+  <div class="h-full w-full">
+    <NScrollbar class="relative h-full max-w-full">
+      <div class="mx-auto max-w-200 p-6">
+        <SettingsSection
+          setting-id="automation.champ-config"
+          :title="t('automation.champConfig.title')"
+        >
+          <SettingsRow
+            setting-id="automation.champ-config.enabled"
+            :label="t('automation.champConfig.enabled.label')"
+            :label-description="t('automation.champConfig.enabled.description')"
+            :label-width="260"
+          >
+            <NSwitch
+              @update:value="(v) => ac.setEnabled(v)"
+              :value="acs.settings.enabled"
+              size="small"
+            ></NSwitch>
+          </SettingsRow>
+          <SettingsRow
+            setting-id="automation.champ-config.configure"
+            :label="t('automation.champConfig.configure.label')"
+            :label-width="260"
+            align="start"
+          >
+            <ChampionConfig />
+          </SettingsRow>
+        </SettingsSection>
+      </div>
+    </NScrollbar>
+  </div>
+</template>
+
+<script setup lang="ts">
+import SettingsRow from '@main-window/settings-navigation/NavigableSettingsRow.vue'
+import SettingsSection from '@main-window/settings-navigation/NavigableSettingsSection.vue'
+import { useInstance } from '@renderer-shared/shards'
+import { AutoChampConfigRenderer } from '@renderer-shared/shards/auto-champ-config'
+import { useAutoChampConfigStore } from '@renderer-shared/shards/auto-champ-config/store'
+import { useTranslation } from 'i18next-vue'
+import { NScrollbar, NSwitch } from 'naive-ui'
+
+import ChampionConfig from './components/auto-champ-config/ChampionConfig.vue'
+
+const { t } = useTranslation()
+
+const acs = useAutoChampConfigStore()
+const ac = useInstance(AutoChampConfigRenderer)
+</script>

@@ -1,0 +1,121 @@
+{
+  "version": "14.24.1",
+  "source": "https://ddragon.leagueoflegends.com/cdn/14.24.1/data/zh_CN/item.json",
+  "scope": "Local artwork for offline UI fixtures; not production KIWI mapping or current gameplay validation",
+  "items": [
+    {
+      "id": 3153,
+      "name": "破败王者之刃",
+      "file": "3153.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/14.24.1/img/item/3153.png"
+    },
+    {
+      "id": 3031,
+      "name": "无尽之刃",
+      "file": "3031.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/14.24.1/img/item/3031.png"
+    },
+    {
+      "id": 6333,
+      "name": "死亡之舞",
+      "file": "6333.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/14.24.1/img/item/6333.png"
+    },
+    {
+      "id": 3032,
+      "name": "育恩塔尔荒野箭",
+      "file": "3032.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/14.24.1/img/item/3032.png"
+    },
+    {
+      "id": 3084,
+      "name": "心之钢",
+      "file": "3084.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/14.24.1/img/item/3084.png"
+    },
+    {
+      "id": 3006,
+      "name": "狂战士胫甲",
+      "file": "3006.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/14.24.1/img/item/3006.png"
+    },
+    {
+      "id": 3111,
+      "name": "水银之靴",
+      "file": "3111.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/14.24.1/img/item/3111.png"
+    },
+    {
+      "id": 3047,
+      "name": "铁板靴",
+      "file": "3047.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/14.24.1/img/item/3047.png"
+    },
+    {
+      "id": 1018,
+      "name": "灵巧披风",
+      "file": "1018.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/14.24.1/img/item/1018.png"
+    },
+    {
+      "id": 1052,
+      "name": "增幅典籍",
+      "file": "1052.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/14.24.1/img/item/1052.png"
+    },
+    {
+      "id": 1036,
+      "name": "长剑",
+      "file": "1036.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/14.24.1/img/item/1036.png"
+    },
+    {
+      "id": 2003,
+      "name": "生命药水",
+      "file": "2003.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/14.24.1/img/item/2003.png"
+    },
+    {
+      "id": 3071,
+      "name": "黑色切割者",
+      "file": "3071.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/14.24.1/img/item/3071.png"
+    },
+    {
+      "id": 3074,
+      "name": "贪欲九头蛇",
+      "file": "3074.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/14.24.1/img/item/3074.png"
+    },
+    {
+      "id": 3139,
+      "name": "水银弯刀",
+      "file": "3139.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/14.24.1/img/item/3139.png"
+    },
+    {
+      "id": 3091,
+      "name": "智慧末刃",
+      "file": "3091.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/14.24.1/img/item/3091.png"
+    },
+    {
+      "id": 3177,
+      "name": "守护者之刃",
+      "file": "3177.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/14.24.1/img/item/3177.png"
+    },
+    {
+      "id": 2051,
+      "name": "守护者号角",
+      "file": "2051.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/14.24.1/img/item/2051.png"
+    },
+    {
+      "id": 1028,
+      "name": "红水晶",
+      "file": "1028.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/14.24.1/img/item/1028.png"
+    }
+  ]
+}

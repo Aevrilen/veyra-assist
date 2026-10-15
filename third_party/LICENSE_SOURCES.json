@@ -1,0 +1,38 @@
+[
+  {
+    "file": "react-sticky-box-LICENSE",
+    "source": "https://raw.githubusercontent.com/codecks-io/react-sticky-box/master/LICENSE",
+    "retrievedDate": "2026-10-15",
+    "sha256": "7aea594c25e41d453e7b9ec22f6f903b0fdc2ed6d264abce923816061f4474d0"
+  },
+  {
+    "file": "fix-lcu-window-LICENSE.txt",
+    "source": "https://raw.githubusercontent.com/LeagueTavern/fix-lcu-window/master/LICENSE.txt",
+    "retrievedDate": "2026-10-15",
+    "sha256": "dc5537aecbbe3c2f607a536520c4387518ed1eb1a2d117ccb3b6fc68730cd1e4"
+  },
+  {
+    "file": "Comfortaa-OFL.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/comfortaa/OFL.txt",
+    "retrievedDate": "2026-10-15",
+    "sha256": "bc85bae0b512b799bbfb2b916e4d0a34cfd963d09778cd783e248b479e67760a"
+  },
+  {
+    "file": "github-markdown-css-LICENSE",
+    "source": "https://raw.githubusercontent.com/sindresorhus/github-markdown-css/main/license",
+    "retrievedDate": "2026-10-15",
+    "sha256": "323f705cbdf0aecac703d4f8e86c185c45fb1a07921b7fe49d5d96318c5fbf3e"
+  },
+  {
+    "file": "Yarn-LICENSE.md",
+    "source": "https://raw.githubusercontent.com/yarnpkg/berry/master/LICENSE.md",
+    "retrievedDate": "2026-10-15",
+    "sha256": "60ff9ea1ee719ef83ce3f9708465babf2b4ad3820541bf35ef7c5c2d512dbf61"
+  },
+  {
+    "file": "regedit-LICENSE",
+    "source": "npm:regedit@5.1.4/LICENSE (isolated lockfile installation)",
+    "retrievedDate": "2026-10-15",
+    "sha256": "74f43180ac14fc614489f07e512c49172931b38bf6c506760fcfa596d5219edd"
+  }
+]

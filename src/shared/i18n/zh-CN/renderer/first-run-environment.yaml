@@ -1,0 +1,73 @@
+firstRunEnvironment:
+  title: 首次使用准备
+  description: 进入游戏后，可刷新状态确认画面读取和定位。
+  refresh: 刷新状态
+  loading: 正在读取状态
+  notChecked: 待检测
+  checkItem: 检测项
+  loadError: 暂时无法读取状态，请稍后刷新。
+  guide:
+    description: 本地准备可提前核对；游戏运行后，程序根据当前画面确认定位。
+    open: 打开定位引导
+    hint: 若仍在等待定位，可打开引导；需要时用当前游戏截图框选三卡或商店，无需填坐标或导入截图。
+    openFailed: 暂时无法打开定位引导，请稍后重试。
+  sections:
+    local: 本地准备
+    game: 游戏运行后确认
+  results:
+    available: 可用
+    needs-setup: 需设置
+    pending-game: 待游戏运行
+    unsupported: 暂不支持
+  checks:
+    platform: 系统兼容性
+    native: 游戏连接组件
+    database: 本地数据
+    data-directory: 设置保存
+    ocr: 文字识别
+    client-connection: 客户端连接
+    game-window: 游戏窗口
+    client-display: 游戏画面
+    foreground: 前台状态
+    capture: 画面读取
+  calibration:
+    title: 定位准备
+    sample: 确认画面位置
+    legacyPresent: 发现之前的定位设置；当前定位状态仍需确认。
+    routes:
+      automatic-ready: 自动就绪
+      fallback-ready: 备用位置已确认
+      guided-sample-needed: 等待定位确认
+      unsupported: 暂不支持
+  reasons:
+    platform-supported: 当前系统支持运行。
+    platform-unsupported: 当前系统暂不支持，请使用 Windows 64 位版本。
+    native-initialized: 游戏连接组件已准备。
+    component-unobserved: 正在等待检查结果，请稍后刷新。
+    database-initialized: 本地数据已准备。
+    data-directory-unobserved: 设置保存状态尚未确认。
+    data-directory-writable: 设置可以正常保存。
+    data-directory-not-writable: 设置暂时无法保存，请重启程序后重试。
+    ocr-ready: 文字识别已准备。
+    ocr-failed: 文字识别暂不可用，请使用完整程序包后重试。
+    ocr-starting: 文字识别正在准备，请稍后刷新。
+    ocr-unprepared: 等待文字识别准备完成。
+    client-connected: 已建立客户端连接。
+    client-waiting: 等待客户端连接和游戏运行。
+    game-not-running: 游戏运行后确认；当前显示待检测。
+    game-observation-unreported: 等待进入游戏后确认。
+    game-observation-expired: 画面状态已过期，请回到游戏后刷新。
+    game-window-ready: 当前游戏窗口已确认。
+    game-window-unobserved: 等待游戏窗口稳定，请稍后刷新。
+    client-display-ready: 当前游戏画面适用。
+    client-display-needs-setup: 当前游戏画面暂不支持，请使用 1920×1080 或 2560×1440 的游戏分辨率。
+    foreground-ready: 游戏当前在前台。
+    foreground-needed: 请将游戏切到前台后再次确认。
+    capture-observed: 当前游戏画面可以读取。
+    capture-not-observed: 正在等待游戏画面，请稍后刷新。
+    calibration-unreported: 等待定位确认，进入游戏后刷新状态。
+    calibration-ready: 当前画面位置已确认。
+    fallback-calibration-ready: 当前游戏画面已通过备用位置的两帧确认。
+    guided-sample-needed: 等待自动定位。需要时可打开定位引导。
+    calibration-unsupported: 当前游戏画面暂不支持，请使用支持的游戏分辨率。
+    guided-sampling-unavailable: 请打开定位引导，再确认画面位置。

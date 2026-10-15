@@ -1,0 +1,245 @@
+import {
+  NATIVE_SUPPORT,
+  getGameClientWindowSnapshot,
+  getPidsByName,
+  isProcessForeground,
+  isProcessRunning,
+  supportsGameClientWindowSnapshot,
+  terminateProcess
+} from '@main/native'
+import { prepareLoadingDiagnostics } from '@main/native/loading-diagnostics'
+import { IAkariShardInitDispose, Shard } from '@shared/akari-shard'
+import { GameClientHttpApiAxiosHelper } from '@shared/http-api-axios-helper/game-client'
+import axios from 'axios'
+import { app } from 'electron'
+import https from 'https'
+import fs from 'node:fs/promises'
+import path from 'node:path'
+import { z } from 'zod'
+
+import { ClientInstallationMain } from '../client-installation'
+import { AkariIpcMain } from '../ipc'
+import { KeyboardShortcutsMain } from '../keyboard-shortcuts'
+import { LeagueClientMain } from '../league-client'
+import { AkariLogger, LoggerFactoryMain } from '../logger-factory'
+import { MobxUtilsMain } from '../mobx-utils'
+import { SettingFactoryMain } from '../setting-factory'
+import { SetterSettingService } from '../setting-factory/setter-setting-service'
+import {
+  GAME_CLIENT_BASE_URL,
+  GAME_CLIENT_MAIN_NAMESPACE,
+  GAME_CLIENT_PROCESS_NAME,
+  GameClientForegroundError,
+  type GameClientMainContext,
+  type SettingsFileMode
+} from './context'
+import { GameClientIpcHandlers } from './ipc-handlers'
+import { GameClientSettingsFileController } from './settings-file-controller'
+import { GameClientShortcutController } from './shortcut-controller'
+import { GameClientSettings } from './state'
+
+/**
+ * 处理游戏端相关的功能
+ */
+@Shard(GameClientMain.id)
+export class GameClientMain implements IAkariShardInitDispose {
+  static id = GAME_CLIENT_MAIN_NAMESPACE
+
+  static GAME_CLIENT_PROCESS_NAME = GAME_CLIENT_PROCESS_NAME
+  static GAME_CLIENT_BASE_URL = GAME_CLIENT_BASE_URL
+
+  private readonly _logger: AkariLogger
+  private readonly _settingService: SetterSettingService<GameClientSettings>
+  private readonly _context: GameClientMainContext
+  private readonly _ipcHandlers: GameClientIpcHandlers
+  private readonly _shortcutController: GameClientShortcutController
+  private readonly _settingsFileController: GameClientSettingsFileController
+
+  private readonly _httpClient = axios.create({
+    baseURL: GameClientMain.GAME_CLIENT_BASE_URL,
+    proxy: false,
+    httpsAgent: new https.Agent({
+      rejectUnauthorized: false,
+      keepAlive: true,
+      maxFreeSockets: 1024,
+      maxCachedSessions: 2048
+    })
+  })
+  private readonly _gameClientApi: GameClientHttpApiAxiosHelper
+
+  public readonly settings = new GameClientSettings()
+
+  private _gameClientCachedRunningPids: number[] = []
+
+  constructor(
+    private readonly _ipc: AkariIpcMain,
+    _loggerFactory: LoggerFactoryMain,
+    _settingFactory: SettingFactoryMain,
+    private readonly _leagueClient: LeagueClientMain,
+    private readonly _keyboardShortcuts: KeyboardShortcutsMain,
+    private readonly _mobxUtils: MobxUtilsMain,
+    private readonly _clientInstallation: ClientInstallationMain
+  ) {
+    this._logger = _loggerFactory.create(GameClientMain.id)
+    this._gameClientApi = new GameClientHttpApiAxiosHelper(this._httpClient)
+
+    this._settingService = _settingFactory.register(
+      GameClientMain.id,
+      {
+        terminateGameClientWithShortcut: {
+          default: this.settings.terminateGameClientWithShortcut,
+          schema: z.boolean()
+        },
+        terminateShortcut: {
+          default: this.settings.terminateShortcut,
+          schema: z.string().nullable(),
+          sideEffect: ({ value }) =>
+            this._shortcutController.applyTerminateShortcutSettingSideEffect(value)
+        }
+      },
+      this.settings
+    )
+
+    this._context = {
+      namespace: GameClientMain.id,
+      clientInstallation: this._clientInstallation,
+      gameClient: this,
+      keyboardShortcuts: this._keyboardShortcuts,
+      leagueClient: this._leagueClient,
+      logger: this._logger,
+      mobxUtils: this._mobxUtils,
+      ipc: this._ipc,
+      settings: this.settings,
+      settingService: this._settingService
+    }
+    this._ipcHandlers = new GameClientIpcHandlers(this._context, this)
+    this._shortcutController = new GameClientShortcutController(this._context)
+    this._settingsFileController = new GameClientSettingsFileController(this._context)
+  }
+
+  get http() {
+    return this._httpClient
+  }
+
+  get api() {
+    return this._gameClientApi
+  }
+
+  async onInit() {
+    await this._setupState()
+    this._ipcHandlers.register()
+    this._shortcutController.watch()
+  }
+
+  async terminateGameClient() {
+    this._logger.info('Try to terminate game client process')
+    const pids = await getPidsByName(GameClientMain.GAME_CLIENT_PROCESS_NAME, 'game-client')
+
+    pids.forEach((pid) => {
+      this._logger.info('Process exists', pid)
+      if (
+        NATIVE_SUPPORT.isProcessForeground.available &&
+        !isProcessForeground(pid, 'game-client')
+      ) {
+        this._logger.info('Process is not in foreground', pid)
+        return
+      }
+
+      this._logger.info(`Terminate game client process ${pid}`)
+      terminateProcess(pid)
+    })
+  }
+
+  async setSettingsFileReadonlyOrWritable(mode: SettingsFileMode = 'readonly') {
+    await this._settingsFileController.setMode(mode)
+  }
+
+  async getSettingsFileReadonlyOrWritable() {
+    return this._settingsFileController.getMode()
+  }
+
+  static async isGameClientForeground() {
+    if (!NATIVE_SUPPORT.isProcessForeground.available) {
+      return false
+    }
+
+    const pids = await getPidsByName(GameClientMain.GAME_CLIENT_PROCESS_NAME, 'game-client')
+
+    return pids.some((pid) => isProcessForeground(pid, 'game-client'))
+  }
+
+  getRunningGameClientPids() {
+    return getPidsByName(GameClientMain.GAME_CLIENT_PROCESS_NAME, 'game-client')
+  }
+
+  prepareLoadingDiagnostics() {
+    const outputFile = path.join(app.getPath('userData'), `loading-diagnostic-${Date.now()}.json`)
+    const recorder = prepareLoadingDiagnostics({
+      getPhase: () => this._leagueClient.data.gameflow.phase,
+      getGameId: () => this._leagueClient.data.gameflow.session?.gameData.gameId ?? null,
+      onPhase: (listener) =>
+        this._leagueClient.events.on('/lol-gameflow/v1/gameflow-phase', (event) =>
+          listener(event.data)
+        ),
+      onSessionChange: (listener) =>
+        this._leagueClient.events.on('/lol-gameflow/v1/session', listener),
+      onExit: (listener) => {
+        app.once('before-quit', listener)
+        return () => app.off('before-quit', listener)
+      },
+      write: (report) =>
+        fs.writeFile(outputFile, JSON.stringify(report, null, 2), { encoding: 'utf8', flag: 'wx' })
+    })
+    return { recorder, outputFile }
+  }
+
+  supportsGameClientWindowSnapshot() {
+    return supportsGameClientWindowSnapshot()
+  }
+
+  async getGameClientWindowSnapshot() {
+    if (!this.supportsGameClientWindowSnapshot()) return null
+    const pids = await this.getRunningGameClientPids()
+    const windows = pids
+      .map((pid) => {
+        const window = getGameClientWindowSnapshot(pid, 'game-client')
+        return window?.ownerProcessId === pid ? window : null
+      })
+      .filter((window) => window !== null)
+    const foreground = windows.filter((window) => window?.isForeground)
+    if (foreground.length === 1) return foreground[0] ?? null
+    return windows.length === 1 ? (windows[0] ?? null) : null
+  }
+
+  async isGameClientForegroundCached() {
+    if (!NATIVE_SUPPORT.isProcessForeground.available) {
+      throw new GameClientForegroundError('foreground-capability-unavailable')
+    }
+
+    try {
+      this._gameClientCachedRunningPids = this._gameClientCachedRunningPids.filter((pid) =>
+        isProcessRunning(pid)
+      )
+
+      if (this._gameClientCachedRunningPids.length === 0) {
+        this._gameClientCachedRunningPids = await getPidsByName(
+          GameClientMain.GAME_CLIENT_PROCESS_NAME,
+          'game-client'
+        )
+      }
+      return this._gameClientCachedRunningPids.some((pid) =>
+        isProcessForeground(pid, 'game-client')
+      )
+    } catch (cause) {
+      throw new GameClientForegroundError('foreground-query-failed', { cause })
+    }
+  }
+
+  private async _setupState() {
+    await this._settingService.applyToState()
+    this._mobxUtils.propSync(GameClientMain.id, 'settings', this.settings, [
+      'terminateGameClientWithShortcut',
+      'terminateShortcut'
+    ])
+  }
+}

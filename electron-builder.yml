@@ -1,0 +1,86 @@
+appId: sugar.cocoa.league-akari
+productName: Veyra Assist
+artifactName: Veyra-Assist-${version}.${ext}
+directories:
+  buildResources: build
+files:
+  - '!**/.vscode/*'
+  - '!src{,/**}'
+  - '!electron.vite.config.{js,ts,mjs,cjs}'
+  - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md,README-en.md,FAQ.md}'
+  - '!{.env,.env.*,.npmrc,pnpm-lock.yaml,yarn.lock}'
+  - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json,tsconfig.*.tsbuildinfo}'
+  - '!{AGENTS.md,CLAUDE.md,PR_REQUIREMENTS.md}'
+  - '!{.agents,.agents/**,.claude,.claude/**,.codex,.codex/**,.mcp.json,opencode.json}'
+  - '!.playwright-mcp{,/**}'
+  - '!.storybook{,/**}'
+  - '!bench-results{,/**}'
+  - '!evidence{,/**}'
+  - '!handoff{,/**}'
+  - '!scripts/mayhem-*'
+  - '!scripts/champ-select-overlay-*'
+  - '!scripts/integrated-overlays-*'
+  - '!scripts/validate-cloud.mjs'
+  - '!.node-version'
+  - '!examples'
+  - '!docs'
+  - '!pictures'
+  - '!rabi-*'
+  - '!feedback-platform{,/**}'
+  - '!native{,/**}'
+  - '!**/.venv/**'
+  - '!node_modules/electron{,/**}'
+  - '!node_modules/**/*.map'
+  - '!node_modules/@electron-internal{,/**}'
+  - '!node_modules/@electron/get{,/**}'
+  - '!node_modules/better-sqlite3/{deps,src}{,/**}'
+  - '!node_modules/better-sqlite3/{binding.gyp,*.gypi}'
+  - '!node_modules/better-sqlite3/build/Release/{.forge-meta,obj}{,/**}'
+  - '!node_modules/league-akari-native-win32/{build,lib,scripts,node_modules}{,/**}'
+  - '!node_modules/league-akari-native-win32/{binding.gyp,tsconfig.json,*.tsbuildinfo}'
+
+electronLanguages:
+  - zh-CN
+  - zh-TW
+  - en-US
+
+afterPack: ./scripts/trim-packaged-app.cjs
+afterSign: ./scripts/macos/ensure-codesign.cjs
+
+asarUnpack:
+  - resources/**
+  # The Node OCR worker resolves its runtime dependencies from real, unpacked paths.
+  - node_modules/tesseract.js/**
+  - node_modules/tesseract.js-core/**
+  - node_modules/bmp-js/**
+  - node_modules/idb-keyval/**
+  - node_modules/is-url/**
+  - node_modules/zlibjs/**
+  - node_modules/node-fetch/**
+  - node_modules/whatwg-url/**
+  - node_modules/webidl-conversions/**
+  - node_modules/tr46/**
+  - node_modules/regenerator-runtime/**
+  - node_modules/wasm-feature-detect/**
+win:
+  target:
+    - 7z
+  executableName: VeyraAssist
+  icon: resources/LA_ICON.ico
+
+mac:
+  target:
+    - dmg
+    - zip
+  category: public.app-category.utilities
+  icon: build/icon.png
+dmg:
+  artifactName: Veyra-Assist-${version}.${ext}
+asar: true
+electronFuses:
+  enableEmbeddedAsarIntegrityValidation: true
+
+npmRebuild: false
+publish:
+#   provider: generic
+#   url: https://league-akari.cocoa.sugar/releases

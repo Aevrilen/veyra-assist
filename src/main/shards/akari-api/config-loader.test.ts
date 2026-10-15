@@ -1,0 +1,256 @@
+import { AkariSupportedQueuesConfigSchema } from '@shared/shards/akari-api'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+
+import { AKARI_API_CACHED_RESOURCES, type CachedResource } from './cached-resources'
+import { AkariApiConfigLoader } from './config-loader'
+import { AKARI_API_FEATURE_GATES_UPDATE_INTERVAL, type AkariApiMainContext } from './context'
+import { AkariApiState } from './state'
+
+const resource: CachedResource<ReturnType<typeof AkariSupportedQueuesConfigSchema.parse>> = {
+  id: 'supportedQueues',
+  name: 'supported queues',
+  resource: 'sgp/supported-queues',
+  cachePath: 'config/v1/sgp/supported-queues.json',
+  intervalMs: 60_000,
+  schema: AkariSupportedQueuesConfigSchema,
+  getTimestamp: (data) => data.updatedAt,
+  getCurrentTimestamp: (state) => state.supportedQueues.updatedAt,
+  apply: (state, data) => state.setSupportedQueues(data),
+  getUpdating: (state) => state.isUpdatingSupportedQueues,
+  setUpdating: (state, value) => state.setUpdatingSupportedQueues(value)
+}
+
+function setup(remoteUpdatedAt: string) {
+  const state = new AkariApiState()
+  const writeToJsonConfigFile = vi.fn().mockResolvedValue(undefined)
+  const deleteJsonConfigFile = vi.fn().mockResolvedValue(undefined)
+  const context = {
+    api: {
+      getConfig: vi.fn().mockResolvedValue({
+        data: {
+          updatedAt: remoteUpdatedAt,
+          queues: [420, 1700]
+        }
+      })
+    },
+    logger: {
+      info: vi.fn(),
+      warn: vi.fn()
+    },
+    settingService: {
+      jsonConfigFileExists: vi.fn().mockResolvedValue(false),
+      readFromJsonConfigFile: vi.fn(),
+      writeToJsonConfigFile,
+      deleteJsonConfigFile
+    },
+    state
+  } as unknown as AkariApiMainContext
+  const loader = new AkariApiConfigLoader(context, [resource])
+
+  return { context, loader, state, writeToJsonConfigFile, deleteJsonConfigFile }
+}
+
+afterEach(() => {
+  vi.restoreAllMocks()
+})
+
+describe('Akari API config loader', () => {
+  it('refreshes feature gates every two hours', () => {
+    expect(AKARI_API_FEATURE_GATES_UPDATE_INTERVAL).toBe(2 * 60 * 60 * 1000)
+  })
+
+  it('loads localized auto-select group metadata from the local cache', async () => {
+    const state = new AkariApiState()
+    const autoSelectGroups = {
+      updatedAt: '2099-01-01T00:00:00.000Z',
+      groups: [
+        {
+          groupId: 'ranked',
+          name: { 'zh-CN': '排位模式', en: 'Ranked' },
+          iconPath:
+            '/lol-game-data/assets/content/src/LeagueClient/GameModeAssets/Classic_SRU/img/game-select-icon-hover.png',
+          isCustom: false,
+          supportedSgpServers: ['*'],
+          targetGameModes: [
+            { gameMode: 'CLASSIC', queueTypes: ['RANKED_SOLO_5x5', 'RANKED_FLEX_SR'] }
+          ],
+          positions: ['top', 'jungle', 'middle', 'bottom', 'utility'],
+          additionalPicks: [],
+          additionalBans: [],
+          excludedPicks: [-1],
+          excludedBans: []
+        }
+      ]
+    }
+    const context = {
+      api: {},
+      logger: { info: vi.fn(), warn: vi.fn() },
+      settingService: {
+        jsonConfigFileExists: vi.fn().mockResolvedValue(true),
+        readFromJsonConfigFile: vi.fn().mockResolvedValue(autoSelectGroups),
+        writeToJsonConfigFile: vi.fn(),
+        deleteJsonConfigFile: vi.fn()
+      },
+      state
+    } as unknown as AkariApiMainContext
+    const autoSelectResource = AKARI_API_CACHED_RESOURCES.find(
+      (item) => item.id === 'autoSelectGroups'
+    )!
+    const loader = new AkariApiConfigLoader(context, [autoSelectResource])
+
+    await loader.initFromLocal()
+
+    expect(state.autoSelectGroups).toEqual(autoSelectGroups)
+    expect(state.autoSelectGroups.groups[0]).toMatchObject({
+      name: { 'zh-CN': '排位模式', en: 'Ranked' },
+      iconPath: expect.stringMatching(/^\/lol-game-data\/assets\//)
+    })
+  })
+
+  it('deletes a cached resource that does not match the current schema', async () => {
+    const state = new AkariApiState()
+    const deleteJsonConfigFile = vi.fn().mockResolvedValue(undefined)
+    const context = {
+      api: {},
+      logger: { info: vi.fn(), warn: vi.fn() },
+      settingService: {
+        jsonConfigFileExists: vi.fn().mockResolvedValue(true),
+        readFromJsonConfigFile: vi.fn().mockResolvedValue({
+          updatedAt: '2099-01-01T00:00:00.000Z',
+          queues: ['invalid']
+        }),
+        writeToJsonConfigFile: vi.fn(),
+        deleteJsonConfigFile
+      },
+      state
+    } as unknown as AkariApiMainContext
+    const loader = new AkariApiConfigLoader(context, [resource])
+
+    await loader.initFromLocal()
+
+    expect(deleteJsonConfigFile).toHaveBeenCalledWith(resource.cachePath)
+    expect(context.logger.warn).toHaveBeenCalledWith(
+      'Invalid cached supported queues',
+      expect.anything()
+    )
+  })
+
+  it('deletes a legacy feature gate document instead of loading management fields', async () => {
+    const state = new AkariApiState()
+    const deleteJsonConfigFile = vi.fn().mockResolvedValue(undefined)
+    const context = {
+      api: {},
+      logger: { info: vi.fn(), warn: vi.fn() },
+      settingService: {
+        jsonConfigFileExists: vi.fn().mockResolvedValue(true),
+        readFromJsonConfigFile: vi.fn().mockResolvedValue({
+          updatedAt: '2099-01-01T00:00:00.000Z',
+          gates: {
+            'match-history.bulk-collection': { enabled: true }
+          }
+        }),
+        writeToJsonConfigFile: vi.fn(),
+        deleteJsonConfigFile
+      },
+      state
+    } as unknown as AkariApiMainContext
+    const featureGateResource = AKARI_API_CACHED_RESOURCES.find(
+      (item) => item.id === 'featureGates'
+    )!
+    const loader = new AkariApiConfigLoader(context, [featureGateResource])
+
+    await loader.initFromLocal()
+
+    expect(state.featureGates).toBeNull()
+    expect(deleteJsonConfigFile).toHaveBeenCalledWith(featureGateResource.cachePath)
+  })
+
+  it('loads a valid feature gate snapshot from the local cache', async () => {
+    const state = new AkariApiState()
+    const remoteFeatureGates = {
+      updatedAt: '2099-01-02T00:00:00.000Z',
+      gates: {
+        'ongoing-game.deobfuscation': {
+          platforms: ['win32']
+        }
+      }
+    }
+    const context = {
+      api: {},
+      logger: { info: vi.fn(), warn: vi.fn() },
+      settingService: {
+        jsonConfigFileExists: vi.fn().mockResolvedValue(true),
+        readFromJsonConfigFile: vi.fn().mockResolvedValue(remoteFeatureGates),
+        writeToJsonConfigFile: vi.fn(),
+        deleteJsonConfigFile: vi.fn()
+      },
+      state
+    } as unknown as AkariApiMainContext
+    const featureGateResource = AKARI_API_CACHED_RESOURCES.find(
+      (item) => item.id === 'featureGates'
+    )!
+    const loader = new AkariApiConfigLoader(context, [featureGateResource])
+
+    await loader.initFromLocal()
+
+    expect(state.featureGates).toEqual(remoteFeatureGates)
+  })
+
+  it('deletes a valid cached resource that is older than the builtin data', async () => {
+    const state = new AkariApiState()
+    const deleteJsonConfigFile = vi.fn().mockResolvedValue(undefined)
+    const context = {
+      api: {},
+      logger: { info: vi.fn(), warn: vi.fn() },
+      settingService: {
+        jsonConfigFileExists: vi.fn().mockResolvedValue(true),
+        readFromJsonConfigFile: vi.fn().mockResolvedValue({
+          updatedAt: '2020-01-01T00:00:00.000Z',
+          queues: [420]
+        }),
+        writeToJsonConfigFile: vi.fn(),
+        deleteJsonConfigFile
+      },
+      state
+    } as unknown as AkariApiMainContext
+    const builtinQueues = state.supportedQueues
+    const loader = new AkariApiConfigLoader(context, [resource])
+
+    await loader.initFromLocal()
+
+    expect(state.supportedQueues).toBe(builtinQueues)
+    expect(deleteJsonConfigFile).toHaveBeenCalledWith(resource.cachePath)
+  })
+
+  it('applies and persists a newer resource', async () => {
+    const { loader, state, writeToJsonConfigFile } = setup('2099-01-01T00:00:00.000Z')
+
+    loader.watch()
+
+    await vi.waitFor(() => {
+      expect(writeToJsonConfigFile).toHaveBeenCalledWith(resource.cachePath, {
+        updatedAt: '2099-01-01T00:00:00.000Z',
+        queues: [420, 1700]
+      })
+    })
+    expect(state.supportedQueues.queues).toEqual([420, 1700])
+    loader.dispose()
+  })
+
+  it('keeps the current value when the response is older', async () => {
+    const { context, loader, state, writeToJsonConfigFile } = setup('2020-01-01T00:00:00.000Z')
+    const current = state.supportedQueues
+
+    loader.watch()
+
+    await vi.waitFor(() => {
+      expect(context.logger.info).toHaveBeenCalledWith(
+        'supported queues is up to date',
+        expect.any(String)
+      )
+    })
+    expect(state.supportedQueues).toBe(current)
+    expect(writeToJsonConfigFile).not.toHaveBeenCalled()
+    loader.dispose()
+  })
+})

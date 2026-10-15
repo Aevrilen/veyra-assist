@@ -1,0 +1,123 @@
+import { useInstance } from '@renderer-shared/shards'
+import { useAkariApiStore } from '@renderer-shared/shards/akari-api/store'
+import { AppCommonRenderer } from '@renderer-shared/shards/app-common'
+import { SelfUpdateRenderer } from '@renderer-shared/shards/self-update'
+import { useSelfUpdateStore } from '@renderer-shared/shards/self-update/store'
+import { WindowManagerRenderer } from '@renderer-shared/shards/window-manager'
+import { useTranslation } from 'i18next-vue'
+import { useNotification } from 'naive-ui'
+import { defineComponent, watch } from 'vue'
+
+import { type SimpleNotificationsRendererContext } from './context'
+import UpdateModal from './modals/UpdateModal.vue'
+import WithActions from './parts/WithActions.vue'
+import { useSimpleNotificationsStore } from './store'
+
+export function registerNewReleaseModal(context: SimpleNotificationsRendererContext) {
+  const Component = defineComponent({
+    setup() {
+      const akariApiStore = useAkariApiStore()
+      const simpleNotificationsStore = useSimpleNotificationsStore()
+      const selfUpdateStore = useSelfUpdateStore()
+      const selfUpdate = useInstance(SelfUpdateRenderer)
+      const windowManager = useInstance(WindowManagerRenderer)
+      const appCommon = useInstance(AppCommonRenderer)
+      const notification = useNotification()
+
+      const { t } = useTranslation(undefined, {
+        keyPrefix: 'notifications.simple.newReleaseHints'
+      })
+
+      let lastNotifiedVersion: string | null = null
+
+      watch(
+        () => [selfUpdateStore.releaseInfo, selfUpdateStore.settings.ignoreVersion] as const,
+        ([release, ignoreVersion]) => {
+          if (
+            !release ||
+            !release.isNew ||
+            !release.isUpdateSupported ||
+            ignoreVersion === release.version
+          ) {
+            return
+          }
+
+          if (lastNotifiedVersion === release.version) {
+            return
+          }
+
+          lastNotifiedVersion = release.version
+          const inst = notification.info({
+            title: () => t('title'),
+            content: () => (
+              <WithActions
+                buttons={[
+                  {
+                    label: () => t('dismiss'),
+                    secondary: true,
+                    onClick: () => {
+                      inst.destroy()
+                    }
+                  },
+                  {
+                    label: () => t('takeALook'),
+                    type: 'primary',
+                    onClick: () => {
+                      simpleNotificationsStore.showNewReleaseModal = true
+                      inst.destroy()
+                    }
+                  }
+                ]}
+              >
+                <span>{t('content', { version: release.version })}</span>
+              </WithActions>
+            ),
+            duration: 0
+          })
+        },
+        { immediate: true }
+      )
+
+      appCommon.onRendererLink((url) => {
+        const u = new URL(url)
+
+        if (u.pathname === '/overlays/release-modal') {
+          simpleNotificationsStore.showNoticeModal = false
+          simpleNotificationsStore.showNewReleaseModal = true
+        }
+      })
+
+      return () => (
+        <UpdateModal
+          {...{
+            release: selfUpdateStore.releaseInfo,
+            contactChannels: akariApiStore.contactChannels,
+            show: simpleNotificationsStore.showNewReleaseModal,
+            ignoreVersion: selfUpdateStore.settings.ignoreVersion,
+            updateProgressInfo: selfUpdateStore.updateProgressInfo,
+            'onUpdate:show': (value: boolean) =>
+              (simpleNotificationsStore.showNewReleaseModal = value),
+            onIgnoreVersion: (version: string, ignore: boolean) => {
+              selfUpdate.setIgnoreVersion(ignore ? version : null)
+            },
+            onStartDownload: () => {
+              if (import.meta.env.DEV) {
+                void selfUpdate.forceStartUpdate()
+              } else {
+                void selfUpdate.startUpdate()
+              }
+            },
+            onCancelUpdate: () => {
+              void selfUpdate.cancelUpdate()
+            },
+            onCloseAndUpdate: () => {
+              windowManager.mainWindow.closeForce()
+            }
+          }}
+        />
+      )
+    }
+  })
+
+  context.setupInAppScope.addRenderVNode(() => <Component />)
+}

@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "upstreamRepository": "LeagueAkari/LeagueAkari",
+  "upstreamCommit": "5109b2f7fcce6e02312e534cd1729ed0f2142b51",
+  "scope": "Upstream prebuilt runtime files required by the current static asset imports; not bundled in this source snapshot. Review applicable per-file notices before redistributing binaries.",
+  "files": [
+    {
+      "path": "resources/akari-updater.exe",
+      "bytes": 813056,
+      "source": "https://github.com/LeagueAkari/LeagueAkari/blob/5109b2f7fcce6e02312e534cd1729ed0f2142b51/resources/akari-updater.exe",
+      "download": "https://raw.githubusercontent.com/LeagueAkari/LeagueAkari/5109b2f7fcce6e02312e534cd1729ed0f2142b51/resources/akari-updater.exe",
+      "gitBlob": "c5eb8c08685bcb17db21c5a9f2121a6d75e7c1bb",
+      "sha256": "d8b4f7ae24efac023f195b03d7f3bf0c0098a08939eb61b892bb561b141f91fc"
+    },
+    {
+      "path": "resources/elevate.exe",
+      "bytes": 107520,
+      "source": "https://github.com/LeagueAkari/LeagueAkari/blob/5109b2f7fcce6e02312e534cd1729ed0f2142b51/resources/elevate.exe",
+      "download": "https://raw.githubusercontent.com/LeagueAkari/LeagueAkari/5109b2f7fcce6e02312e534cd1729ed0f2142b51/resources/elevate.exe",
+      "gitBlob": "66a74c0d0bbabfc0cbd83ad7233a642c495daa48",
+      "sha256": "9b1fbf0c11c520ae714af8aa9af12cfd48503eedecd7398d8992ee94d1b4dc37"
+    },
+    {
+      "path": "resources/magic/magic.darwin-arm64.node",
+      "bytes": 50736,
+      "source": "https://github.com/LeagueAkari/LeagueAkari/blob/5109b2f7fcce6e02312e534cd1729ed0f2142b51/resources/magic/magic.darwin-arm64.node",
+      "download": "https://raw.githubusercontent.com/LeagueAkari/LeagueAkari/5109b2f7fcce6e02312e534cd1729ed0f2142b51/resources/magic/magic.darwin-arm64.node",
+      "gitBlob": "8b1f7f53044b3ef62d357e2508595e663ffd8b84",
+      "sha256": "27c23fa011aece43b844e3e5f3d8f69bcd8d6e176271d55dfb7b79603e96bcab"
+    },
+    {
+      "path": "resources/magic/magic.win32-x64.node",
+      "bytes": 109568,
+      "source": "https://github.com/LeagueAkari/LeagueAkari/blob/5109b2f7fcce6e02312e534cd1729ed0f2142b51/resources/magic/magic.win32-x64.node",
+      "download": "https://raw.githubusercontent.com/LeagueAkari/LeagueAkari/5109b2f7fcce6e02312e534cd1729ed0f2142b51/resources/magic/magic.win32-x64.node",
+      "gitBlob": "789d020b5a31335838a04bbc47176a814f094692",
+      "sha256": "26ee2a4172166bce8451eff690a44db84363c71880ec82aa617d8e11c0b5e51d"
+    }
+  ]
+}

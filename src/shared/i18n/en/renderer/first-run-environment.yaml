@@ -1,0 +1,73 @@
+firstRunEnvironment:
+  title: First run preparation
+  description: Local preparation and in-game checks are shown separately. Refresh after the game view changes.
+  refresh: Refresh status
+  loading: Reading status
+  notChecked: Not checked
+  checkItem: Check
+  loadError: Status is temporarily unavailable. Try refreshing later.
+  guide:
+    description: Preparation is checked locally. In-game location is confirmed from current frames after the game starts.
+    open: Open location guide
+    hint: Open the guide if location is pending. You can select the three-card or shop area in a current game preview without entering coordinates or importing screenshots.
+    openFailed: The location guide could not be opened. Try again later.
+  sections:
+    local: Local preparation
+    game: Confirm after the game starts
+  results:
+    available: Available
+    needs-setup: Needs setup
+    pending-game: Waiting for game
+    unsupported: Not supported yet
+  checks:
+    platform: System and app architecture
+    native: Native components
+    database: Local data component
+    data-directory: Data directory writes
+    ocr: Local recognition component
+    client-connection: Client connection
+    game-window: Game window
+    client-display: Game client area and DPI
+    foreground: Foreground state
+    capture: Capture availability
+  calibration:
+    title: Location preparation
+    sample: Start one guided sample
+    legacyPresent: A previous calibration exists. Current location readiness still needs confirmation.
+    routes:
+      automatic-ready: Automatically ready
+      fallback-ready: Fallback location confirmed
+      guided-sample-needed: One guided sample needed
+      unsupported: Not supported yet
+  reasons:
+    platform-supported: The app is running on Windows x64.
+    platform-unsupported: This system or app architecture does not currently support the game assistant.
+    native-initialized: Native components have initialized.
+    component-unobserved: Component initialization has not been observed yet.
+    database-initialized: The local database has initialized.
+    data-directory-unobserved: Data directory write access has not been independently confirmed.
+    data-directory-writable: The data directory has been confirmed writable.
+    data-directory-not-writable: Settings could not be saved. Restart the app and try again.
+    ocr-ready: The existing recognition instance has completed warmup.
+    ocr-failed: The existing recognition instance failed to initialize. Check the complete app package.
+    ocr-starting: The existing recognition instance is warming up.
+    ocr-unprepared: Recognition has not warmed up. Waiting for the existing workflow.
+    client-connected: The client connection is established.
+    client-waiting: Waiting for the client connection and game.
+    game-not-running: This check will be confirmed after the game starts.
+    game-observation-unreported: No valid observation of the current game window is available yet.
+    game-observation-expired: The previous game observation has expired. Waiting for a new observation.
+    game-window-ready: The existing workflow confirmed a stable game window.
+    game-window-unobserved: Game window stability has not been confirmed.
+    client-display-ready: The existing workflow confirmed matching client area and display scaling.
+    client-display-needs-setup: The client area or display scaling needs adjustment.
+    foreground-ready: The existing workflow confirmed that the game is in the foreground.
+    foreground-needed: Bring the game to the foreground and confirm again.
+    capture-observed: The existing capture workflow produced a valid current frame.
+    capture-not-observed: No valid current capture result is available yet.
+    calibration-unreported: Waiting for the location workflow. Readiness has not been confirmed.
+    calibration-ready: Location has been verified for the current game client area.
+    fallback-calibration-ready: Two current game frames have confirmed the fallback location.
+    guided-sample-needed: Enter the specified game view for one guided sample that locates the interface.
+    calibration-unsupported: The location workflow reports that this scene is not supported yet.
+    guided-sampling-unavailable: Open the location guide to confirm the current view.
