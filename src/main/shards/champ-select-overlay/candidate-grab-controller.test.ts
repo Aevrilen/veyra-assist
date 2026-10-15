@@ -118,6 +118,9 @@ function createFixture() {
     platform: 'win32',
     leagueClient,
     ongoingGame: {
+      getChampSelectOverlaySettings() {
+        return this.settings.champSelectOverlay
+      },
       settings: observable({ enabled: true, champSelectOverlay: { candidateStep: 58.5 } })
     },
     logger: { warn: vi.fn() },

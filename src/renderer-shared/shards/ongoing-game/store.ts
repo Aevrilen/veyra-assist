@@ -1,4 +1,7 @@
-import { createDefaultChampSelectOverlaySettings } from '@shared/champ-select-overlay'
+import {
+  type ChampSelectOverlaySettings,
+  createDefaultChampSelectOverlaySettings
+} from '@shared/champ-select-overlay'
 import type { AggregatedAnalysis } from '@shared/data-adapter/analysis/player'
 import type { AggregatedTeamAnalysis } from '@shared/data-adapter/analysis/team'
 import type { LcuOrSgpGameDetails, LcuOrSgpGameSummary } from '@shared/data-adapter/wrapper'
@@ -45,6 +48,7 @@ export const useOngoingGameStore = defineStore('shard:ongoing-game-renderer', ()
     queryInLobbyPhase: true
   })
 
+  const automaticChampSelectOverlay = shallowRef<ChampSelectOverlaySettings | null>(null)
   const championSelections = shallowRef<Record<string, number>>({})
   const champSelectPlayerPuuids = shallowRef<Record<number, string>>({})
   const positionAssignments = shallowRef<Record<string, OngoingGamePositionAssignment>>({})
@@ -94,6 +98,7 @@ export const useOngoingGameStore = defineStore('shard:ongoing-game-renderer', ()
 
   return {
     settings,
+    automaticChampSelectOverlay,
 
     championSelections,
     champSelectPlayerPuuids,

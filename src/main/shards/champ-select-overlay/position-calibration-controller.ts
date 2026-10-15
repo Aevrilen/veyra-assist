@@ -91,6 +91,10 @@ export class ChampSelectPositionCalibrationController {
 
   constructor(private readonly _deps: Dependencies) {}
 
+  isEditing() {
+    return this._state === 'waiting' || this._state === 'ready' || this._state === 'saving'
+  }
+
   status(): PositionCalibrationStatus {
     const context = this._deps.context()
     let mismatch = false

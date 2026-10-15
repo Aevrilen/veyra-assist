@@ -78,9 +78,6 @@
         <NText depth="3" class="text-xs">
           {{ t('settings.ongoingGame.champSelectOverlay.dataDescription') }}
         </NText>
-        <NText depth="3" class="text-xs">
-          {{ t('veyraSettings.positionDescription') }}
-        </NText>
         <SettingsRow
           setting-id="ongoing-game.champ-select-overlay.opacity"
           :label="t('settings.ongoingGame.champSelectOverlay.opacity.label')"

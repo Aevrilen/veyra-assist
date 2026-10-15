@@ -69,7 +69,7 @@ export class CandidateButtonWindowController {
         this._context.leagueClient.data.champSelect.currentPickableChampionIdArray,
         this._context.leagueClient.data.lobbyTeamBuilder.champSelect.subsetChampionList,
         this._context.ongoingGame.settings.enabled,
-        JSON.stringify(this._context.ongoingGame.settings.champSelectOverlay)
+        JSON.stringify(this._context.ongoingGame.getChampSelectOverlaySettings())
       ],
       () => {
         if (this._timer) clearInterval(this._timer)
@@ -149,7 +149,7 @@ export class CandidateButtonWindowController {
       }
       const clientBounds = screen.screenToDipRect(null, client.bounds)
       const workArea = screen.getDisplayMatching(clientBounds).workArea
-      const settings = ongoingGame.settings.champSelectOverlay
+      const settings = ongoingGame.getChampSelectOverlaySettings()
       const band = getChampSelectOverlayBounds(clientBounds, workArea, settings, {
         candidates: session.benchChampions.length,
         teammates: session.myTeam.length

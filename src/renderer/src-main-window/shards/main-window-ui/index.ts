@@ -67,6 +67,15 @@ export class MainWindowUiRenderer implements IAkariShardInitDispose {
 
   async onDispose() {}
 
+  async markReleaseNotesRead(version: string) {
+    await this._context.settingUtils.set(
+      MAIN_WINDOW_UI_RENDERER_NAMESPACE,
+      'lastReadReleaseNotesVersion',
+      version
+    )
+    useMainWindowUiStore().frontendSettings.lastReadReleaseNotesVersion = version
+  }
+
   getMayhemSetupStatus(): Promise<{ supported: boolean; calibrated: boolean }> {
     return this._context.ipc.call('mayhem-assistant-main', 'setupStatus')
   }

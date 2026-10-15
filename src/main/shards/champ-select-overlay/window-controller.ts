@@ -141,7 +141,7 @@ export class ChampSelectOverlayWindowController {
       const bounds = getChampSelectOverlayBounds(
         clientBounds,
         workArea,
-        this._context.ongoingGame.settings.champSelectOverlay,
+        this._context.ongoingGame.getChampSelectOverlaySettings(),
         {
           candidates: session?.benchEnabled ? session.benchChampions.length : 0,
           teammates: session?.myTeam.length ?? 0

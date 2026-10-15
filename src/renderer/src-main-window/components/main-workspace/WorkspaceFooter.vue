@@ -13,9 +13,12 @@
     <div class="workspace-footer-status">
       <SidebarFixed :is-collapsed="false" :show-settings="false" />
     </div>
-    <NButton size="small" quaternary @click="context.openSearch('settings')">{{
-      t('navigation.workspace.functionSearch')
-    }}</NButton>
+    <div class="workspace-footer-actions">
+      <ReleaseNotesButton />
+      <NButton size="small" quaternary @click="context.openSearch('settings')">{{
+        t('navigation.workspace.functionSearch')
+      }}</NButton>
+    </div>
   </footer>
 </template>
 
@@ -25,6 +28,7 @@ import { useTranslation } from 'i18next-vue'
 import { NButton, NIcon } from 'naive-ui'
 import { useMainWindowAppContext } from '@main-window/context'
 import SidebarFixed from '../sidebar/SidebarFixed.vue'
+import ReleaseNotesButton from '../release-notes/ReleaseNotesButton.vue'
 defineProps<{ settingsActive: boolean }>()
 const { t } = useTranslation()
 const context = useMainWindowAppContext()
@@ -46,6 +50,15 @@ const context = useMainWindowAppContext()
   align-items: center;
   min-width: 0;
   flex: 1;
+}
+.workspace-footer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
 }
 .workspace-footer-status :deep(.sidebar-fixed) {
   display: flex;
@@ -72,8 +85,12 @@ const context = useMainWindowAppContext()
 }
 @media (max-width: 760px) {
   .workspace-footer {
+    flex-wrap: wrap;
     gap: 6px;
     padding-inline: 12px;
+  }
+  .workspace-footer-actions {
+    gap: 6px;
   }
   .workspace-footer-status :deep(.menu-item) {
     max-width: 150px;

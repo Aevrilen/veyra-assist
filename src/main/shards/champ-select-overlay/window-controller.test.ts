@@ -83,6 +83,9 @@ function createContext(platform: NodeJS.Platform = 'win32') {
       }
     },
     ongoingGame: {
+      getChampSelectOverlaySettings() {
+        return this.settings.champSelectOverlay
+      },
       settings: observable({
         enabled: true,
         champSelectOverlay: {

@@ -236,6 +236,13 @@ navigation:
       respawnTimer:
         detail: Respawn in {{seconds}} s ({{totalSeconds}} s)
 startup:
+  quickSettings:
+    title: Quick settings
+    overlay: Match overlay
+    autoAccept: Auto accept
+    autoMatchmaking: Auto matchmaking
+    overlayHint: The match overlay uses the same settings, display behavior, and shortcut as the settings page.
+    saveFailed: Could not save the setting. Please try again.
   quickLaunch:
     title: Launch your game client
     description: Choose a game mode in the client after launch. Matchmaking will not start automatically.
@@ -268,3 +275,18 @@ startup:
 backgroundTasks:
   taskTitle: Ongoing Tasks ({{count}})
   emptyPlaceholder: No background tasks
+releaseNotes:
+  title: Release notes
+  new: New
+  saveFailed: Release notes opened, but the read status could not be saved. Please try again later.
+  groups:
+    added: Added
+    improved: Improved
+    fixed: Fixed
+  items:
+    automaticPosition: Automatically positions bench and teammate cards in supported champion-select layouts, with no manual positioning step.
+    offlineReleaseNotes: Release notes are bundled for offline viewing. Unread versions display a New badge.
+    homeQuickSettings: Toggle the match overlay, auto accept, and auto matchmaking from Home, using the same saved settings as their existing pages.
+    noFirstPositionStep: Removed the first-positioning entry and instructions. Positioning runs automatically during champion select.
+    validatedGeometryCache: Saved geometry is applied only after the window and two fresh frames are validated again.
+    retiredMiniWindow: Fixed the blank Mini card entry by retiring the old Mini window while preserving saved settings.

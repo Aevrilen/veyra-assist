@@ -1,10 +1,14 @@
 import { IAkariShardInitDispose, Shard } from '@shared/akari-shard'
 import type { ChampSelectOverlaySettings } from '@shared/champ-select-overlay'
 import { QueueKeeper } from '@shared/utils/queue-keeper'
-import { compareShallow, runInAction } from 'mobx'
+import { compareShallow, observable, runInAction } from 'mobx'
 import { z } from 'zod'
 
 import { AppCommonMain } from '../app-common'
+import {
+  type AutomaticPositionLease,
+  resolveAutomaticPositionLease
+} from '../champ-select-overlay/automatic-position-lease'
 import { FeatureGatingMain } from '../feature-gating'
 import { AkariIpcMain } from '../ipc'
 import { LeagueClientMain } from '../league-client'
@@ -184,6 +188,38 @@ export class OngoingGameMain implements IAkariShardInitDispose {
     )
   }
 
+  // Automatic calibration is a separately validated runtime lease. Manual settings are never
+  // overwritten, including partial/legacy manual profiles and saves completing asynchronously.
+  private readonly _automaticChampSelectOverlay = observable.box<AutomaticPositionLease | null>(
+    null,
+    { deep: false }
+  )
+
+  getChampSelectOverlaySettings(): ChampSelectOverlaySettings {
+    return resolveAutomaticPositionLease(
+      this.settings.champSelectOverlay,
+      this._automaticChampSelectOverlay.get()
+    )
+  }
+
+  setAutomaticChampSelectOverlay(
+    settings: ChampSelectOverlaySettings | null,
+    isCurrent?: () => boolean
+  ) {
+    runInAction(() => {
+      this._automaticChampSelectOverlay.set(settings && isCurrent ? { settings, isCurrent } : null)
+      this.state.automaticChampSelectOverlay = settings && isCurrent ? settings : null
+    })
+  }
+
+  readAutomaticChampSelectOverlayCache(): Promise<unknown> {
+    return this._settingService._getFromStorage('automaticChampSelectOverlayV1')
+  }
+
+  saveAutomaticChampSelectOverlayCache(value: unknown): Promise<unknown> {
+    return this._settingService._saveToStorage('automaticChampSelectOverlayV1', value)
+  }
+
   async setChampSelectOverlay(value: ChampSelectOverlaySettings) {
     const validated = champSelectOverlaySettingsSchema.parse(value)
     // Visual calibration confirms a durable save before discarding its only preview.
@@ -215,6 +251,7 @@ export class OngoingGameMain implements IAkariShardInitDispose {
     ])
 
     this._mobxUtils.propSync(OngoingGameMain.id, 'state', this.state, [
+      'automaticChampSelectOverlay',
       'championSelections',
       'champSelectPlayerPuuids',
       'positionAssignments',

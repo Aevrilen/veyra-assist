@@ -84,7 +84,47 @@ const reasons = {
     'observer-exception',
     'capture-exception',
     'confirmation-exhausted',
-    'preview-retained'
+    'preview-retained',
+    'automatic-triggered',
+    'automatic-attempt-started',
+    'automatic-disabled',
+    'automatic-source-missing',
+    'automatic-source-ambiguous',
+    'automatic-image-empty',
+    'automatic-image-size-mismatch',
+    'automatic-capture-timeout',
+    'automatic-capture-busy',
+    'automatic-capture-needs-restart',
+    'automatic-display-changed',
+    'automatic-prepare-started',
+    'automatic-prepare-finished',
+    'automatic-geometry-unverified',
+    'automatic-window-source-rejected',
+    'manual-editor-active',
+    'automatic-manual-priority',
+    'automatic-retry-wait',
+    'automatic-cache-read-failed',
+    'automatic-source-changed',
+    'automatic-frame-rejected',
+    'automatic-pair-stale',
+    'automatic-pair-sealed',
+    'automatic-analysis-finished',
+    'automatic-observation-rejected',
+    'automatic-analysis-rejected',
+    'automatic-analysis-complete',
+    'automatic-save-stale',
+    'automatic-save-started',
+    'automatic-save-finished',
+    'automatic-cache-reused',
+    'automatic-applied',
+    'automatic-attempt-failed',
+    'automatic-prepare-failed',
+    'automatic-capture-failed',
+    'automatic-observer-failed',
+    'automatic-save-failed',
+    'automatic-apply-failed',
+    'automatic-attempt-finished',
+    'automatic-disposed'
   ]
 } as const
 
@@ -157,6 +197,13 @@ const metricNames = [
   'expectedScaleFactor',
   'captureOrdinal',
   'elapsedMs',
+  'analysisDurationMs',
+  'prepareDurationMs',
+  'windowSelected',
+  'pixelTimestampKnown',
+  'nativeAtomic',
+  'saveDurationMs',
+  'succeeded',
   'captureDurationMs',
   'ageLimitMs',
   'agreementGapLimitMs',
@@ -265,7 +312,8 @@ export class AutomaticPositionDiagnosticJournal {
 
   constructor(
     private readonly _attemptId: string,
-    private readonly _sink?: (record: AutomaticPositionDiagnosticRecord) => void
+    private readonly _sink?: (record: AutomaticPositionDiagnosticRecord) => void,
+    private readonly _retentionLimit = Number.POSITIVE_INFINITY
   ) {}
 
   record(input: AutomaticPositionDiagnostic, now: number) {
@@ -318,6 +366,7 @@ export class AutomaticPositionDiagnosticJournal {
 
   private _emit(record: AutomaticPositionDiagnosticRecord) {
     this._records.push(record)
+    if (this._records.length > this._retentionLimit) this._records.shift()
     try {
       this._sink?.({ ...record, metrics: { ...record.metrics } })
     } catch {

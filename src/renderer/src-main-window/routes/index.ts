@@ -1,6 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 
-import FirstRunGuide from '@main-window/components/first-run-environment/FirstRunGuide.vue'
 import SettingsModal from '@main-window/components/settings-modal/SettingsModal.vue'
 import Automation from '@main-window/views/automation/Automation.vue'
 import OngoingGame from '@main-window/views/ongoing-game/OngoingGame.vue'
@@ -12,7 +11,7 @@ import Toolkit from '@main-window/views/toolkit/Toolkit.vue'
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
-    { name: 'first-run', path: '/first-run', component: FirstRunGuide },
+    { path: '/first-run', redirect: { name: 'root' } },
     {
       path: '/',
       name: 'root',

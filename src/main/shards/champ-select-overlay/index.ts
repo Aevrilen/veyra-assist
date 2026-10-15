@@ -13,6 +13,7 @@ import { LeagueClientMain } from '../league-client'
 import { LoggerFactoryMain } from '../logger-factory'
 import { OngoingGameMain } from '../ongoing-game'
 import { WindowManagerMain } from '../window-manager'
+import { AutomaticPositionController } from './automatic-position-controller'
 import { observeAutomaticPositionImage } from './automatic-position-image'
 import { CandidateButtonWindowController } from './candidate-button-window-controller'
 import { CandidateGrabController } from './candidate-grab-controller'
@@ -35,6 +36,8 @@ export class ChampSelectOverlayMain implements IAkariShardInitDispose {
   private readonly _ipcHandlers: ChampSelectOverlayIpcHandlers
   private readonly _positionCalibration: ChampSelectPositionCalibrationController
 
+  private readonly _automaticController: AutomaticPositionController
+
   constructor(
     _leagueClient: LeagueClientMain,
     _ongoingGame: OngoingGameMain,
@@ -44,9 +47,10 @@ export class ChampSelectOverlayMain implements IAkariShardInitDispose {
     private readonly _ipc: AkariIpcMain
   ) {
     const logger = _loggerFactory.create(ChampSelectOverlayMain.id)
-    const automaticDiagnostic = _loggerFactory.createAutomaticPositionDiagnosticSink(() =>
+    const automaticDiagnostic = _loggerFactory.createAutomaticPositionDiagnosticSink(() => {
       this._positionCalibration.flushAutomaticDiagnostics()
-    )
+      this._automaticController?.flush()
+    })
     this._positionCalibration = new ChampSelectPositionCalibrationController({
       platform: process.platform,
       context: () => ({
@@ -70,6 +74,16 @@ export class ChampSelectOverlayMain implements IAkariShardInitDispose {
       automaticObservation: observeAutomaticPositionImage,
       automaticDiagnostic,
       exportSample: exportPositionSample
+    })
+    this._automaticController = new AutomaticPositionController({
+      platform: process.platform,
+      leagueClient: _leagueClient,
+      ongoingGame: _ongoingGame,
+      manualEditing: () => this._positionCalibration.isEditing(),
+      diagnostic: automaticDiagnostic,
+      readWindow: getLeagueClientWindowSnapshot,
+      toDip: (bounds) => screen.screenToDipRect(null, bounds),
+      getDisplay: (bounds) => screen.getDisplayMatching(bounds)
     })
     this._windowController = new ChampSelectOverlayWindowController({
       platform: process.platform,
@@ -130,6 +144,7 @@ export class ChampSelectOverlayMain implements IAkariShardInitDispose {
       this._positionCalibration,
       () => this._windowManager.mainWindow.window?.webContents
     )
+    this._automaticController.start()
     this._ipcHandlers.register()
     this._candidateGrabController.start()
     this._windowController.start()
@@ -150,6 +165,7 @@ export class ChampSelectOverlayMain implements IAkariShardInitDispose {
   }
 
   async onDispose() {
+    this._automaticController.dispose()
     this._positionCalibration.dispose()
     this._candidateButtonWindowController.dispose()
     this._candidateGrabController.dispose()

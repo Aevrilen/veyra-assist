@@ -8,6 +8,7 @@ import {
 import { inspectNormalizedLegacyLayout } from '@shared/champ-select-overlay/automatic-position/legacy-layout-provider'
 import { nativeImage, screen } from 'electron'
 
+import { matchesAutomaticCaptureScale } from './automatic-position-scale'
 import type { CapturedPosition } from './position-calibration-controller'
 
 /** Runs only for an explicitly armed trial; media stays in main-process memory. */
@@ -16,6 +17,26 @@ export function observeAutomaticPositionImage(
   context: AutomaticPositionContext,
   sequence: number,
   diagnostic?: AutomaticPositionDiagnosticSink
+) {
+  return inspectCapturedImage(capture, context, sequence, diagnostic, true)
+}
+
+/** Sealed, target-bound pairs can be analysed after the client closes. No live screen lookup. */
+export function observeOfflineAutomaticPositionImage(
+  capture: CapturedPosition,
+  context: AutomaticPositionContext,
+  sequence: number,
+  diagnostic?: AutomaticPositionDiagnosticSink
+) {
+  return inspectCapturedImage(capture, context, sequence, diagnostic, false)
+}
+
+function inspectCapturedImage(
+  capture: CapturedPosition,
+  context: AutomaticPositionContext,
+  sequence: number,
+  diagnostic: AutomaticPositionDiagnosticSink | undefined,
+  checkLiveDisplay: boolean
 ) {
   const reject = (
     reason: AutomaticPositionDiagnosticReason,
@@ -29,10 +50,18 @@ export function observeAutomaticPositionImage(
     return null
   }
   const evidence = capture.capture
-  const display = screen.getDisplayMatching(context.dipClient)
+  const display = checkLiveDisplay
+    ? screen.getDisplayMatching(context.dipClient)
+    : {
+        id: context.displayId,
+        scaleFactor: evidence?.scaleFactor
+      }
   if (!evidence) return reject('missing-capture-evidence')
   if (String(display.id) !== evidence.displayId) return reject('display-changed')
-  if (display.scaleFactor !== evidence.scaleFactor)
+  if (
+    display.scaleFactor !== evidence.scaleFactor ||
+    (!checkLiveDisplay && !matchesAutomaticCaptureScale(context, evidence.scaleFactor))
+  )
     return reject('scale-changed', {
       scaleFactor: display.scaleFactor,
       expectedScaleFactor: evidence.scaleFactor

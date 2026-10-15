@@ -12,7 +12,6 @@
     <div class="workspace">
       <MainWindowTitlebar />
       <WorkspaceHeader />
-      <ChampSelectPositionNotice />
       <div ref="contentEl" class="workspace-content">
         <RouterView v-slot="{ Component }">
           <Transition name="fade">
@@ -50,7 +49,6 @@ import { NavigationFailureType, isNavigationFailure, useRoute, useRouter } from 
 import { PlayerTabsRenderer } from '@main-window/shards/player-tabs'
 
 import MainWindowCloseConfirmModal from './components/MainWindowCloseConfirmModal.vue'
-import ChampSelectPositionNotice from './components/champ-select-position/ChampSelectPositionNotice.vue'
 import { SETTINGS_MODAL_NAVIGATION_STEP_KEY } from './components/settings-modal/navigation'
 import WorkspaceFooter from './components/main-workspace/WorkspaceFooter.vue'
 import WorkspaceHeader from './components/main-workspace/WorkspaceHeader.vue'

@@ -1,7 +1,10 @@
 import type { AutomaticPositionContext } from '@shared/champ-select-overlay/automatic-position'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { observeAutomaticPositionImage } from './automatic-position-image'
+import {
+  observeAutomaticPositionImage,
+  observeOfflineAutomaticPositionImage
+} from './automatic-position-image'
 import type { CapturedPosition } from './position-calibration-controller'
 
 const mocks = vi.hoisted(() => ({ display: vi.fn(), decode: vi.fn() }))
@@ -88,5 +91,19 @@ describe('image boundary reason codes', () => {
         metrics: expect.objectContaining({ benchSlot: 0, benchEdges: 0 })
       })
     )
+  })
+})
+
+describe('sealed pair offline image analysis', () => {
+  it('does not require any current display or open client once a frame is sealed', () => {
+    const f = setup()
+    mocks.display.mockImplementation(() => {
+      throw Error('client closed')
+    })
+    expect(() =>
+      observeOfflineAutomaticPositionImage(f.capture, f.context, 1, f.diagnostic)
+    ).not.toThrow()
+    expect(mocks.display).not.toHaveBeenCalled()
+    expect(f.diagnostic).toHaveBeenCalledWith(expect.objectContaining({ stage: 'provider' }))
   })
 })

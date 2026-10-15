@@ -132,3 +132,19 @@ describe('complete consecutive-poll aggregation', () => {
     expect(journal.snapshot()[0].metrics.candidates).toBe(0)
   })
 })
+
+it('bounded lifecycle retention does not discard emitted attempt records', () => {
+  const emitted: unknown[] = []
+  const journal = new AutomaticPositionDiagnosticJournal(
+    'bounded-attempt',
+    (entry) => emitted.push(entry),
+    2
+  )
+  for (let i = 0; i < 5; i++)
+    journal.record(
+      { stage: 'controller', reason: 'capture-started', metrics: { captureOrdinal: i } },
+      1000 + i
+    )
+  expect(journal.snapshot()).toHaveLength(2)
+  expect(emitted).toHaveLength(5)
+})

@@ -1,4 +1,7 @@
-import { createDefaultChampSelectOverlaySettings } from '@shared/champ-select-overlay'
+import {
+  type ChampSelectOverlaySettings,
+  createDefaultChampSelectOverlaySettings
+} from '@shared/champ-select-overlay'
 import type { LcuOrSgpGameDetails, LcuOrSgpGameSummary } from '@shared/data-adapter/wrapper'
 import type { MatchHistoryQueryParams } from '@shared/http-api-axios-helper/sgp/match-history-query'
 import { ONGOING_GAME_DEOBFUSCATION_FEATURE_GATE } from '@shared/shards/feature-gating/keys'
@@ -146,6 +149,8 @@ export class OngoingGameSettings implements OngoingGameSettingsData {
 }
 
 export class OngoingGameState {
+  automaticChampSelectOverlay: ChampSelectOverlaySettings | null = null
+
   get champSelectPlayerPuuids(): Record<number, string> {
     const session = this._leagueClientData.champSelect.session
     if (!session) return {}
@@ -393,6 +398,7 @@ export class OngoingGameState {
     private readonly _featureGating: FeatureGatingMain
   ) {
     makeAutoObservable(this, {
+      automaticChampSelectOverlay: observableRef,
       matchHistory: observableShallow,
       summoner: observableShallow,
       rankedStats: observableShallow,

@@ -137,6 +137,9 @@ function fixture(platform: NodeJS.Platform = 'win32') {
     }
   }
   const ongoingGame = {
+    getChampSelectOverlaySettings() {
+      return this.settings.champSelectOverlay
+    },
     settings: observable({
       enabled: true,
       champSelectOverlay: {

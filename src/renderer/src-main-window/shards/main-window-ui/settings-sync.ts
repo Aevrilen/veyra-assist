@@ -12,6 +12,13 @@ const BACKGROUND_IMAGE_MODES = new Set<MainWindowBackgroundImageMode>([
 export async function syncMainWindowUiSettings(context: MainWindowUiRendererContext) {
   const store = useMainWindowUiStore()
 
+  const lastReadReleaseNotesVersion = await context.settingUtils.get(
+    MAIN_WINDOW_UI_RENDERER_NAMESPACE,
+    'lastReadReleaseNotesVersion'
+  )
+  store.frontendSettings.lastReadReleaseNotesVersion =
+    typeof lastReadReleaseNotesVersion === 'string' ? lastReadReleaseNotesVersion : ''
+
   const savedLaunchConfiguration = await context.settingUtils.get(
     MAIN_WINDOW_UI_RENDERER_NAMESPACE,
     'clientLaunchConfiguration'

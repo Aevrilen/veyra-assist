@@ -235,6 +235,13 @@ navigation:
       respawnTimer:
         detail: 距离重生 {{seconds}} s（{{totalSeconds}} s）
 startup:
+  quickSettings:
+    title: 快捷设置
+    overlay: 对局悬浮窗
+    autoAccept: 自动接受
+    autoMatchmaking: 自动匹配
+    overlayHint: 对局悬浮窗与设置页保持同步，显示方式和快捷键沿用原设置。
+    saveFailed: 未能保存设置，请重试。
   quickLaunch:
     title: 启动游戏客户端
     description: 打开客户端后选择游戏模式，不会自动匹配对局。
@@ -267,3 +274,18 @@ startup:
 backgroundTasks:
   taskTitle: 正在进行 ({{count}})
   emptyPlaceholder: 无后台任务
+releaseNotes:
+  title: 更新日志
+  new: 新
+  saveFailed: 已打开更新日志，但未能保存已读状态，请稍后重试。
+  groups:
+    added: 新增
+    improved: 优化
+    fixed: 修复
+  items:
+    automaticPosition: 支持的选人布局中，候选席和队友卡片自动定位，无需手动点击定位。
+    offlineReleaseNotes: 更新内容随程序内置，可离线查看；新版本未读时显示“新”标记。
+    homeQuickSettings: 首页可直接切换对局悬浮窗、自动接受和自动匹配，与原设置页同步保存。
+    noFirstPositionStep: 移除首次定位入口和操作提示，进入选人后自动处理。
+    validatedGeometryCache: 自动保存定位几何，下次仍需重新验证窗口和双帧图像后才会应用。
+    retiredMiniWindow: 修复 Mini 白色空卡入口，保留原配置并停用旧 Mini 窗口。

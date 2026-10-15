@@ -15,6 +15,8 @@
     <!-- version -->
     <div class="text-xs text-black/40 dark:text-white/40">v{{ as.version }}</div>
 
+    <StartupQuickSettings />
+
     <!-- spacer -->
     <div class="h-12"></div>
 
@@ -137,6 +139,7 @@ import { NEllipsis, NIcon, NScrollbar, NSpin, useMessage } from 'naive-ui'
 import { computed } from 'vue'
 
 import { useLeagueClientPeekStore } from '@main-window/shards/league-client-peek/store'
+import StartupQuickSettings from '@main-window/components/startup-quick-settings/StartupQuickSettings.vue'
 import { PlayerTabsRenderer } from '@main-window/shards/player-tabs'
 import { useDetectedClientLaunchItems } from '@main-window/components/game-launcher/useDetectedClientLaunchItems'
 

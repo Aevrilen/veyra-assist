@@ -80,7 +80,7 @@ export class CandidateGrabController {
           leagueClient.data.champSelect.currentPickableChampionIdArray,
           leagueClient.data.lobbyTeamBuilder.champSelect.subsetChampionList,
           ongoingGame.settings.enabled,
-          ongoingGame.settings.champSelectOverlay
+          ongoingGame.getChampSelectOverlaySettings()
         ]
       },
       () => this.refresh(),
@@ -175,7 +175,7 @@ export class CandidateGrabController {
             client.windowHandle,
             client.ownerProcessId,
             client.bounds,
-            ongoingGame.settings.champSelectOverlay,
+            ongoingGame.getChampSelectOverlaySettings(),
             this._selectionSignature(session, pickableIds, subsetIds, currentChampion)
           ])
         }

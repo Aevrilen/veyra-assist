@@ -12,6 +12,7 @@ export const useMainWindowUiStore = defineStore('shard:main-window-ui-renderer',
     customBackgroundRevision: 0,
     customBackgroundOverlayStrength: 0.8,
     sidebarCollapsed: true,
+    lastReadReleaseNotesVersion: '',
     showTestPage: false
   })
 

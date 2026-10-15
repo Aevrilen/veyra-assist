@@ -1,0 +1,31 @@
+{
+  "version": "1.5.2-beta.3",
+  "originalSourceCommit": "0e54d71f8f1e21f4caad7c257a0e0c2db26762d9",
+  "originalPatchBase": "5abfbe3cd46d25440e5d473dd597c0d1cbe21933",
+  "uiParentCommit": "6c29fe46c1bfbf9b83d31baf4aaae19c1e198199",
+  "publicBaseCommit": "1439cca983b1d9437c8ce8b17e2826459b1af3c7",
+  "sourcePatchItems": 54,
+  "copiedFiles": 52,
+  "deletedFiles": 2,
+  "privateHistoryImported": false,
+  "preservedPublicDifferences": [
+    "npm private:true guard",
+    "previously approved disclaimer paragraphs in en/zh-CN shell.yaml"
+  ],
+  "validation": {
+    "focusedTests": 331,
+    "testFiles": 31,
+    "browserFixtureScenarios": 8,
+    "nodeTypes": "passed",
+    "webTypes": "passed",
+    "productionBuild": "passed",
+    "packagedGuiStarted": false,
+    "realClientRetested": false,
+    "predecessorObserved1280x720Selection": true
+  },
+  "archive": {
+    "name": "VeyraAssist-1.5.2-beta.3-0e54d71f-Windows-x64.zip",
+    "bytes": 320777695,
+    "sha256": "de6b59a26eec4faf668e6a2fe52901e6dcb8bec663ceb39eb76d59400babd29d"
+  }
+}

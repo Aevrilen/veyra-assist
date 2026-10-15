@@ -7,7 +7,7 @@
     :group="group"
     :champions="leagueClient.gameData.champions"
     :champion-rates="championRates"
-    :settings="ongoingGame.settings.champSelectOverlay"
+    :settings="overlaySettings"
   />
 </template>
 
@@ -31,6 +31,13 @@ const { group } = defineProps<{
 
 const leagueClient = useLeagueClientStore()
 const ongoingGame = useOngoingGameStore()
+const overlaySettings = computed(() => {
+  const manual = ongoingGame.settings.champSelectOverlay
+  const automatic = ongoingGame.automaticChampSelectOverlay
+  if (manual.candidateFirstCenterX !== null || manual.teammateFirstCenterY !== null || !automatic)
+    return manual
+  return { ...automatic, backgroundOpacity: manual.backgroundOpacity }
+})
 const championData = useInstance(ChampionDataRenderer)
 const championDataStore = useChampionDataStore()
 const logger = useInstance(LoggerRenderer).createLogger('champ-select-overlay-window')
