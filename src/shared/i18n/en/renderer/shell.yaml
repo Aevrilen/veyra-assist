@@ -72,14 +72,8 @@ legal:
       - **$t(common:appName)i** is entirely open-source and free; all features are provided “as-is.”
       - This software is not sold in any form of paid, bundled, or profit-making manner. If you encounter any form of reselling, bundling, or other profit-making activities, please do not purchase it. If you purchase it, please **immediately refund**.
 
-      ## II. Risk Notice & Limitation of Liability
-      - Using this software **may** result in (including but not limited to):
-        1. Your game account being suspended or permanently banned;
-        2. Loss, corruption, or inconsistency of game data with server data;
-        3. Client crashes, performance degradation, or other poor game experiences.
-      - For any direct, indirect, incidental, special, or consequential damages arising from using or being unable to use this software, the **$t(common:appName)** development team and all contributors assume no liability; all related risks are borne by the user.
-
-      > Please refer to the **Game Info Tracking Improvements** section in [Patch 25.17 Notes](https://www.leagueoflegends.com/en-us/news/game-updates/patch-25-17-notes/).
+      ## Disclaimer
+      This project is free and open source and is still being improved. Please assess the risks of use yourself; we cannot guarantee account safety. If you encounter a malfunction, you can use the log feedback feature to help us investigate.
 
       ## III. Server Compatibility Statement
       - **Effective from the release of this statement, $t(common:appName) will no longer provide any form of support for Tencent Game servers.**
