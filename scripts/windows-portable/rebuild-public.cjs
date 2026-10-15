@@ -9,19 +9,24 @@ const asar = require('@electron/asar')
 const { readSourceVersion } = require('./source-version.cjs')
 
 const root = path.resolve(__dirname, '../..')
-const [baselineArgument, outputArgument] = process.argv.slice(2)
+const [baselineArgument, outputArgument, reuseFlag, compiledSourceCommit] = process.argv.slice(2)
 const hash = (data) => crypto.createHash('sha256').update(data).digest('hex')
 const walk = (directory, prefix = '') =>
   fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     const name = path.join(prefix, entry.name)
     if (entry.isSymbolicLink()) throw new Error(`Unexpected symbolic link: ${name}`)
-    return entry.isDirectory() ? walk(directory, name) : [name]
+    return entry.isDirectory() ? walk(path.join(directory, entry.name), name) : [name]
   })
 
 async function main() {
-  if (!baselineArgument || !outputArgument)
+  if (
+    !baselineArgument ||
+    !outputArgument ||
+    (reuseFlag &&
+      (reuseFlag !== '--reuse-build' || !/^[a-f0-9]{40}$/.test(compiledSourceCommit || '')))
+  )
     throw new Error(
-      'Usage: node rebuild-public.cjs EXISTING_REVIEWED_PORTABLE_DIRECTORY NEW_OUTPUT_DIRECTORY'
+      'Usage: node rebuild-public.cjs EXISTING_REVIEWED_PORTABLE_DIRECTORY NEW_OUTPUT_DIRECTORY [--reuse-build COMPILED_SOURCE_COMMIT]'
     )
   const baseline = path.resolve(baselineArgument)
   const output = path.resolve(outputArgument)
@@ -42,20 +47,70 @@ async function main() {
     if (hash(fs.readFileSync(path.join(root, item.path))) !== item.sha256)
       throw new Error(`External resource mismatch: ${item.path}`)
   }
-  console.log(`Building public source ${commit}; one compiler process, one Rayon worker`)
-  execFileSync(
-    process.execPath,
-    [
-      '--max-old-space-size=1536',
-      path.join(root, 'node_modules/electron-vite/bin/electron-vite.js'),
-      'build'
-    ],
-    {
-      cwd: root,
-      env: { ...process.env, NODE_ENV: 'production', RAYON_NUM_THREADS: '1', OMP_NUM_THREADS: '1' },
-      stdio: 'inherit'
+  if (reuseFlag) {
+    const changed = execFileSync(
+      'git',
+      [
+        'diff',
+        '--name-only',
+        compiledSourceCommit,
+        commit,
+        '--',
+        'src',
+        'resources',
+        'package.json',
+        'yarn.lock',
+        'electron.vite.config.ts',
+        'tsconfig*.json',
+        'third_party/elevate'
+      ],
+      { cwd: root, encoding: 'utf8' }
+    ).trim()
+    if (changed) throw new Error('Compiled application/helper inputs changed; cannot reuse outputs')
+    const receipt = JSON.parse(
+      fs.readFileSync(path.join(root, '.public-compile-receipt.json'), 'utf8')
+    )
+    if (receipt.commit !== compiledSourceCommit || receipt.success !== true)
+      throw new Error('Missing successful compilation receipt')
+    for (const item of receipt.files)
+      if (hash(fs.readFileSync(path.join(root, 'out', item.path))) !== item.sha256)
+        throw new Error(`Compiled output changed: ${item.path}`)
+    console.log(
+      `Reusing verified compilation from ${compiledSourceCommit}; application/helper inputs unchanged`
+    )
+  } else {
+    console.log(`Building public source ${commit}; one compiler process, one Rayon worker`)
+    execFileSync(
+      process.execPath,
+      [
+        '--max-old-space-size=1536',
+        path.join(root, 'node_modules/electron-vite/bin/electron-vite.js'),
+        'build'
+      ],
+      {
+        cwd: root,
+        env: {
+          ...process.env,
+          NODE_ENV: 'production',
+          RAYON_NUM_THREADS: '1',
+          OMP_NUM_THREADS: '1'
+        },
+        stdio: 'inherit'
+      }
+    )
+    const receipt = {
+      commit,
+      success: true,
+      files: walk(path.join(root, 'out')).map((name) => ({
+        path: name,
+        sha256: hash(fs.readFileSync(path.join(root, 'out', name)))
+      }))
     }
-  )
+    fs.writeFileSync(
+      path.join(root, '.public-compile-receipt.json'),
+      JSON.stringify(receipt, null, 2) + '\n'
+    )
+  }
   fs.mkdirSync(output)
   const stage = path.join(output, `VeyraAssist-${manifest.version}-log-feedback-public`)
   fs.mkdirSync(stage)
@@ -138,7 +193,7 @@ async function main() {
   const metadata = {
     schemaVersion: 2,
     commit,
-    compiledFromCommit: commit,
+    compiledFromCommit: reuseFlag ? compiledSourceCommit : commit,
     version: manifest.version,
     displayName: 'Veyra Assist',
     label: 'log-feedback-public-revision',

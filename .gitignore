@@ -42,6 +42,7 @@ bench-results/
 *.webm
 *.dmp
 *.obj
+.public-compile-receipt.json
 __pycache__/
 *.pyc
 .venv/
