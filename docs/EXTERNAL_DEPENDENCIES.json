@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "upstreamRepository": "LeagueAkari/LeagueAkari",
   "upstreamCommit": "5109b2f7fcce6e02312e534cd1729ed0f2142b51",
-  "scope": "Upstream prebuilt runtime files required by the current static asset imports; not bundled in this source snapshot. Review applicable per-file notices before redistributing binaries.",
+  "scope": "Fixed upstream MIT runtime resources. The revised portable package omits the disabled updater executable; magic modules remain external prebuilt MIT resources. Elevate is rebuilt separately from complete LGPL source; see ELEVATE_BUILD.json.",
   "files": [
     {
       "path": "resources/akari-updater.exe",
@@ -11,14 +11,6 @@
       "download": "https://raw.githubusercontent.com/LeagueAkari/LeagueAkari/5109b2f7fcce6e02312e534cd1729ed0f2142b51/resources/akari-updater.exe",
       "gitBlob": "c5eb8c08685bcb17db21c5a9f2121a6d75e7c1bb",
       "sha256": "d8b4f7ae24efac023f195b03d7f3bf0c0098a08939eb61b892bb561b141f91fc"
-    },
-    {
-      "path": "resources/elevate.exe",
-      "bytes": 107520,
-      "source": "https://github.com/LeagueAkari/LeagueAkari/blob/5109b2f7fcce6e02312e534cd1729ed0f2142b51/resources/elevate.exe",
-      "download": "https://raw.githubusercontent.com/LeagueAkari/LeagueAkari/5109b2f7fcce6e02312e534cd1729ed0f2142b51/resources/elevate.exe",
-      "gitBlob": "66a74c0d0bbabfc0cbd83ad7233a642c495daa48",
-      "sha256": "9b1fbf0c11c520ae714af8aa9af12cfd48503eedecd7398d8992ee94d1b4dc37"
     },
     {
       "path": "resources/magic/magic.darwin-arm64.node",

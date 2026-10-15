@@ -2,11 +2,11 @@
 
 > **开发中 / 半成品 · 测试版。** 尚未完成跨电脑和真实游戏环境验收。本源码未附外部预编译运行依赖，缺少这些文件时不能直接完成应用构建。
 
-> **程序下载入口：[GitHub Releases](https://github.com/Aevrilen/veyra-assist/releases)。** 普通用户应下载 Release 的 **Assets 中标有 `VeyraAssist` 的程序 ZIP**，不要下载 GitHub 自动生成的 **Source code (zip / tar.gz)**；后者是源码，不能直接运行。日志优化版正在进行公开分发核验，附件实际出现在 Release 后才可下载。
+> **程序下载入口：[GitHub Releases](https://github.com/Aevrilen/veyra-assist/releases)。** 普通用户应下载 Release 的 **Assets 中标有 `VeyraAssist` 的程序 ZIP**，不要下载 GitHub 自动生成的 **Source code (zip / tar.gz)**；后者是源码，不能直接运行。当前日志优化修订版为 **1.5.2-beta.2 / Windows x64 预发布**，请阅读该版验证范围和限制。
 
 Veyra Assist 是基于 [League Akari](https://github.com/LeagueAkari/LeagueAkari) 二次开发的《英雄联盟》桌面辅助工具，当前重点是选人辅助、海克斯识别与装备推荐。项目沿用 Akari 的 Electron、Vue、LCU 连接、模块框架和部分界面，并在此基础上扩展功能。上游作者和代码来源见 [许可与致谢](THIRD_PARTY_NOTICES.md)。
 
-此快照以 `37e2ccc` 为源码基线，公开整理差异见 [导出说明](docs/EXPORT_DIFFERENCES.md)。现已同步 1.5.2-beta.1 日志反馈源码增量；范围、验证和与原交付包的差异见 [日志优化版说明](docs/releases/1.5.2-beta.1-log-feedback.md)。
+此快照以 `37e2ccc` 为源码基线，公开整理差异见 [导出说明](docs/EXPORT_DIFFERENCES.md)。1.5.2-beta.2 保留日志反馈增量，从公开源码重建应用并替换旧资源；范围、来源和限制见 [修订版说明](docs/releases/1.5.2-beta.2-log-feedback.md)。
 
 ## 给使用者
 

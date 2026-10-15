@@ -2,9 +2,9 @@
 
 ## 当前可复现范围
 
-此源码开发快照清理了旧历史、真实测试数据、内部交接和预编译应用，并将四个上游预编译运行文件作为外部依赖列出。原生扩展的 C++ 源码仍保留，但 `resources/magic/*.node` 没有相应源码或构建脚本随基线提供。主进程仍静态导入这些资源，缺少时不能直接完成应用构建。
+此源码开发快照清理了旧历史、真实测试数据、内部交接和预编译应用。三个上游预编译文件列在外部依赖清单；提权 helper 改为从随仓官方 LGPL 源码独立重建。原生扩展的 C++ 源码仍保留，但 `resources/magic/*.node` 没有相应源码或构建脚本随基线提供。主进程仍静态导入这些资源，缺少时不能直接完成应用构建。
 
-`resources/akari-updater.exe`、`resources/elevate.exe` 和原生 workspace 的 `addons/`、`dist/` 也未随快照提供。四个外部文件已与 Akari 固定提交逐项匹配，来源及 hash 见 [EXTERNAL_DEPENDENCIES.json](EXTERNAL_DEPENDENCIES.json)。MIT 允许按其条件分发软件，是否同时提供依赖源码与源码能否公开、二进制能否再分发应分别判断；恢复二进制分发时保留适用的原许可。根目录 `build/icon.png` 是打包图标资源。
+`resources/akari-updater.exe`、`resources/elevate.exe` 和原生 workspace 的 `addons/`、`dist/` 不随源码归档提供。三个外部预编译文件已与 Akari 固定提交逐项匹配，来源及 hash 见 [EXTERNAL_DEPENDENCIES.json](EXTERNAL_DEPENDENCIES.json)。helper 从 [third_party/elevate](../third_party/elevate/README.md) 构建到 `resources/elevate.exe`；本次分发构建摘要见 [ELEVATE_BUILD.json](ELEVATE_BUILD.json)。根目录 `build/icon.png` 是打包图标资源。
 
 ## 取得外部预编译依赖
 
@@ -21,7 +21,7 @@ foreach ($dependency in $dependencyManifest.files) {
 }
 ```
 
-这些文件是上游依赖，不是 Veyra 安装包。本轮没有重新下载或执行它们。`elevate.exe` 的作者来源及许可文本差异见 [许可说明](../THIRD_PARTY_NOTICES.md)；同名的其他提权工具不保证接口相同。Veyra 自动更新已禁用，上游更新器仍因遗留静态导入成为构建依赖，此轮不改其调用逻辑。
+这些文件是上游依赖，不是 Veyra 安装包。提权 helper 的官方源码和完整许可另随仓提供，不要替换成同名但接口不同的程序。Veyra 自动更新已禁用，上游更新器仍因遗留静态导入成为构建输入，但公开修订程序包不携带这个未调用的 updater。
 
 ## 环境
 
@@ -81,6 +81,14 @@ $env:AKARI_RAPIDOCR_MODEL = '<本地模型路径>'
 必须用实际文件路径替换占位符。选择 RapidOCR 后资源缺失会报错；不会自动退回 Tesseract。具体依赖收集和校验由 `scripts/windows-portable/prepare-rapidocr.cjs` 执行，版本和再分发许可需在制作测试包时逐项核对。
 
 ## 便携包状态
+
+1.5.2-beta.2 的独立修订入口为：
+
+```powershell
+node scripts/windows-portable/rebuild-public.cjs '<已审核旧运行包目录>' '<不存在的新输出目录>'
+```
+
+需先重建 helper、准备清单中的固定外部文件，并提交全部源码变更。该流程只复用显式旧包中的 Electron / native / JS 依赖 / OCR runtime，重新编译应用并替换一方资源，保留对应源码和 notices。原输入包保持不变，不依赖旧 Git 历史。旧包当前并非公开下载的构建前置，不能声称从任意新电脑已实现完整可复现构建；常规从零准备流程仍受下述前置限制。
 
 `build:win:portable` 需要 Python、site-packages、VC runtime、模型、全新输出目录和 label 参数。该脚本还要求 `bootstrap-provenance.json`、已审核的 native bootstrap 及干净提交；这些二进制相关前置已从候选移除，**当前不能直接用该入口产出可交付 ZIP**。保留脚本用于说明原有组装流程，待补齐可复现构建与新的来源核验后再恢复。
 

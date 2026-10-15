@@ -41,6 +41,7 @@ bench-results/
 *.mov
 *.webm
 *.dmp
+*.obj
 __pycache__/
 *.pyc
 .venv/

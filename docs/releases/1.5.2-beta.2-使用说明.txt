@@ -1,0 +1,15 @@
+Veyra Assist 1.5.2-beta.2 日志优化公开修订版
+
+开发中 / 半成品，Windows x64 预发布，未签名。程序包为 VeyraAssist-1.5.2-beta.2-log-feedback-public.zip。GitHub 自动生成的 Source code 不是可运行程序。
+
+使用：非游戏期间退出旧版，完整解压到新的目录，再运行“启动 Veyra Assist.cmd”。不要覆盖运行中的文件，不删除旧版或用户配置；回退时退出测试版，再从旧目录启动。
+
+日志按本地日期追加，修复日志目录入口和快速退出的末尾记录。反馈入口：帮助与修复 → 导出反馈 ZIP → 选择保存位置。最多20个近期日志、总计32 MiB、每文件8 MiB，超限保留近期完整记录，空目录也可导出环境信息。不自动上传；发送前检查内容，只私下发给维护者。原始日志不修改，不打包整套配置、数据库、截图、聊天和 Cookie。
+
+本修订从公开源码重建应用与一方资源，移除旧百科摘录，保持公开源码已清理的非核心工具/静态列表状态。提权功能保留，helper 从官方 LGPL 源码重建，完整对应源码和许可随包提供。原已禁用的更新器仍禁用；旧的1.5.2-beta.1交付文件不覆盖。
+
+日志离线测试17项已通过。构建与隔离启动检查结果请看该版 Release。真实保存对话框、Explorer 打开、完整主界面和游戏内流程仍待验收；窗口拖动错位、海克斯/装备显示问题未宣称修复。新版自动定位未合入且未可用。请勿把本版当成正式稳定版。
+
+项目基于 League Akari 二次开发，非从零自研。许可和来源见 app/resources/veyra-notices/；提权helper完整对应源码见 app/resources/third-party-sources/elevate/。源码提交记录在 app/resources/portable-build.json。
+
+下载及源码：https://github.com/Aevrilen/veyra-assist

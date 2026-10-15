@@ -5,7 +5,7 @@
 ## 初次清理
 
 - 排除内部交接、证据、真实对局 / 截图测试数据、任务与编辑器配置，以及原自动发布工作流。
-- 不携带已编译应用、原生扩展输出和用户配置 / 数据库。四个上游预编译运行文件改列 [外部依赖](EXTERNAL_DEPENDENCIES.json)，并提供固定官方来源与校验值。
+- 初次公开不携带已编译应用、原生扩展输出和用户配置 / 数据库，四个上游运行文件改列外部依赖。1.5.2-beta.2 将其中提权 helper 改为随仓 LGPL 源码重建；其余三个固定上游输入继续列于 [清单](EXTERNAL_DEPENDENCIES.json)，公开程序包不携带原已禁用的 updater。
 - 四个测试 / 示例中的疑似真实昵称、账号标识和本机用户路径替换为合成值；运行时功能未因此重写。
 - `resources/AKARI` 删除独立非商业许可百科摘录，仅保留资源定位标记。程序不采用该摘录的非商业条款。
 - 重写 README，补充架构、开发、路线图、隐私和第三方许可说明；保留原 MIT、模型 Apache 文本及真实来源归属。
@@ -16,7 +16,7 @@
 新增文件：
 
 - `docs/rapidocr-local-test-requirements.txt`：恢复冻结基线已有的纯依赖版本清单，包含 `rapidocr==3.10.0`，不含个人路径、token 或账号。
-- `docs/EXTERNAL_DEPENDENCIES.json`：记录四个外部预编译依赖的官方固定地址、Git blob、大小和 SHA-256。
+- `docs/EXTERNAL_DEPENDENCIES.json`：记录外部预编译输入的官方固定地址、Git blob、大小和 SHA-256；`docs/ELEVATE_BUILD.json` 单独记录从完整官方源码重建的 helper。
 - 本文 `docs/EXPORT_DIFFERENCES.md`。
 
 修改文件：`README.md`、`docs/DEVELOPMENT.md`、`THIRD_PARTY_NOTICES.md`。修正源码快照定位、RapidOCR 包名、外部依赖准备方法，以及 Seraphine 历史许可和端点列表的局部待核范围。

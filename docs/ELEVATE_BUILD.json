@@ -1,0 +1,10 @@
+{
+  "path": "resources/elevate.exe",
+  "bytes": 145920,
+  "sha256": "813f137435c731a631147a95568f17d25a1ebead1c879df2339beb1125098caf",
+  "source": "third_party/elevate",
+  "upstream": "https://github.com/jpassing/elevate/tree/d5cfc93d1ce06844a39d1a334a7a8081d26b6204",
+  "license": "LGPL-2.1-or-later",
+  "build": "third_party/elevate/build.cmd",
+  "replacesOpaqueBinary": true
+}

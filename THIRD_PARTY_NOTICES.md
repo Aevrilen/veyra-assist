@@ -41,8 +41,8 @@ Markdown CSS 的直接来源 Akari 已确认，另外保留 [github-markdown-css
 
 未随源码快照提供的 `resources/elevate.exe`、`resources/akari-updater.exe`、`resources/magic/magic.win32-x64.node`、`resources/magic/magic.darwin-arm64.node` 已与上述 Akari 提交逐个核对相同。[外部依赖清单](docs/EXTERNAL_DEPENDENCIES.json)给出固定官方地址和 hash。这些文件的缺失导致当前静态资源导入无法完成构建；不自动构成其余源码禁止公开的理由。MIT 本身也不普遍要求分发二进制时必须同时给出源码。
 
-- `elevate.exe` 的版本信息指向 Johannes Passing 1.0.0.2894；[作者仓库 LICENSE.md](https://github.com/jpassing/elevate/blob/master/LICENSE.md) 是 MIT 文本，而 [main.c](https://github.com/jpassing/elevate/blob/master/Elevate/main.c) 仍带 LGPL-2.1-or-later 文件头。恢复二进制再分发前，需核对这个旧版本适用的许可及必要源码 / notice，不把同名的其他提权程序当作已验证替代。
-- `akari-updater.exe` 为 Hanxven 的 2.0.0 上游工具，同作者 [源码仓库](https://github.com/LeagueAkari/akari-updater) 可读取，精确构建提交和 Rust 依赖归属待补。Veyra 更新生命周期已禁用，此轮保留遗留资源导入和逻辑，不启用上游更新。
+- 旧 `elevate.exe` 的版本信息指向 Johannes Passing 1.0.0.2894；作者仓库的 MIT 文本与源码 LGPL 文件头曾需要进一步区分。1.5.2-beta.2 不再使用该旧二进制，改由[固定官方源码](https://github.com/jpassing/elevate/tree/d5cfc93d1ce06844a39d1a334a7a8081d26b6204/Elevate)重建独立 helper，保留提权入口与原命令行。源码明确提供 LGPL-2.1-or-later 授权；完整对应 `main.c`、`stdafx.h`、构建命令、原版权及许可均保存在 [third_party/elevate](third_party/elevate/README.md)，并随程序包提供，helper 可自行重建替换。它作为独立进程使用，未链接进 MIT 应用。二进制摘要见 [ELEVATE_BUILD.json](docs/ELEVATE_BUILD.json)。
+- `akari-updater.exe` 为 Hanxven 的 2.0.0 上游工具，同作者 [源码仓库](https://github.com/LeagueAkari/akari-updater) 可读取，精确构建提交和 Rust 依赖归属待补。直接取得来源是附 MIT 的 Akari 固定提交。Veyra 的 `shouldRunSelfUpdateLifecycle()` 恒为 false；1.5.2-beta.2 保留该禁用策略及遗留源码，但不向程序包复制这个从不调用的 updater 文件。静态导入仍需构建时按清单准备文件；本次没有移除已启用的应用功能。
 - 两平台 `magic` addon 暂无对应源码 / 重建脚本随基线提供，已知直接分发来源是附 MIT 的 Akari 固定提交。可记录为外部预编译依赖；源码重建可复现性与按适用许可再分发分别核对，不因缺源码一律判定禁止 MIT 分发。
 
 ## 依赖和数据服务
