@@ -7,6 +7,7 @@ const { Readable } = require('node:stream')
 const { execFileSync } = require('node:child_process')
 const asar = require('@electron/asar')
 const { readSourceVersion } = require('./source-version.cjs')
+const { finalizePublicPackage } = require('./finalize-public.cjs')
 
 const root = path.resolve(__dirname, '../..')
 const [baselineArgument, outputArgument, reuseFlag, compiledSourceCommit] = process.argv.slice(2)
@@ -214,6 +215,7 @@ async function main() {
     path.join(stage, 'app/resources/portable-build.json'),
     JSON.stringify(metadata, null, 2) + '\n'
   )
+  const finalized = await finalizePublicPackage(stage, root, metadata)
   const notes = fs.readFileSync(path.join(root, 'docs/releases/1.5.2-beta.2-使用说明.txt'))
   fs.writeFileSync(path.join(stage, '使用说明.txt'), notes)
   fs.copyFileSync(
@@ -222,7 +224,7 @@ async function main() {
   )
   fs.writeFileSync(
     path.join(output, 'build-report.json'),
-    JSON.stringify({ ...metadata, stage, archiveFiles: streams.length }, null, 2) + '\n'
+    JSON.stringify({ ...finalized.metadata, stage, archiveFiles: streams.length }, null, 2) + '\n'
   )
   console.log(
     JSON.stringify({
