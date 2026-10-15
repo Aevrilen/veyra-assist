@@ -54,6 +54,9 @@ afterEach(async () => {
 it('keeps operational timing and event context while omitting credentials, identity, chat and payload records', async () => {
   const raw = [
     record('[mayhem-timing] {"stage":"capture","at":123,"width":1920,"foreground":false}'),
+    record(
+      '[mayhem-timing] {"stage":"roi-markers-ready","locatorReason":"budget","guideState":"waiting","guideScene":"cards","fallbackCardsReason":"duplicate","shopDecision":"guide-excludes-shop","locationDecision":"incomplete","frameWidth":1920,"framePixelBytes":8294400,"windowSourceRevision":2}'
+    ),
     record('accessToken: SHORT-CREDENTIAL'),
     record('{"data": "PRIVATE-RESPONSE"}'),
     record('Cookie: a=COOKIE-VALUE'),
@@ -71,6 +74,9 @@ it('keeps operational timing and event context while omitting credentials, ident
   ].join('')
   const result = await redactFeedbackLog(raw)
   expect(result.text).toContain('"stage":"capture","at":123,"width":1920,"foreground":false')
+  expect(result.text).toContain('"locatorReason":"budget"')
+  expect(result.text).toContain('"fallbackCardsReason":"duplicate"')
+  expect(result.text).toContain('"framePixelBytes":8294400')
   expect(result.text).toContain('12:34:56:789')
   expect(result.text).toContain('Capture failed at [local-path]')
   expect(result.text).toContain('[id:')

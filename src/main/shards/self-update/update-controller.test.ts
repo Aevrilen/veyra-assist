@@ -72,7 +72,7 @@ describe('SelfUpdateController', () => {
     const context = createContext()
     const controller = new SelfUpdateController(context, { start: vi.fn() } as never)
 
-    await expect(controller.checkLatestRelease()).rejects.toThrow('platform-unsupported')
+    await expect(controller.checkLatestRelease()).rejects.toThrow('veyra-update-unavailable')
     controller.watchLatestRelease()
 
     expect(context.akariApi.updateLatestRelease).not.toHaveBeenCalled()

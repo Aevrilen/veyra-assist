@@ -3,10 +3,8 @@ import { z } from 'zod'
 
 import type {
   AkariAutoSelectGroupsConfig,
-  AkariContactChannels,
   AkariFeatureGateSnapshot,
   AkariLeagueServersConfig,
-  AkariNotice,
   AkariRelease,
   AkariSupportedQueuesConfig
 } from './types'
@@ -68,49 +66,6 @@ export const AkariFeatureGateSnapshotSchema: z.ZodType<AkariFeatureGateSnapshot>
     )
   })
   .strict()
-
-export const AkariNoticeSchema: z.ZodType<AkariNotice> = z
-  .object({
-    revision: z.string(),
-    language: z.enum(['zh-CN', 'en']),
-    severity: z.enum(['low', 'medium', 'high']),
-    summary: z.string(),
-    contentType: z.literal('text/markdown'),
-    content: z.string(),
-    updatedAt: z.iso.datetime({ offset: true })
-  })
-  .passthrough()
-
-const AkariContactChannelUrlSchema = z.url().refine(
-  (value) => {
-    const protocol = new URL(value).protocol
-    return protocol === 'https:' || protocol === 'mailto:'
-  },
-  { message: 'url must use https or mailto' }
-)
-
-export const AkariContactChannelsSchema: z.ZodType<AkariContactChannels> = z
-  .object({
-    ...ConfigMetadataShape,
-    channels: z.array(
-      z
-        .object({
-          id: z
-            .string()
-            .trim()
-            .min(1)
-            .max(64)
-            .regex(/^[a-z0-9][a-z0-9_-]*$/i),
-          platform: z.enum(['qq', 'telegram', 'discord', 'email', 'website', 'other']),
-          name: z.string().trim().min(1).max(80),
-          identifier: z.string().trim().min(1).max(120),
-          url: AkariContactChannelUrlSchema,
-          password: z.string().trim().min(1).max(120).nullable()
-        })
-        .passthrough()
-    )
-  })
-  .passthrough()
 
 export const AkariAutoSelectGroupsConfigSchema: z.ZodType<AkariAutoSelectGroupsConfig> = z
   .object({

@@ -28,6 +28,18 @@ export class AkariApiProtocolController {
 
   private _registerDomain(domain: string, httpClient: AxiosInstance) {
     this._protocol.registerDomain(domain, async (uri, request, context) => {
+      // Keep game configuration/static assets, but never proxy upstream product services.
+      const pathname = new URL(uri, 'https://veyra.invalid/').pathname
+      if (
+        domain === AKARI_API_PROTOCOL_DOMAIN &&
+        ['/notice/', '/website/', '/releases/', '/statistics/'].some((prefix) =>
+          pathname.startsWith(prefix)
+        )
+      ) {
+        return new Response('Upstream product services are disabled in Veyra Assist', {
+          status: 403
+        })
+      }
       const headers: Record<string, string> = {}
       request.headers.forEach((value, key) => {
         headers[key] = value

@@ -17,6 +17,15 @@ const RECORD =
 const PRIVATE_RECORD =
   /chat|whisper|conversation|payload|headers?|cookies?|authorization|credentials?|password|secret|token|entitlement|puuid|summoner|account|user.?name|login|riot.?id|session.?key|game.?name|tag.?line|private.?key|api.?key|access.?key|command.?line|deep.?link|data:image|-----BEGIN|\bdata["']?\s*:/i
 
+/** Shared privacy gate also applied before parsing dedicated scalar diagnostics. */
+export function isPrivateFeedbackRecord(body: string) {
+  return PRIVATE_RECORD.test(body)
+}
+
+export function pseudonymizeFeedbackId(value: string, salt: Buffer) {
+  return `[id:${createHmac('sha256', salt).update(value.toLowerCase()).digest('hex').slice(0, 16)}]`
+}
+
 /** Export operational records only. Raw local logs are never modified. */
 export async function redactFeedbackLog(input: string, salt = randomBytes(16)) {
   const records = [...input.matchAll(RECORD)]
@@ -36,7 +45,7 @@ export async function redactFeedbackLog(input: string, salt = randomBytes(16)) {
       omitted++
       continue
     }
-    if (PRIVATE_RECORD.test(body)) {
+    if (isPrivateFeedbackRecord(body)) {
       output.push(`${match[0]}[sensitive record omitted]\n`)
       omitted++
       continue
@@ -48,9 +57,8 @@ export async function redactFeedbackLog(input: string, salt = randomBytes(16)) {
       .replace(/\\\\[^\r\n]+/g, '[local-path]')
       .replace(/\/(?:home|Users)\/[^\r\n]+/g, '[local-path]')
       .replace(/\b[\w.+-]+@[\w.-]+\.[a-z]{2,}\b/gi, '[email]')
-      .replace(
-        /\b[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}\b/gi,
-        (value) => `[id:${createHmac('sha256', salt).update(value).digest('hex').slice(0, 8)}]`
+      .replace(/\b[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}\b/gi, (value) =>
+        pseudonymizeFeedbackId(value, salt)
       )
       .replace(/\b(?:Basic|Bearer)\s+\S+/gi, '[credential]')
       .replace(/[A-Za-z0-9_+/=-]{48,}/g, '[long-value]')

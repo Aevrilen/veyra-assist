@@ -13,18 +13,30 @@
       <NButton
         type="primary"
         :disabled="busy || status?.state === 'saving'"
-        @click="run(() => mainUi.beginChampSelectPosition())"
+        @click="run(() => mainUi.beginChampSelectPosition(), true)"
         >{{ status?.preview ? t('retake') : t('prepare') }}</NButton
+      >
+      <NButton
+        :disabled="busy || status?.state === 'saving'"
+        @click="run(() => mainUi.beginAutomaticChampSelectPosition(), true)"
+        >{{ t('autoPrepare') }}</NButton
       >
       <NButton
         v-if="status?.state === 'waiting' || status?.preview"
         :disabled="busy"
-        @click="run(() => mainUi.cancelChampSelectPosition())"
+        @click="run(() => mainUi.cancelChampSelectPosition(), true)"
         >{{ t('cancel') }}</NButton
       >
       <NButton quaternary :disabled="busy" @click="openAdvanced">{{ t('advanced') }}</NButton>
     </div>
+    <p class="position-note">{{ t('autoHint') }}</p>
     <template v-if="status?.preview && imageUrl">
+      <NAlert
+        v-if="status.preview.automatic"
+        :show-icon="false"
+        :type="status.preview.automatic.reason === 'suggested' ? 'info' : 'warning'"
+        >{{ t(`automatic.${status.preview.automatic.reason}`) }}</NAlert
+      >
       <div class="position-steps">
         <NButton
           v-for="key in pointKeys"
@@ -64,7 +76,13 @@
         <NButton type="primary" :disabled="busy || !draft" :loading="busy" @click="save">{{
           t('save')
         }}</NButton>
+        <NButton
+          :disabled="busy"
+          @click="run(() => mainUi.exportChampSelectPositionSample(status!.preview!.requestId))"
+          >{{ t('exportSample') }}</NButton
+        >
       </div>
+      <p class="position-note">{{ t('exportHint') }}</p>
     </template>
     <p class="position-note">{{ t('privacy') }}</p>
   </section>
@@ -106,7 +124,8 @@ const configured = computed(
 )
 let timer: ReturnType<typeof setInterval> | undefined
 let alive = true
-let refreshing = false
+let refreshGeneration = 0
+let refreshing: number | null = null
 let imageRequest: string | null = null
 
 function resetPoints() {
@@ -114,32 +133,44 @@ function resetPoints() {
   active.value = 'candidateFirst'
 }
 async function refresh() {
-  if (refreshing) return
-  refreshing = true
+  if (busy.value) return
+  const generation = refreshGeneration
+  if (refreshing === generation) return
+  refreshing = generation
   try {
     const next = await mainUi.getChampSelectPositionStatus()
-    if (!alive) return
+    if (!alive || generation !== refreshGeneration) return
     status.value = next
     const requestId = next.preview?.requestId ?? null
     if (requestId !== imageRequest) {
       imageRequest = requestId
       imageUrl.value = null
       resetPoints()
+      if (next.preview?.automatic?.selection)
+        selection.value = JSON.parse(JSON.stringify(next.preview.automatic.selection))
       if (requestId) {
         const image = await mainUi.getChampSelectPositionPreview(requestId)
-        if (alive && imageRequest === requestId) imageUrl.value = image
+        if (alive && generation === refreshGeneration && imageRequest === requestId)
+          imageUrl.value = image
       }
     }
   } catch {
-    if (alive) failed.value = true
+    if (alive && generation === refreshGeneration) failed.value = true
   } finally {
-    refreshing = false
+    if (refreshing === generation) refreshing = null
   }
 }
-async function run(action: () => Promise<unknown>) {
+async function run(action: () => Promise<unknown>, clearPreview = false) {
   if (busy.value) return
   busy.value = true
   failed.value = false
+  refreshGeneration++
+  if (clearPreview) {
+    status.value = null
+    imageRequest = null
+    imageUrl.value = null
+    resetPoints()
+  }
   try {
     await action()
   } catch {

@@ -504,25 +504,27 @@ export class MayhemWindowController {
       } else if (shown) {
         const reason = this._hidden
           ? 'explicit-hide'
-          : !valid
-            ? 'display-invalid'
-            : expired
-              ? 'observation-expired'
-              : !this._ready.has(role)
-                ? 'renderer-loading'
-                : role.startsWith('augment-')
-                  ? 'cards-not-visible'
-                  : snapshot.suppressed
-                    ? 'session-suppressed'
-                    : snapshot.equipmentCollapsed
-                      ? 'equipment-collapsed'
-                      : this._captureTiming?.temporarilyHidden
-                        ? 'equipment-temporarily-hidden'
-                        : role === 'equipment-restore'
-                          ? 'restore-not-visible'
-                          : !shop
-                            ? 'shop-not-visible'
-                            : 'equipment-pair-loading'
+          : !layout && !this._equipmentPlacement
+            ? 'layout-unavailable'
+            : !valid
+              ? 'display-invalid'
+              : expired
+                ? 'observation-expired'
+                : !this._ready.has(role)
+                  ? 'renderer-loading'
+                  : role.startsWith('augment-')
+                    ? 'cards-not-visible'
+                    : snapshot.suppressed
+                      ? 'session-suppressed'
+                      : snapshot.equipmentCollapsed
+                        ? 'equipment-collapsed'
+                        : this._captureTiming?.temporarilyHidden
+                          ? 'equipment-temporarily-hidden'
+                          : role === 'equipment-restore'
+                            ? 'restore-not-visible'
+                            : !shop
+                              ? 'shop-not-visible'
+                              : 'equipment-pair-loading'
         this._hide(w, reason)
       }
     })

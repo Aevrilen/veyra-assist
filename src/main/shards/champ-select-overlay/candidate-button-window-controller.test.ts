@@ -251,6 +251,29 @@ describe('main-owned bench buttons and visibility leases', () => {
       })
   })
 
+  it('reuses ready windows through unchanged session updates and polling without hide or reload', () => {
+    f = fixture()
+    runtime.windows.forEach(f.ready)
+    const windows = [...runtime.windows]
+    windows.forEach((window) => {
+      window.hide.mockClear()
+      window.showInactive.mockClear()
+    })
+    for (let index = 0; index < 20; index++) {
+      runInAction(() => {
+        f.leagueClient.data.champSelect.session = structuredClone(f.server.session)
+      })
+      vi.advanceTimersByTime(100)
+    }
+    expect(runtime.windows).toEqual(windows)
+    for (const window of windows) {
+      expect(window.hide).not.toHaveBeenCalled()
+      expect(window.showInactive).not.toHaveBeenCalled()
+      expect(window.destroy).not.toHaveBeenCalled()
+      expect(window.loadFile).toHaveBeenCalledTimes(1)
+    }
+  })
+
   it('never suppresses Mini for configured, loading, disabled or space-limited buttons', () => {
     f = fixture()
     runInAction(() => (f.leagueClient.data.champSelect.currentPickableChampionIdArray = []))

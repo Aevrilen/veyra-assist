@@ -69,17 +69,22 @@ onMounted(async () => {
 async function grab() {
   const identity = state.value.identity ? { ...state.value.identity } : null
   if (!identity || state.value.busy || pending.value) return
+  const isCurrentIdentity = () =>
+    state.value.identity?.sessionId === identity.sessionId &&
+    state.value.identity?.revision === identity.revision &&
+    state.value.identity?.championId === identity.championId
   pending.value = true
   result.value = null
   try {
-    result.value = await ipc.call<CandidateGrabResult>(
+    const response = await ipc.call<CandidateGrabResult>(
       CANDIDATE_GRAB_NAMESPACE,
       'grabCandidate',
       identity
     )
+    if (isCurrentIdentity()) result.value = response
   } catch (error) {
     logger.warn('Candidate selection IPC failed', error)
-    result.value = { state: 'failed' }
+    if (isCurrentIdentity()) result.value = { state: 'failed' }
   } finally {
     pending.value = false
   }

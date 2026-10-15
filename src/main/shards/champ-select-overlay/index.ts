@@ -13,6 +13,7 @@ import { LeagueClientMain } from '../league-client'
 import { LoggerFactoryMain } from '../logger-factory'
 import { OngoingGameMain } from '../ongoing-game'
 import { WindowManagerMain } from '../window-manager'
+import { observeAutomaticPositionImage } from './automatic-position-image'
 import { CandidateButtonWindowController } from './candidate-button-window-controller'
 import { CandidateGrabController } from './candidate-grab-controller'
 import { ChampSelectOverlayIpcHandlers } from './ipc-handlers'
@@ -21,6 +22,7 @@ import {
   captureChampSelectPosition
 } from './position-calibration-controller'
 import { registerPositionCalibrationIpc } from './position-calibration-ipc'
+import { exportPositionSample } from './position-sample-executor'
 import { ChampSelectOverlayWindowController } from './window-controller'
 
 @Shard(ChampSelectOverlayMain.id)
@@ -42,6 +44,9 @@ export class ChampSelectOverlayMain implements IAkariShardInitDispose {
     private readonly _ipc: AkariIpcMain
   ) {
     const logger = _loggerFactory.create(ChampSelectOverlayMain.id)
+    const automaticDiagnostic = _loggerFactory.createAutomaticPositionDiagnosticSink(() =>
+      this._positionCalibration.flushAutomaticDiagnostics()
+    )
     this._positionCalibration = new ChampSelectPositionCalibrationController({
       platform: process.platform,
       context: () => ({
@@ -53,12 +58,18 @@ export class ChampSelectOverlayMain implements IAkariShardInitDispose {
             : 0,
           teammates: _leagueClient.data.champSelect.session?.myTeam.length ?? 0
         },
-        settings: _ongoingGame.settings.champSelectOverlay
+        settings: _ongoingGame.settings.champSelectOverlay,
+        sessionKey:
+          _leagueClient.data.champSelect.session?.id ||
+          String(_leagueClient.data.champSelect.session?.gameId || '')
       }),
       readWindow: getLeagueClientWindowSnapshot,
       toDip: (bounds) => screen.screenToDipRect(null, bounds),
       capture: captureChampSelectPosition,
-      save: (value) => _ongoingGame.setChampSelectOverlay(value)
+      save: (value) => _ongoingGame.setChampSelectOverlay(value),
+      automaticObservation: observeAutomaticPositionImage,
+      automaticDiagnostic,
+      exportSample: exportPositionSample
     })
     this._windowController = new ChampSelectOverlayWindowController({
       platform: process.platform,
@@ -82,7 +93,10 @@ export class ChampSelectOverlayMain implements IAkariShardInitDispose {
         this._candidateButtonWindowController.onGrantStateChanged(sender, identity)
       },
       onResult: (identity, result) =>
-        _ipc.sendEvent(ChampSelectOverlayMain.id, 'candidate-grab-feedback', { identity, result })
+        _ipc.sendEvent(ChampSelectOverlayMain.id, 'candidate-grab-feedback', {
+          identity,
+          result
+        })
     })
     this._candidateButtonWindowController = new CandidateButtonWindowController({
       platform: process.platform,

@@ -24,7 +24,9 @@ export function registerPositionCalibrationIpc(
   }
   register('positionStatus', 0, () => controller.status())
   register('beginPosition', 0, () => controller.begin())
+  register('beginAutomaticPosition', 0, () => controller.beginAutomatic())
   register('positionPreview', 1, (id) => controller.preview(id))
   register('cancelPosition', 0, () => controller.cancel())
   register('savePosition', 1, (input) => controller.save(input))
+  register('exportPositionSample', 1, (id) => controller.exportSample(id))
 }

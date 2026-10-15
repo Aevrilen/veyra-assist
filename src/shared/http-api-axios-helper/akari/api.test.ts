@@ -16,61 +16,30 @@ function createHttpMock() {
 }
 
 describe('Akari API HTTP helper', () => {
-  it('uses Chinese for notice and release requests by default', () => {
+  it('blocks upstream releases and telemetry before HTTP dispatch', async () => {
+    const { get, http, post } = createHttpMock()
+    const api = new AkariApiHttpApiAxiosHelper(http)
+
+    await expect(api.getLatestRelease('en')).rejects.toThrow('disabled in Veyra Assist')
+    await expect(api.postStatisticsRecord('1.5.2-beta')).rejects.toThrow('disabled in Veyra Assist')
+    expect(get).not.toHaveBeenCalled()
+    expect(post).not.toHaveBeenCalled()
+  })
+
+  it('keeps game configuration requests and their cancellation signal after blocking product APIs', async () => {
     const { get, http } = createHttpMock()
     const api = new AkariApiHttpApiAxiosHelper(http)
 
-    api.getLatestNotice()
-    api.getLatestRelease()
-
-    expect(get).toHaveBeenNthCalledWith(1, '/notice/v1/latest', {
-      params: { lang: 'zh-CN' },
-      signal: undefined
-    })
-    expect(get).toHaveBeenNthCalledWith(2, '/releases/v1/latest', {
-      params: { lang: 'zh-CN' },
-      signal: undefined
-    })
-  })
-
-  it('maps each allowlisted config resource to its API path', () => {
-    const { get, http } = createHttpMock()
-    const api = new AkariApiHttpApiAxiosHelper(http)
-
-    api.getConfig('sgp/league-servers')
-
-    expect(get).toHaveBeenCalledWith('/config/v1/sgp/league-servers', {
-      signal: undefined
-    })
-
-    api.getConfig('app/feature-gates')
-
-    expect(get).toHaveBeenCalledWith('/config/v1/app/feature-gates', {
-      signal: undefined
-    })
-  })
-
-  it('maps contact channels to the public website content path', () => {
-    const { get, http } = createHttpMock()
-    const api = new AkariApiHttpApiAxiosHelper(http)
-
-    api.getContactChannels()
-
-    expect(get).toHaveBeenCalledWith('/website/v1/contact-channels', {
-      signal: undefined
-    })
-  })
-
-  it('maps statistics records to the Akari API', () => {
-    const { http, post } = createHttpMock()
-    const api = new AkariApiHttpApiAxiosHelper(http)
-
-    api.postStatisticsRecord('1.5.0')
-
-    expect(post).toHaveBeenCalledWith(
-      '/statistics/v1/records',
-      { version: '1.5.0' },
-      { signal: undefined }
-    )
+    await expect(api.getLatestRelease()).rejects.toThrow('disabled')
+    const signal = new AbortController().signal
+    for (const resource of [
+      'sgp/league-servers',
+      'sgp/supported-queues',
+      'auto-select/groups',
+      'app/feature-gates'
+    ] as const) {
+      await api.getConfig(resource, { signal })
+      expect(get).toHaveBeenCalledWith(`/config/v1/${resource}`, { signal })
+    }
   })
 })

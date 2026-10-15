@@ -19,10 +19,7 @@ import { registerDeclarationModal } from './declaration-modal'
 import { createElevatedStartupNotificationSetup } from './elevated-startup-notification'
 import { registerFunnyPricingModal } from './funny-pricing-modal'
 import { watchSpecialKeyboardCombo } from './keyboard-combo-controller'
-import { registerNewReleaseModal } from './new-release-modal'
-import { registerNoticeModal } from './notice-modal'
 import { watchQueueingProgress } from './queueing-progress-task'
-import { useSimpleNotificationsStore } from './store'
 import { setupStreamerModeNotifications } from './streamer-mode-notifications'
 import {
   watchAskUserToRunAsAdministrator,
@@ -31,7 +28,6 @@ import {
   watchHigherVersionDbWarning,
   watchRunInTempDirWarning
 } from './system-warning-dialogs'
-import { watchUpdateDownloadFailed } from './update-download-failed-notification'
 
 /**
  * 主窗口常驻通知中心。
@@ -49,7 +45,7 @@ export class SimpleNotificationsRenderer implements IAkariShardInitDispose {
   constructor(
     @Dep(ClientInstallationRenderer) readonly clientInstallation: ClientInstallationRenderer,
     @Dep(AppCommonRenderer) readonly appCommon: AppCommonRenderer,
-    @Dep(SettingUtilsRenderer) private readonly settingUtils: SettingUtilsRenderer,
+    @Dep(SettingUtilsRenderer) settingUtils: SettingUtilsRenderer,
     @Dep(LeagueClientRenderer) leagueClient: LeagueClientRenderer,
     @Dep(SetupInAppScopeRenderer) private readonly setupInAppScope: SetupInAppScopeRenderer,
     @Dep(LeagueClientUxRenderer) readonly leagueClientUx: LeagueClientUxRenderer,
@@ -67,17 +63,7 @@ export class SimpleNotificationsRenderer implements IAkariShardInitDispose {
   }
 
   async onInit() {
-    const simpleNotificationsStore = useSimpleNotificationsStore()
-
-    await this.settingUtils.savedPropVue(
-      SimpleNotificationsRenderer.id,
-      simpleNotificationsStore,
-      'lastNoticeRevision'
-    )
-
     registerDeclarationModal(this.context)
-    registerNoticeModal(this.context)
-    registerNewReleaseModal(this.context)
     registerFunnyPricingModal(this.context)
 
     this.setupInAppScope.addSetupFn(createElevatedStartupNotificationSetup())
@@ -90,16 +76,5 @@ export class SimpleNotificationsRenderer implements IAkariShardInitDispose {
     this.setupInAppScope.addSetupFn(() => watchBadSgpConnectionWarning(this.context))
     this.setupInAppScope.addSetupFn(() => watchAutoReconnectNotification())
     this.setupInAppScope.addSetupFn(() => watchRunInTempDirWarning())
-    this.setupInAppScope.addSetupFn(() => watchUpdateDownloadFailed(this.context))
-  }
-
-  showNoticeModal() {
-    const simpleNotificationsStore = useSimpleNotificationsStore()
-    simpleNotificationsStore.showNoticeModal = true
-  }
-
-  showNewReleaseModal() {
-    const simpleNotificationsStore = useSimpleNotificationsStore()
-    simpleNotificationsStore.showNewReleaseModal = true
   }
 }

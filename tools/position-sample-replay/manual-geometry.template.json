@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "kind": "veyra-manual-client-geometry",
+  "crop": "actual-client-area",
+  "physicalClientSize": { "width": null, "height": null },
+  "dipClientSize": { "width": null, "height": null },
+  "counts": { "candidates": null, "teammates": null }
+}

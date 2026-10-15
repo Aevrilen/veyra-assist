@@ -1,0 +1,28 @@
+{
+  "originCommit": "543a8d4a11da94f11ec46d20650363c99c7199ab",
+  "publicBase": "6c1b1345b72bd9fa712ab13b833d5e1d6514a63d",
+  "sourceMode": "Sanitized tracked-file delta on existing public history; not the private Git commit or a byte-for-byte private source mirror",
+  "programVersion": "1.5.2-beta.2-candidate.20261015",
+  "archiveName": "VeyraAssist-ManualPosition-543a8d4a-Windows-x64.zip",
+  "archiveBytes": 292785770,
+  "archiveSHA256": "40ad7217d935f99b4084d80a4ccdacf7a7f1c058749ed3e4e2c745fee2204012",
+  "reviewedItems": 131,
+  "exportedFiles": 113,
+  "deletedItems": 15,
+  "excludedRecordedDataConsumers": [
+    "src/main/shards/mayhem-assistant/fallback-calibration-controller.test.ts",
+    "src/main/shards/mayhem-assistant/game-ui-locator.test.ts",
+    "src/main/shards/mayhem-assistant/overlay-controller.test.ts"
+  ],
+  "preservedPublicCleanup": [
+    "Copyright, licenses and attribution",
+    "Previously sanitized tests and examples",
+    "Previously omitted legacy non-core tools, endpoint data and encyclopedia excerpt",
+    "Approved source disclaimer wording",
+    "Public package npm publishing guard"
+  ],
+  "privateHistoryImported": false,
+  "logsProfilesCredentialsOrEvidenceImported": false,
+  "rebuiltOrRepackedForPublication": false,
+  "localGuiGameOrFullTestsRun": false
+}

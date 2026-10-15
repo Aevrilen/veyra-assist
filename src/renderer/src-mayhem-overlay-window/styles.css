@@ -516,24 +516,6 @@ textarea {
   height: 190px;
   min-height: 0;
 }
-.augment-bar {
-  pointer-events: none;
-  --tone: 196, 159, 84;
-  --bg: 43, 32, 18;
-  --strength: 0.45;
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-  height: 72px;
-  padding: 8px 20px;
-  border: 1px solid rgba(var(--tone), var(--strength));
-  border-top: 3px solid rgba(var(--tone), var(--strength));
-  border-radius: 7px;
-  background: rgba(var(--bg), var(--augment-background-opacity, 0.65));
-  box-shadow: inset 0 1px 16px rgba(var(--tone), 0.045);
-  font-variant-numeric: tabular-nums;
-}
 .appearance-controls label {
   display: grid;
   gap: 8px;
@@ -549,88 +531,6 @@ textarea {
   border: 0;
   background: transparent;
   accent-color: #d3b769;
-}
-.augment-bar.unknown {
-  --tone: 139, 149, 164;
-  --bg: 18, 25, 35;
-}
-.augment-bar.silver {
-  --tone: 164, 187, 210;
-  --bg: 25, 34, 46;
-}
-.augment-bar.prismatic {
-  --tone: 166, 156, 236;
-  --bg: 36, 31, 63;
-}
-.augment-bar.tier-S {
-  --strength: 0.95;
-  box-shadow:
-    inset 0 1px 16px rgba(var(--tone), 0.06),
-    0 0 12px rgba(var(--tone), 0.12);
-}
-.augment-bar.tier-A {
-  --strength: 0.68;
-}
-.augment-bar.tier-B {
-  --strength: 0.4;
-}
-.win-stat {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-}
-.win-stat small,
-.pick-stat small {
-  font-size: 17px;
-  color: #bcb8ad;
-  font-weight: 400;
-}
-.win-stat strong {
-  font-size: 34px;
-  line-height: 42px;
-  color: #f5edde;
-  font-weight: 700;
-  letter-spacing: -1px;
-}
-.pick-stat {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  margin-left: auto;
-  margin-right: 20px;
-}
-.pick-stat span {
-  font-size: 23px;
-  line-height: 28px;
-  color: #d2caba;
-}
-.tier {
-  position: absolute;
-  top: 7px;
-  right: 7px;
-  width: 21px;
-  height: 21px;
-  display: grid;
-  place-items: center;
-  border-radius: 3px;
-  border: 1px solid transparent;
-  background: rgba(136, 150, 166, 0.1);
-  color: #a3adb8;
-  font-size: 14px;
-  line-height: 21px;
-}
-.tier-S .tier {
-  border-color: rgba(111, 219, 246, 0.8);
-  background: rgba(34, 139, 174, 0.2);
-  color: #97e9ff;
-}
-.tier-A .tier {
-  background: rgba(113, 143, 169, 0.15);
-  color: #b3c7d9;
-}
-.tier-B .tier {
-  background: rgba(136, 150, 166, 0.1);
-  color: #a3adb8;
 }
 .setup {
   height: 100%;

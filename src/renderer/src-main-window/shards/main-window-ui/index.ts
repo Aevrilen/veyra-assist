@@ -85,6 +85,12 @@ export class MainWindowUiRenderer implements IAkariShardInitDispose {
   beginChampSelectPosition(): Promise<PositionCalibrationStatus> {
     return this._ipc.call('champ-select-overlay-main', 'beginPosition')
   }
+  beginAutomaticChampSelectPosition(): Promise<PositionCalibrationStatus> {
+    return this._ipc.call('champ-select-overlay-main', 'beginAutomaticPosition')
+  }
+  exportChampSelectPositionSample(requestId: string): Promise<boolean> {
+    return this._ipc.call('champ-select-overlay-main', 'exportPositionSample', requestId)
+  }
   getChampSelectPositionPreview(requestId: string): Promise<string | null> {
     return this._ipc.call('champ-select-overlay-main', 'positionPreview', requestId)
   }

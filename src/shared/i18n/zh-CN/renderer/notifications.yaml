@@ -39,7 +39,7 @@ notifications:
     higherVersionDb:
       title: 检测到降级版本
       content: 当前已有的数据库版本高于此应用支持的版本。请更新 $t(common:appName) 到最新版本以获得最佳兼容性
-      positiveText: 查看更新
+      positiveText: 关闭
     badSgpConnection:
       title: SGP 数据源网络连接质量差
       content:

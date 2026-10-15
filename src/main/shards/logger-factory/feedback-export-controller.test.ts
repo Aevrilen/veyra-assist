@@ -72,7 +72,11 @@ it('prevents concurrent save dialogs and still reports success if Explorer canno
     unreadableFiles: 0
   })
   finish('C:/feedback.zip')
-  expect(await first).toMatchObject({ status: 'saved', limited: true, revealed: false })
+  expect(await first).toMatchObject({
+    status: 'saved',
+    limited: true,
+    revealed: false
+  })
 })
 
 it('accepts only the main window main frame and never accepts a source directory from the renderer', async () => {
@@ -99,11 +103,56 @@ it('accepts only the main window main frame and never accepts a source directory
   expect(() => handlers.exportFeedbackPackage({ senderFrame: { ...mainFrame }, sender })).toThrow(
     'main window'
   )
-  const overlayFrame = { url: 'file:///app/out/renderer/mayhem-overlay-window.html' }
+  const overlayFrame = {
+    url: 'file:///app/out/renderer/mayhem-overlay-window.html'
+  }
   expect(() =>
     handlers.exportFeedbackPackage({
       senderFrame: overlayFrame,
       sender: { mainFrame: overlayFrame }
     })
   ).toThrow('main window')
+})
+
+it('flushes journals and files after destination selection and before environment/snapshot, never after cancellation', async () => {
+  const f = fixture()
+  const order: string[] = []
+  f.dependencies.environment.mockImplementation(async () => {
+    order.push('environment')
+    return {}
+  })
+  f.dependencies.createBundle.mockImplementation(async () => {
+    order.push('bundle')
+    return {
+      logFiles: 1,
+      olderFilesOmitted: 0,
+      truncatedFiles: 0,
+      unreadableFiles: 0,
+      automaticPosition: { limited: true }
+    }
+  })
+  const flush = vi.fn(async () => {
+    order.push('flush')
+  })
+  const controller = new FeedbackExportController('C:/logs', f.dependencies, flush)
+  expect(await controller.export(f.parent)).toMatchObject({
+    status: 'saved',
+    limited: true
+  })
+  expect(order).toEqual(['flush', 'environment', 'bundle'])
+  f.dependencies.chooseDestination.mockResolvedValue(null)
+  await controller.export(f.parent)
+  expect(flush).toHaveBeenCalledTimes(1)
+})
+
+it('does not export an unflushed snapshot after a flush failure and permits retry', async () => {
+  const f = fixture()
+  const flush = vi
+    .fn()
+    .mockRejectedValueOnce(new Error('flush failed'))
+    .mockResolvedValue(undefined)
+  const controller = new FeedbackExportController('C:/logs', f.dependencies, flush)
+  await expect(controller.export(f.parent)).rejects.toThrow('flush failed')
+  expect(f.dependencies.createBundle).not.toHaveBeenCalled()
+  expect(await controller.export(f.parent)).toMatchObject({ status: 'saved' })
 })

@@ -8,18 +8,6 @@
       :is-collapsed="isCollapsed"
     />
 
-    <!-- self update -->
-    <UpdateStatusItem
-      v-if="updateStatus"
-      :status="updateStatus"
-      :release="sus.releaseInfo"
-      :update-progress-info="sus.updateProgressInfo"
-      :is-collapsed="isCollapsed"
-      @start="handleStartUpdate"
-      @cancel="handleCancelUpdate"
-      @restart="handleRestartUpdate"
-    />
-
     <!-- connection hub -->
     <NPopover placement="right-end" ref="popover-connection" :duration="250">
       <template #trigger>
@@ -108,9 +96,6 @@ import { useLeagueClientUxStore } from '@renderer-shared/shards/league-client-ux
 import { useLeagueClientStore } from '@renderer-shared/shards/league-client/store'
 import { profileIconUri } from '@renderer-shared/shards/league-client/game-data-assets'
 import { useRespawnTimerStore } from '@renderer-shared/shards/respawn-timer/store'
-import { SelfUpdateRenderer } from '@renderer-shared/shards/self-update'
-import { useSelfUpdateStore } from '@renderer-shared/shards/self-update/store'
-import { WindowManagerRenderer } from '@renderer-shared/shards/window-manager'
 import { useMainWindowStore } from '@renderer-shared/shards/window-manager/store'
 import { SummonerInfo } from '@shared/types/league-client/summoner'
 import {
@@ -127,7 +112,6 @@ import { PlayerTabsRenderer } from '@main-window/shards/player-tabs'
 
 import ClientConnection from './ClientConnection.vue'
 import { RespawnTimerItem } from './respawn-timer-item'
-import { UpdateStatusItem, resolveUpdateStatusDisplay } from './update-status-item'
 
 const { isCollapsed = false, showSettings = true } = defineProps<{
   isCollapsed?: boolean
@@ -140,31 +124,8 @@ const lcs = useLeagueClientStore()
 const lcuxs = useLeagueClientUxStore()
 const rts = useRespawnTimerStore()
 const mws = useMainWindowStore()
-const sus = useSelfUpdateStore()
 
 const pt = useInstance(PlayerTabsRenderer)
-const su = useInstance(SelfUpdateRenderer)
-const wm = useInstance(WindowManagerRenderer)
-
-const updateStatus = computed(() =>
-  resolveUpdateStatusDisplay(sus.releaseInfo, sus.updateProgressInfo, sus.settings.ignoreVersion)
-)
-
-const handleCancelUpdate = () => {
-  void su.cancelUpdate()
-}
-
-const handleRestartUpdate = () => {
-  wm.mainWindow.closeForce()
-}
-
-const handleStartUpdate = () => {
-  if (import.meta.env.DEV) {
-    void su.forceStartUpdate()
-  } else {
-    void su.startUpdate()
-  }
-}
 
 const notification = useNotification()
 

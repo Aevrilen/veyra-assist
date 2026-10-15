@@ -66,7 +66,8 @@ export class FeedbackExportController {
 
   constructor(
     private readonly _directory: string,
-    private readonly _dependencies = runtimeDependencies
+    private readonly _dependencies = runtimeDependencies,
+    private readonly _beforeSnapshot: () => Promise<void> = async () => {}
   ) {}
 
   async export(parent: BrowserWindow): Promise<FeedbackExportResult> {
@@ -75,6 +76,7 @@ export class FeedbackExportController {
     try {
       const destination = await this._dependencies.chooseDestination(parent)
       if (!destination) return { status: 'cancelled' }
+      await this._beforeSnapshot()
       const environment = await this._dependencies.environment()
       const summary = await this._dependencies.createBundle(
         this._directory,
@@ -92,7 +94,10 @@ export class FeedbackExportController {
         logFiles: summary.logFiles,
         revealed,
         limited:
-          summary.olderFilesOmitted > 0 || summary.truncatedFiles > 0 || summary.unreadableFiles > 0
+          summary.olderFilesOmitted > 0 ||
+          summary.truncatedFiles > 0 ||
+          summary.unreadableFiles > 0 ||
+          Boolean(summary.automaticPosition?.limited)
       }
     } finally {
       this._busy = false

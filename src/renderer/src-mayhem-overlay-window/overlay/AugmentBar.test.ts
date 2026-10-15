@@ -22,6 +22,16 @@ describe('confirmed augment slot rendering', () => {
     expect(html).not.toContain('识别')
     expect(html).not.toContain('?')
   })
+  it('keeps a recognized ID without current statistics completely transparent', async () => {
+    const html = await render({ id: 9, rarity: 'gold', tier: null, winRate: null, pickRate: null })
+    expect(html).not.toContain('<div')
+    expect(html).not.toContain('<b')
+  })
+  it('preserves a real zero rate without fabricating a missing ranking', async () => {
+    const html = await render({ id: 9, rarity: 'gold', tier: null, winRate: 0, pickRate: 0 })
+    expect(html).toContain('0.0%')
+    expect(html).not.toContain('<b')
+  })
   it('renders the confirmed slot without progress or identification messages', async () => {
     const html = await render(candidates[0])
     expect(html).toContain('54.0%')

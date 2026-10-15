@@ -20,35 +20,6 @@ export interface AkariApiBootstrapDocument {
 export type AkariApiLanguage = 'zh-CN' | 'en'
 export const DEFAULT_AKARI_API_LANGUAGE: AkariApiLanguage = 'zh-CN'
 
-export type AkariNoticeSeverity = 'low' | 'medium' | 'high'
-
-export interface AkariNotice {
-  revision: string
-  language: AkariApiLanguage
-  severity: AkariNoticeSeverity
-  summary: string
-  contentType: 'text/markdown'
-  content: string
-  updatedAt: string
-}
-
-export type AkariContactChannelPlatform =
-  'qq' | 'telegram' | 'discord' | 'email' | 'website' | 'other'
-
-export interface AkariContactChannel {
-  id: string
-  platform: AkariContactChannelPlatform
-  name: string
-  identifier: string
-  url: string
-  password: string | null
-}
-
-export interface AkariContactChannels {
-  channels: AkariContactChannel[]
-  updatedAt: string
-}
-
 export interface AkariReleaseArtifact {
   platform: string
   arch: string

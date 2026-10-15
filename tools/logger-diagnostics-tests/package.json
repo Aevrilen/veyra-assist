@@ -1,0 +1,18 @@
+{
+  "name": "veyra-logger-diagnostics-tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run --config vitest.config.mjs --maxWorkers=1"
+  },
+  "devDependencies": {
+    "vitest": "4.1.10",
+    "winston": "3.19.0",
+    "winston-transport": "4.9.0",
+    "unzipper": "0.12.3",
+    "axios": "1.12.2",
+    "dayjs": "1.11.21",
+    "mobx": "7.0.0",
+    "safe-stable-stringify": "2.5.0"
+  }
+}

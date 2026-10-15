@@ -57,7 +57,7 @@ describe('self-update release info', () => {
     expect(isSupportedWin32X64Artifact(artifact)).toBe(false)
   })
 
-  it('projects only the selected update details for Windows x64', () => {
+  it('withholds upstream update artifacts even on Windows x64 in Veyra', () => {
     const releaseInfo = resolveSelfUpdateReleaseInfo(release, '1.5.0', {
       platform: 'win32',
       arch: 'x64'
@@ -69,10 +69,10 @@ describe('self-update release info', () => {
       publishedAt: '2026-07-19T00:00:00.000Z',
       description: 'Release notes',
       isNew: true,
-      isUpdateSupported: true,
-      artifact: release.artifacts[0]
+      isUpdateSupported: false,
+      artifact: null
     })
-    expect(releaseInfo?.artifact).toBe(release.artifacts[0])
+    expect(releaseInfo?.artifact).toBeNull()
   })
 
   it('keeps release details but withholds the artifact on unsupported platforms', () => {

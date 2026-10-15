@@ -103,6 +103,7 @@ export class MayhemOverlayController {
   private _ocrSequence = 0
   private _foregroundFrames = 0
   private _gameWindowSignature: string | null = null
+  private _windowSourceRevision = 0
   private _windowCapabilitySupported: boolean | null = null
   private _ocrPreloadStarted = false
   private _ocrPreloadReady = false
@@ -858,7 +859,9 @@ export class MayhemOverlayController {
         this._pause(readiness.message!, true)
         return
       }
-      if (windowSignature !== this._gameWindowSignature) {
+      const windowSourceChanged = windowSignature !== this._gameWindowSignature
+      if (windowSourceChanged) {
+        this._windowSourceRevision++
         this._fallback.resetRuntime()
         this._foregroundFrames = 0
         this._uiLocator.reset()
@@ -918,6 +921,7 @@ export class MayhemOverlayController {
         this._pause('截图不可用，浮窗暂停')
         return
       }
+      const captureSize = image.getSize()
       if (mapping) {
         const crop = gameClientCrop(mapping, image.getSize())
         if (!crop) {
@@ -960,6 +964,30 @@ export class MayhemOverlayController {
       let fallbackConfirmation: Partial<Record<Scene, boolean>> = {}
       let ignoreObservation = false
       let locationIncomplete = false
+      const locationDiagnostics: Record<string, string | number | boolean | null> = {
+        locationMode: automatic ? 'automatic' : 'manual',
+        locatorReason: null,
+        locatorMode: null,
+        locatorChecks: null,
+        locatorDurationMs: null,
+        guideScene: this._automaticSample.scene,
+        guideState: this._automaticSample.state,
+        fallbackCardsReason: null,
+        fallbackShopReason: null,
+        shopDecision: null,
+        clientWidth: gameWindow!.bounds.width,
+        clientHeight: gameWindow!.bounds.height,
+        captureWidth: captureSize.width,
+        captureHeight: captureSize.height,
+        frameWidth: frame.width,
+        frameHeight: frame.height,
+        framePixelBytes: frame.pixels.length,
+        expectedFramePixelBytes: frame.width * frame.height * 4,
+        displayPixelWidth: mapping?.displayBounds.width ?? display.size.width,
+        displayPixelHeight: mapping?.displayBounds.height ?? display.size.height,
+        displayScaleFactor: display.scaleFactor,
+        windowSourceRevision: this._windowSourceRevision
+      }
       if (automatic) {
         const location = this._uiLocator.locate(
           frame,
@@ -968,6 +996,25 @@ export class MayhemOverlayController {
         this._captureDiagnostics.uiLocation = location
         // The same physical client-area frame reaches fallback before any locator early return.
         const resolved = this._fallback.resolve(frame, location)
+        Object.assign(locationDiagnostics, {
+          locatorReason: location.reason,
+          locatorMode: location.mode,
+          locatorChecks: location.checks,
+          locatorDurationMs: location.durationMs,
+          fallbackCardsReason: resolved.reasons.cards ?? 'not-evaluated',
+          fallbackShopReason: resolved.reasons.shop ?? 'not-evaluated',
+          shopDecision: !resolved.shouldUpdate
+            ? 'fallback-deferred'
+            : resolved.shopRect
+              ? resolved.methods.shop
+              : this._automaticSample.state === 'waiting' && this._automaticSample.scene === 'cards'
+                ? 'guide-excludes-shop'
+                : resolved.confirmed.shop === false
+                  ? 'fallback-not-visible'
+                  : location.cards
+                    ? 'cards-scene'
+                    : `automatic-${location.reason}`
+        })
         ignoreObservation = !resolved.shouldUpdate
         locationIncomplete =
           !['matched', 'not-found'].includes(location.reason) &&
@@ -1027,8 +1074,12 @@ export class MayhemOverlayController {
           reason: location.reason,
           rect: location.rect
         }
+        locationDiagnostics.shopDecision = `manual-anchor-${location.reason}`
       } else {
         shop = matchesMarkers(calibration!.shop, pixels(calibration!.shop))
+        locationDiagnostics.shopDecision = shop
+          ? 'manual-markers-matched'
+          : 'manual-markers-no-match'
       }
       const titlesOccluded =
         cards &&
@@ -1068,11 +1119,17 @@ export class MayhemOverlayController {
             (title, i) => bound.candidates[i] && titlePixelDistance(title, bound.titles[i]) <= 0.015
           ).length >= 2
       }
+      locationDiagnostics.locationDecision = ignoreObservation
+        ? 'deferred'
+        : locationIncomplete
+          ? 'incomplete'
+          : 'observation'
       this._trace('roi-markers-ready', {
         sequence,
         durationMs: performance.now() - markerStarted,
         shop,
         cards,
+        ...locationDiagnostics,
         cardsEvidence: cards
           ? automatic
             ? this._locationMethods.cards === 'fallback'
@@ -1083,6 +1140,7 @@ export class MayhemOverlayController {
               : 'marker-and-title'
           : 'none'
       })
+      this._captureDiagnostics.location = locationDiagnostics
       this._captureDiagnostics.cardsOpen = cards
       this._captureDiagnostics.shopOpen = shop
       const stillForeground = await this._gameClient.isGameClientForegroundCached()

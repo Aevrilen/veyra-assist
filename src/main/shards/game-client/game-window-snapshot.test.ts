@@ -44,7 +44,7 @@ const snapshot = (pid: number, foreground = false) => ({
 
 describe('GameClient native snapshot adapter', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    vi.resetAllMocks()
     native.supports.mockReturnValue(true)
     native.pids.mockResolvedValue([42])
     native.snapshot.mockImplementation((pid: number) => snapshot(pid, true))
@@ -59,10 +59,51 @@ describe('GameClient native snapshot adapter', () => {
   it('uses the cached game PID but reads foreground again after a normal focus change', async () => {
     const subject = client()
     expect(await subject.isGameClientForegroundCached()).toBe(true)
+    expect(await subject.isGameClientForegroundCached()).toBe(true)
+    expect(native.pids).toHaveBeenCalledOnce()
     native.foreground.mockReturnValue(false)
     expect(await subject.isGameClientForegroundCached()).toBe(false)
-    expect(native.pids).toHaveBeenCalledOnce()
+    expect(native.pids).toHaveBeenCalledTimes(2)
     expect(native.foreground).toHaveBeenCalledWith(42, 'game-client')
+  })
+  it('discovers the next foreground game while the previous game process is still alive', async () => {
+    const subject = client()
+    expect(await subject.isGameClientForegroundCached()).toBe(true)
+    // Game one has left its window, but its process has not exited yet.
+    native.pids.mockResolvedValue([42, 43])
+    native.foreground.mockImplementation((pid: number) => pid === 43)
+    native.snapshot.mockImplementation((pid: number) => snapshot(pid, pid === 43))
+    expect(await subject.isGameClientForegroundCached()).toBe(true)
+    expect(await subject.getGameClientWindowSnapshot()).toEqual(snapshot(43, true))
+    native.foreground.mockReturnValue(false)
+    native.snapshot.mockImplementation((pid: number) => snapshot(pid, false))
+    expect(await subject.isGameClientForegroundCached()).toBe(false)
+    expect(await subject.getGameClientWindowSnapshot()).toBeNull()
+    native.foreground.mockImplementation((pid: number) => pid === 43)
+    expect(await subject.isGameClientForegroundCached()).toBe(true)
+  })
+  it('rediscovers a game after all cached processes exit and after an empty lobby poll', async () => {
+    const subject = client()
+    expect(await subject.isGameClientForegroundCached()).toBe(true)
+    native.running.mockReturnValue(false)
+    native.pids.mockResolvedValue([])
+    expect(await subject.isGameClientForegroundCached()).toBe(false)
+    native.pids.mockResolvedValue([43])
+    native.running.mockReturnValue(true)
+    native.foreground.mockImplementation((pid: number) => pid === 43)
+    expect(await subject.isGameClientForegroundCached()).toBe(true)
+  })
+  it('keeps a failed rediscovery visible and retries it on the next poll', async () => {
+    const subject = client()
+    expect(await subject.isGameClientForegroundCached()).toBe(true)
+    native.foreground.mockReturnValue(false)
+    native.pids.mockRejectedValueOnce(new Error('enumeration failed'))
+    await expect(subject.isGameClientForegroundCached()).rejects.toMatchObject({
+      reason: 'foreground-query-failed'
+    })
+    native.pids.mockResolvedValue([43])
+    native.foreground.mockImplementation((pid: number) => pid === 43)
+    expect(await subject.isGameClientForegroundCached()).toBe(true)
   })
   it('reports an unavailable capability instead of treating it as a background game', async () => {
     native.foregroundSupport.available = false

@@ -1,62 +1,5 @@
 <template>
   <div class="common-buttons" :class="{ blurred: mws.focus === 'blurred' }">
-    <!-- notice -->
-    <NPopover
-      :z-index="TITLE_BAR_TOOLTIP_Z_INDEX"
-      :show="shouldShowNoticeTooltip || noticeTooltipShow"
-      @update:show="(v) => (noticeTooltipShow = v)"
-    >
-      <template #trigger>
-        <div class="common-button-outer" @click="sn.showNoticeModal()">
-          <NBadge dot :show="shouldShowNoticeBadge" :offset="[-4, 4]">
-            <div class="common-button-inner">
-              <NIcon><Notification /></NIcon>
-            </div>
-          </NBadge>
-        </div>
-      </template>
-
-      <template v-if="sns.noticeSummary">
-        <div>
-          <div class="font-bold text-black/80 dark:text-white/80">
-            {{ t('titlebar.actions.noticeSummary') }}
-          </div>
-          <div class="my-2 h-px bg-black/10 dark:bg-white/10"></div>
-          <div class="mb-2 max-w-100 text-xs text-black/80 dark:text-white/80">
-            {{ sns.noticeSummary }}
-          </div>
-          <div class="flex justify-end gap-2">
-            <NButton
-              size="tiny"
-              @click="setRead()"
-              v-if="
-                aks.notice?.severity !== 'low' && sns.lastNoticeRevision !== aks.notice?.revision
-              "
-              >{{ t('titlebar.actions.noticeOk') }}</NButton
-            >
-            <NButton size="tiny" type="primary" @click="sn.showNoticeModal()">{{
-              t('titlebar.actions.noticeSeeMore')
-            }}</NButton>
-          </div>
-        </div>
-      </template>
-      <template v-else>
-        {{ t('titlebar.actions.notice') }}
-      </template>
-    </NPopover>
-
-    <!-- github -->
-    <NTooltip :z-index="TITLE_BAR_TOOLTIP_Z_INDEX">
-      <template #trigger>
-        <div class="common-button-outer" @click="handleToGithub">
-          <div class="common-button-inner">
-            <NIcon><LogoGithub /></NIcon>
-          </div>
-        </div>
-      </template>
-      {{ t('titlebar.actions.github') }}
-    </NTooltip>
-
     <!-- aux window -->
     <HorizontalExpand :show="aws.settings.enabled" class="h-full">
       <NTooltip :z-index="TITLE_BAR_TOOLTIP_Z_INDEX">
@@ -76,59 +19,22 @@
 <script setup lang="ts">
 import HorizontalExpand from '@renderer-shared/components/HorizontalExpand.vue'
 import { useInstance } from '@renderer-shared/shards'
-import { useAkariApiStore } from '@renderer-shared/shards/akari-api/store'
 import { WindowManagerRenderer } from '@renderer-shared/shards/window-manager'
 import { useAuxWindowStore, useMainWindowStore } from '@renderer-shared/shards/window-manager/store'
-import { LEAGUE_AKARI_GITHUB } from '@shared/constants/common'
-import { Notification } from '@vicons/carbon'
 import { Window24Filled } from '@vicons/fluent'
-import { LogoGithub } from '@vicons/ionicons5'
 import { useTranslation } from 'i18next-vue'
-import { NBadge, NButton, NIcon, NPopover, NTooltip } from 'naive-ui'
-import { computed, ref } from 'vue'
-
-import { SimpleNotificationsRenderer } from '@main-window/shards/simple-notifications'
-import { useSimpleNotificationsStore } from '@main-window/shards/simple-notifications/store'
+import { NIcon, NTooltip } from 'naive-ui'
 
 const { t } = useTranslation()
 
 const mws = useMainWindowStore()
 const aws = useAuxWindowStore()
-const aks = useAkariApiStore()
-const sns = useSimpleNotificationsStore()
 const wm = useInstance(WindowManagerRenderer)
-const sn = useInstance(SimpleNotificationsRenderer)
 
 const TITLE_BAR_TOOLTIP_Z_INDEX = 75000
 
 const handleShowAuxWindow = () => {
   wm.auxWindow.show()
-}
-
-const handleToGithub = () => {
-  window.open(LEAGUE_AKARI_GITHUB, '_blank')
-}
-
-const shouldShowNoticeBadge = computed(() => {
-  return (
-    aks.notice !== null &&
-    (aks.notice.severity === 'medium' || aks.notice.severity === 'high') &&
-    sns.lastNoticeRevision !== aks.notice.revision
-  )
-})
-
-const noticeTooltipShow = ref(false)
-const shouldShowNoticeTooltip = computed(() => {
-  return (
-    aks.notice !== null &&
-    aks.notice.summary &&
-    aks.notice.severity === 'medium' &&
-    sns.lastNoticeRevision !== aks.notice.revision
-  )
-})
-
-const setRead = () => {
-  sns.lastNoticeRevision = aks.notice?.revision ?? null
 }
 </script>
 

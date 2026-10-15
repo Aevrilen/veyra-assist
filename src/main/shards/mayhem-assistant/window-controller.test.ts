@@ -427,6 +427,37 @@ describe('Mayhem overlay window lifecycle', () => {
     ).toBe(true)
     expect(Object.keys(second[2]).sort()).toEqual(['captureSequence', 'snapshotVersion'])
   })
+  it('distinguishes a missing automatic layout from a missing physical display when hiding cards', () => {
+    const subject = controller()
+    const layout: AutomaticOverlayLayout = {
+      displayId: '1',
+      clientBounds: { x: -2560, y: 0, width: 2560, height: 1440 },
+      scaleFactor: 1,
+      shopRect: null,
+      cardRects: calibration.cardRects,
+      titleRects: []
+    }
+    const cards = snapshot({ shopVisible: false, cardsVisible: true })
+    const timing = { sequence: 1, capturedAt: Date.now() }
+    subject.update(cards, null, timing, layout)
+    windows.forEach((window) => window.ready())
+    expect(windowFor('augment-0').visible).toBe(true)
+    subject.update(snapshot({ shopVisible: false, cardsVisible: false }), null, timing, null)
+    const hidden = () =>
+      logger.info.mock.calls
+        .map(([, json]) => JSON.parse(json))
+        .filter((record) => record.stage === 'window-hide')
+    expect(hidden()).toHaveLength(3)
+    expect(hidden().every((record) => record.reason === 'layout-unavailable')).toBe(true)
+    subject.update(cards, null, timing, layout)
+    vi.mocked(screen.getAllDisplays).mockReturnValue([])
+    subject.update(cards, null, timing, layout)
+    expect(
+      hidden()
+        .slice(-3)
+        .every((record) => record.reason === 'display-invalid')
+    ).toBe(true)
+  })
 
   it('avoids repeated native layout/visibility calls while still sending fresh visible snapshots', () => {
     const subject = controller()
@@ -893,5 +924,42 @@ describe('Mayhem overlay window lifecycle', () => {
     expect(windows).toHaveLength(count)
     expect(windows.every((window) => window.destroyed)).toBe(true)
     expect(subject.setupWindow).toBeNull()
+  })
+
+  it('reuses equipment windows and their listeners across two games, keeping late ready events hidden between games', () => {
+    const subject = controller()
+    subject.update(snapshot(), calibration)
+    windows.forEach((window) => window.ready())
+    const firstGameWindows = [...windows]
+    const listeners = firstGameWindows.map((window) => ({
+      closed: window.listenerCount('closed'),
+      ready: window.webContents.listenerCount('did-finish-load'),
+      gone: window.webContents.listenerCount('render-process-gone')
+    }))
+    expect(windowFor('equipment').visible).toBe(true)
+    subject.update(snapshot({ suppressed: true, shopVisible: false }), calibration)
+    expect(windows.every((window) => !window.visible)).toBe(true)
+    subject.update(snapshot({ sessionKey: null, championId: null, shopVisible: false }), null)
+    firstGameWindows.forEach((window) => window.ready())
+    expect(windows.every((window) => !window.visible)).toBe(true)
+    subject.update(snapshot({ sessionKey: 'player:2', shopVisible: false }), null)
+    firstGameWindows.forEach((window) => window.ready())
+    expect(windows.every((window) => !window.visible)).toBe(true)
+    subject.update(snapshot({ sessionKey: 'player:2' }), calibration)
+    expect(windowFor('equipment').visible).toBe(true)
+    expect(windowFor('controls').visible).toBe(true)
+    expect(windows).toEqual(firstGameWindows)
+    expect(
+      firstGameWindows.map((window) => ({
+        closed: window.listenerCount('closed'),
+        ready: window.webContents.listenerCount('did-finish-load'),
+        gone: window.webContents.listenerCount('render-process-gone')
+      }))
+    ).toEqual(listeners)
+    expect(windowFor('equipment').webContents.send).toHaveBeenLastCalledWith(
+      'mayhem-snapshot',
+      expect.objectContaining({ sessionKey: 'player:2' }),
+      expect.anything()
+    )
   })
 })

@@ -1,5 +1,7 @@
 # Veyra Assist
 
+> **本发布分支：手动触发定位建议版 543a8d4a。** 程序内部版本仍为 `1.5.2-beta.2-candidate.20261015`。先手动准备、前台采集，建议核对后保存；免点击触发尚未完成。下载与验证边界见 [本次交付说明](docs/releases/manual-position-543a8d4a.md)。下方早期日志版文档保留供对照，不代表本次最终包又做过GUI或实机验收。
+
 > **开发中 / 半成品 · 测试版。** 尚未完成跨电脑和真实游戏环境验收。本源码未附外部预编译运行依赖，缺少这些文件时不能直接完成应用构建。
 
 > **程序下载入口：[GitHub Releases](https://github.com/Aevrilen/veyra-assist/releases)。** 普通用户应下载 Release 的 **Assets 中标有 `VeyraAssist` 的程序 ZIP**，不要下载 GitHub 自动生成的 **Source code (zip / tar.gz)**；后者是源码，不能直接运行。当前日志优化修订版为 **1.5.2-beta.2 / Windows x64 预发布**，请阅读该版验证范围和限制。

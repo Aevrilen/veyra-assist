@@ -3,9 +3,29 @@ import { app } from 'electron'
 import { randomUUID } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
-import { createLogger, format, transports } from 'winston'
+import { type Logger, createLogger, format, transports } from 'winston'
 
+import {
+  AUTOMATIC_POSITION_CATEGORY,
+  AUTOMATIC_POSITION_LOG_PREFIX
+} from './automatic-position-diagnostic'
 import { DailyFileTransport, dailyLogFilename } from './daily-file-transport'
+import { LOG_FLUSH } from './log-flush'
+
+const flushers = new WeakMap<Logger, { hooks: Set<() => void>; flush(): Promise<void> }>()
+
+export function registerAppLogFlushHook(logger: Logger, hook: () => void) {
+  const state = flushers.get(logger)
+  if (!state) throw new Error('Application log flushing is unavailable')
+  state.hooks.add(hook)
+  return () => state.hooks.delete(hook)
+}
+
+export function flushAppLogger(logger: Logger) {
+  const state = flushers.get(logger)
+  if (!state) return Promise.reject(new Error('Application log flushing is unavailable'))
+  return state.flush()
+}
 
 const STYLES = {
   reset: '\x1b[0m',
@@ -93,15 +113,50 @@ export function initAppLogger(level: string = 'info') {
   const fileTransport = new DailyFileTransport(logsDir, {
     level,
     format: format.combine(
+      format((info) =>
+        info[LOG_FLUSH] || info.category !== AUTOMATIC_POSITION_CATEGORY ? info : false
+      )(),
       format.printf(({ level, message, namespace, timestamp }) => {
         return `[${dayjs(timestamp as number).format('YYYY-MM-DD HH:mm:ss:SSS')}] [${namespace}] [${level}] ${message}`
       })
     )
   })
 
+  // Detailed automatic-position records have their own daily, append-only category.
+  // User-facing log-level changes cannot suppress the evidence needed for feedback.
+  let diagnosticFailed = false
+  const diagnosticTransport = new DailyFileTransport(
+    logsDir,
+    {
+      level: 'info',
+      format: format.combine(
+        format((info) =>
+          info[LOG_FLUSH] || info.category === AUTOMATIC_POSITION_CATEGORY ? info : false
+        )(),
+        format.printf(
+          ({ level, message, namespace, timestamp }) =>
+            `[${dayjs(timestamp as number).format('YYYY-MM-DD HH:mm:ss:SSS')}] [${namespace}] [${level}] ${message}`
+        )
+      )
+    },
+    8 * 1024 * 1024,
+    AUTOMATIC_POSITION_LOG_PREFIX,
+    () => {
+      diagnosticFailed = true
+      logger.error({
+        namespace: 'logger-factory-main',
+        message:
+          '[automatic-position-log-unavailable] Detailed diagnostic persistence stopped; feedback export is unavailable until restart.'
+      })
+    }
+  )
+
   const consoleTransport = new transports.Console({
     level,
     format: format.combine(
+      format((info) =>
+        info[LOG_FLUSH] || info.category === AUTOMATIC_POSITION_CATEGORY ? false : info
+      )(),
       format.printf(({ level, message, namespace, timestamp }) => {
         const timestampColored = `${STYLES.white}[${dayjs(timestamp as any).format('YYYY-MM-DD HH:mm:ss:SSS')}]${STYLES.reset}`
         const namespaceColored = `${STYLES.brightBlue}${STYLES.bold}[${namespace}]${STYLES.reset}`
@@ -120,26 +175,65 @@ export function initAppLogger(level: string = 'info') {
 
   const logger = createLogger({
     format: format.timestamp(),
-    transports: [fileTransport, consoleTransport]
+    transports: [fileTransport, diagnosticTransport, consoleTransport]
   })
 
-  logger.log({ level, namespace: 'app', message: `[run-start] id=${runId} pid=${process.pid}` })
+  logger.log({
+    level,
+    namespace: 'app',
+    message: `[run-start] id=${runId} pid=${process.pid}`
+  })
+
+  const hooks = new Set<() => void>()
+  let finishing = false
+  const flush = async () => {
+    // Journal hooks emit their pending repeat summaries before the queue barrier.
+    for (const hook of hooks) hook()
+    await new Promise<void>((resolve, reject) => {
+      let remaining = 2
+      let failure: Error | undefined = diagnosticFailed
+        ? new Error('Automatic-position diagnostic log unavailable; feedback was not exported')
+        : undefined
+      const onError = () => {
+        cleanup()
+        reject(new Error('Application log flush failed'))
+      }
+      const cleanup = () => logger.off('error', onError)
+      logger.on('error', onError)
+      logger.log({
+        level: 'error',
+        namespace: 'app',
+        message: '',
+        [LOG_FLUSH]: (error?: Error) => {
+          if (error)
+            failure ??= new Error(
+              'Automatic-position diagnostic log unavailable; feedback was not exported'
+            )
+          if (--remaining === 0) {
+            cleanup()
+            if (failure) reject(failure)
+            else resolve()
+          }
+        }
+      })
+    })
+  }
+  flushers.set(logger, { hooks, flush })
 
   const finish = () => {
-    const endMessage = `[run-end] id=${runId} pid=${process.pid}`
-    // Winston ends its transports before draining its readable buffer under
-    // backpressure. Wait for our final record to reach the file transport first.
-    const onLogged = (info: { namespace?: string; message: unknown }) => {
-      if (info.namespace !== 'app' || info.message !== endMessage) return
-      fileTransport.off('logged', onLogged)
-      logger.end()
-    }
-    fileTransport.on('logged', onLogged)
+    if (finishing) return
+    finishing = true
     logger.log({
       level: fileTransport.level || level,
       namespace: 'app',
-      message: endMessage
+      message: `[run-end] id=${runId} pid=${process.pid}`
     })
+    // Drain both file channels, including pending journal records and size rotation,
+    // before Winston ends its transports. No file is deleted during this operation.
+    void flush().then(
+      () => logger.end(),
+      () => logger.end()
+    )
   }
 
   return {
@@ -147,6 +241,7 @@ export function initAppLogger(level: string = 'info') {
     logsDir,
     filename,
     finish,
+    flush,
     setLevel,
     getLevel: () => fileTransport.level || level
   }

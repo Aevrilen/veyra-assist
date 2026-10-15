@@ -221,12 +221,15 @@ export class GameClientMain implements IAkariShardInitDispose {
         isProcessRunning(pid)
       )
 
-      if (this._gameClientCachedRunningPids.length === 0) {
-        this._gameClientCachedRunningPids = await getPidsByName(
-          GameClientMain.GAME_CLIENT_PROCESS_NAME,
-          'game-client'
-        )
-      }
+      if (this._gameClientCachedRunningPids.some((pid) => isProcessForeground(pid, 'game-client')))
+        return true
+
+      // A previous game's process may outlive its window. Re-enumerate on a miss
+      // so the next foreground game is discoverable without restarting the app.
+      this._gameClientCachedRunningPids = await getPidsByName(
+        GameClientMain.GAME_CLIENT_PROCESS_NAME,
+        'game-client'
+      )
       return this._gameClientCachedRunningPids.some((pid) =>
         isProcessForeground(pid, 'game-client')
       )

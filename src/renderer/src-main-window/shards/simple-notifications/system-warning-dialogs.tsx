@@ -5,7 +5,6 @@ import { useAppCommonStore } from '@renderer-shared/shards/app-common/store'
 import { LeagueClientUxRenderer } from '@renderer-shared/shards/league-client-ux'
 import { useLeagueClientUxStore } from '@renderer-shared/shards/league-client-ux/store'
 import { useLeagueClientStore } from '@renderer-shared/shards/league-client/store'
-import { useSelfUpdateStore } from '@renderer-shared/shards/self-update/store'
 import { useSgpStore } from '@renderer-shared/shards/sgp/store'
 import { useStorageStore } from '@renderer-shared/shards/storage/store'
 import { useTranslation } from 'i18next-vue'
@@ -19,7 +18,6 @@ import {
   SIMPLE_NOTIFICATIONS_RENDERER_ID,
   type SimpleNotificationsRendererContext
 } from './context'
-import { useSimpleNotificationsStore } from './store'
 
 export function watchAskUserToRunAsAdministrator() {
   const leagueClientUxStore = useLeagueClientUxStore()
@@ -122,27 +120,12 @@ export function watchCannotGetUxCommandLine() {
 
 export function watchHigherVersionDbWarning() {
   const storage = useStorageStore()
-  const selfUpdateStore = useSelfUpdateStore()
   const dialog = useDialog()
-  const simpleNotificationsStore = useSimpleNotificationsStore()
   const { t } = useTranslation(undefined, {
     keyPrefix: 'notifications.simple.higherVersionDb'
   })
 
-  const hasNewRelease = computed(
-    () => !!selfUpdateStore.releaseInfo?.isNew && selfUpdateStore.releaseInfo.isUpdateSupported
-  )
-
   let inst: ReturnType<typeof dialog.warning> | null = null
-
-  watch(
-    () => hasNewRelease.value,
-    () => {
-      if (hasNewRelease.value && inst) {
-        inst.positiveButtonProps = { disabled: false }
-      }
-    }
-  )
 
   watch(
     () => storage.usingHigherVersionDb,
@@ -154,11 +137,7 @@ export function watchHigherVersionDbWarning() {
           title: () => t('title'),
           content: () => t('content'),
           positiveText: t('positiveText'),
-          positiveButtonProps: { disabled: !hasNewRelease.value },
           onPositiveClick: () => {
-            if (hasNewRelease.value) {
-              simpleNotificationsStore.showNewReleaseModal = true
-            }
             inst?.destroy()
           }
         })

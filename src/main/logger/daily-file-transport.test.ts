@@ -6,6 +6,7 @@ import { expect, it, vi } from 'vitest'
 import { createLogger, format } from 'winston'
 
 import { DailyFileTransport } from './daily-file-transport'
+import { LOG_FLUSH } from './log-flush'
 
 it('keeps Winston size-based append volumes and historical logs without deleting records', async () => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'veyra-volumes-test-'))
@@ -129,6 +130,62 @@ it('resumes existing size volumes after restart and drains both days during a mi
     expect(yesterday.match(/(?:saved|evening)-\d+:/g)).toHaveLength(12)
     expect(today.match(/morning-\d+:/g)).toHaveLength(6)
   } finally {
+    vi.useRealTimers()
+    fs.rmSync(directory, { recursive: true, force: true })
+  }
+})
+
+it('keeps dedicated-category daily volumes and all records across size rotation, explicit flush and midnight', async () => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'veyra-diagnostic-rotation-'))
+  vi.useFakeTimers({ toFake: ['Date'] })
+  vi.setSystemTime(new Date(2026, 9, 15, 23, 59))
+  const logger = createLogger({
+    format: format.timestamp(),
+    transports: [
+      new DailyFileTransport(
+        directory,
+        { format: format.printf((info) => String(info.message)) },
+        384,
+        'AUTO_POSITION',
+        () => {
+          throw new Error('Unexpected optional-channel failure')
+        }
+      )
+    ]
+  })
+  const flush = () =>
+    new Promise<void>((resolve, reject) =>
+      logger.log({
+        level: 'error',
+        message: '',
+        [LOG_FLUSH]: (error?: Error) => (error ? reject(error) : resolve())
+      })
+    )
+  try {
+    for (let i = 0; i < 25; i++) logger.info(`before-${i}: ${'x'.repeat(100)}`)
+    await flush()
+    const beforeFiles = fs.readdirSync(directory)
+    expect(beforeFiles.length).toBeGreaterThan(1)
+    expect(beforeFiles.every((name) => /^AUTO_POSITION_20261015\d*\.log$/.test(name))).toBe(true)
+    for (let i = 0; i < 10; i++) logger.info(`after-flush-${i}: ${'x'.repeat(100)}`)
+    vi.setSystemTime(new Date(2026, 9, 16, 0, 1))
+    for (let i = 0; i < 15; i++) logger.info(`midnight-${i}: ${'x'.repeat(100)}`)
+    await flush()
+    const finished = once(logger, 'finish')
+    logger.end()
+    await finished
+    const text = fs
+      .readdirSync(directory)
+      .map((name) => fs.readFileSync(path.join(directory, name), 'utf8'))
+      .join('')
+    expect(text.match(/before-\d+:/g)).toHaveLength(25)
+    expect(text.match(/after-flush-\d+:/g)).toHaveLength(10)
+    expect(text.match(/midnight-\d+:/g)).toHaveLength(15)
+    expect(
+      fs.readdirSync(directory).some((name) => name.startsWith('AUTO_POSITION_20261016'))
+    ).toBe(true)
+  } finally {
+    logger.close()
     vi.useRealTimers()
     fs.rmSync(directory, { recursive: true, force: true })
   }

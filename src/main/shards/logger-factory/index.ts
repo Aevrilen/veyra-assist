@@ -1,5 +1,12 @@
-import { getAppLogsDirectory } from '@main/logger'
+import { flushAppLogger, getAppLogsDirectory, registerAppLogFlushHook } from '@main/logger'
+import {
+  AUTOMATIC_POSITION_CATEGORY,
+  AUTOMATIC_POSITION_MARKER,
+  AUTOMATIC_POSITION_NAMESPACE,
+  sanitizeAutomaticPositionRecord
+} from '@main/logger/automatic-position-diagnostic'
 import { IAkariShardInitDispose, Shard, SharedGlobalShard } from '@shared/akari-shard'
+import type { AutomaticPositionDiagnosticRecord } from '@shared/champ-select-overlay/automatic-position/diagnostics'
 import { type BrowserWindow, shell } from 'electron'
 import { Logger } from 'winston'
 
@@ -50,6 +57,7 @@ export class LoggerFactoryMain implements IAkariShardInitDispose {
   private readonly _formatter = new LogMessageFormatter()
   private readonly _context: LoggerFactoryMainContext
   private readonly _ipcHandlers: LoggerFactoryIpcHandlers
+  private readonly _removeFlushHooks: Array<() => void> = []
 
   constructor(
     private readonly _shared: SharedGlobalShard,
@@ -58,7 +66,9 @@ export class LoggerFactoryMain implements IAkariShardInitDispose {
   ) {
     // macOS 下写入 .app bundle 会导致权限/签名问题，日志目录应位于用户目录。
     this._logsDir = getAppLogsDirectory()
-    this._feedbackExport = new FeedbackExportController(this._logsDir)
+    this._feedbackExport = new FeedbackExportController(this._logsDir, undefined, () =>
+      flushAppLogger(this._logger)
+    )
     this._logger = this._shared.global.logger
 
     this.state.setLogLevel(this._shared.global.getLogLevel())
@@ -93,6 +103,25 @@ export class LoggerFactoryMain implements IAkariShardInitDispose {
    */
   create(namespace: string) {
     return new AkariLogger(this, namespace)
+  }
+
+  /** Internal structured channel; never accepts free-form messages or renderer data. */
+  createAutomaticPositionDiagnosticSink(flushPending?: () => void) {
+    if (flushPending)
+      this._removeFlushHooks.push(registerAppLogFlushHook(this._logger, flushPending))
+    return (record: AutomaticPositionDiagnosticRecord) => {
+      const safe = sanitizeAutomaticPositionRecord(record)
+      if (!safe) return
+      this._logger.info({
+        namespace: AUTOMATIC_POSITION_NAMESPACE,
+        category: AUTOMATIC_POSITION_CATEGORY,
+        message: AUTOMATIC_POSITION_MARKER + JSON.stringify(safe)
+      })
+    }
+  }
+
+  async onDispose() {
+    for (const remove of this._removeFlushHooks.splice(0)) remove()
   }
 
   info(namespace: string, ...args: any[]) {

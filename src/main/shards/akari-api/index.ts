@@ -11,7 +11,6 @@ import { SetterSettingService } from '../setting-factory/setter-setting-service'
 import { AkariApiBootstrapController } from './bootstrap-controller'
 import { AkariApiConfigLoader } from './config-loader'
 import type { AkariApiMainContext } from './context'
-import { AkariApiNoticeLoader } from './notice-loader'
 import { AkariApiProtocolController } from './protocol-controller'
 import { AkariApiReleaseLoader } from './release-loader'
 import { AkariApiState } from './state'
@@ -28,7 +27,6 @@ export class AkariApiMain implements IAkariShardInitDispose {
   private readonly _bootstrapController: AkariApiBootstrapController
   private readonly _protocolController: AkariApiProtocolController
   private readonly _configLoader: AkariApiConfigLoader
-  private readonly _noticeLoader: AkariApiNoticeLoader
   private readonly _releaseLoader: AkariApiReleaseLoader
 
   get api() {
@@ -69,7 +67,6 @@ export class AkariApiMain implements IAkariShardInitDispose {
       api: this.api
     }
     this._configLoader = new AkariApiConfigLoader(this._context)
-    this._noticeLoader = new AkariApiNoticeLoader(this._context)
     this._releaseLoader = new AkariApiReleaseLoader(this._context)
   }
 
@@ -85,12 +82,10 @@ export class AkariApiMain implements IAkariShardInitDispose {
 
     this._protocolController.register()
     this._configLoader.watch()
-    this._noticeLoader.watch()
   }
 
   async onDispose() {
     this._configLoader.dispose()
-    this._noticeLoader.dispose()
     this._protocolController.unregister()
   }
 
@@ -99,10 +94,6 @@ export class AkariApiMain implements IAkariShardInitDispose {
   }
 
   private _setupState() {
-    this._context.mobxUtils.propSync(AkariApiMain.id, 'state', this.state, [
-      'featureGates',
-      'notice',
-      'contactChannels'
-    ])
+    this._context.mobxUtils.propSync(AkariApiMain.id, 'state', this.state, ['featureGates'])
   }
 }

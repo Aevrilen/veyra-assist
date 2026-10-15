@@ -145,7 +145,7 @@ describe('SelfUpdateExecutor', () => {
 
     await expect(executor.start(release)).resolves.toEqual({
       result: 'failed',
-      reason: 'platform-unsupported'
+      reason: 'veyra-update-unavailable'
     })
     expect(httpClient.get).not.toHaveBeenCalled()
   })

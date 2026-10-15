@@ -39,7 +39,7 @@ notifications:
     higherVersionDb:
       title: Detected higher version database
       content: The database version in use is higher than this application supports. Please update $t(common:appName) to the latest version for best compatibility
-      positiveText: View Update
+      positiveText: Close
     badSgpConnection:
       title: Poor SGP Data Source Network Connection
       content:

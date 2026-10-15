@@ -2,6 +2,10 @@ import { randomBytes } from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
+import {
+  AUTOMATIC_POSITION_FEEDBACK_LIMITS,
+  collectAutomaticPositionFeedback
+} from './automatic-position-feedback'
 import { redactFeedbackLog } from './feedback-redaction'
 import { writeFeedbackZip } from './feedback-zip'
 
@@ -36,7 +40,8 @@ export async function createFeedbackBundle(
   directory: string,
   destination: string,
   environment: FeedbackEnvironment,
-  limits = FEEDBACK_LIMITS
+  limits = FEEDBACK_LIMITS,
+  diagnosticLimits = AUTOMATIC_POSITION_FEEDBACK_LIMITS
 ) {
   const salt = randomBytes(16)
   const entries: Array<{ name: string; data: Buffer }> = []
@@ -98,19 +103,33 @@ export async function createFeedbackBundle(
       data: Buffer.from(redacted.text || '[No exportable diagnostic records]\n')
     })
   }
+  const generalLogFiles = entries.length
+  const diagnostics = await collectAutomaticPositionFeedback(
+    directory,
+    names,
+    salt,
+    diagnosticLimits
+  )
+  if (diagnostics) entries.push(...diagnostics.entries)
   const summary = {
-    logFiles: entries.length,
+    logFiles: generalLogFiles + (diagnostics?.summary.exportedAttempts ? 1 : 0),
     sourceBytesRead: bytes,
-    olderFilesOmitted: candidates.length - entries.length,
+    olderFilesOmitted: candidates.length - generalLogFiles,
     truncatedFiles: truncated,
     unreadableFiles: unreadable,
-    privateOrUnsupportedRecordsOmitted: omittedRecords
+    privateOrUnsupportedRecordsOmitted: omittedRecords,
+    automaticPosition: diagnostics?.summary ?? null
   }
   entries.push({
     name: 'environment.json',
     data: Buffer.from(
       JSON.stringify(
-        { createdAt: new Date().toISOString(), ...environment, ...summary, limits },
+        {
+          createdAt: new Date().toISOString(),
+          ...environment,
+          ...summary,
+          limits
+        },
         null,
         2
       )
@@ -119,7 +138,7 @@ export async function createFeedbackBundle(
   entries.push({
     name: 'README.txt',
     data: Buffer.from(
-      'Veyra Assist local feedback package\nNo automatic upload. Share this ZIP privately with the maintainer.\nOnly allowlisted operational log records are exported. Credentials, identity/chat/request payload records, local paths and URLs are omitted/redacted. Raw logs stay on this computer.\nRecent logs are selected automatically within the limits in environment.json; oversized files contribute their most recent records. Both historical startup logs and daily logs are supported.\nAn empty log folder still produces environment information. No settings, database, cookies, screenshots or other profile files are included.\nLog timestamps retain the local timezone; createdAt is UTC.\n'
+      'Veyra Assist local feedback package\nNo automatic upload. Share this ZIP privately with the maintainer.\nOnly allowlisted operational log records are exported. Credentials, identity/chat/request payload records, local paths and URLs are omitted/redacted. Raw logs stay on this computer.\nRecent logs are selected automatically within the limits in environment.json; oversized files contribute their most recent records. Both historical startup logs and daily logs are supported.\nDedicated AUTO_POSITION daily volumes are handled separately: complete attempts are selected newest-first, without tail slicing, under the explicit source/output budgets and limitations in automatic-position/manifest.json. An ongoing or interrupted attempt is identified there. Manual save does not erase history.\nAn empty log folder still produces environment information. No settings, database, cookies, screenshots or other profile files are included.\nLog timestamps retain the local timezone; createdAt is UTC.\n'
     )
   })
   await writeFeedbackZip(destination, entries)

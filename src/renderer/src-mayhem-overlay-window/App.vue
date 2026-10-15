@@ -36,7 +36,11 @@ const snapshot = ref<OverlaySnapshot>({
   diagnostic: '等待本局数据'
 })
 const candidateIndex = /^augment-[0-2]$/.test(role) ? Number(role.at(-1)) : -1
-const candidate = computed(() => snapshot.value.candidates[candidateIndex] ?? null)
+const candidate = computed(() =>
+  snapshot.value.cardsVisible && !snapshot.value.suppressed
+    ? (snapshot.value.candidates[candidateIndex] ?? null)
+    : null
+)
 const equipmentView = computed(() => equipmentPresentation(snapshot.value))
 
 async function call(name: string, ...args: unknown[]) {

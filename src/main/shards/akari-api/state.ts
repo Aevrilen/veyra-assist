@@ -1,9 +1,7 @@
 import type {
   AkariAutoSelectGroupsConfig,
-  AkariContactChannels,
   AkariFeatureGateSnapshot,
   AkariLeagueServersConfig,
-  AkariNotice,
   AkariRelease,
   AkariSupportedQueuesConfig
 } from '@shared/shards/akari-api'
@@ -21,16 +19,12 @@ export class AkariApiState {
   supportedQueues = BUILTIN_SUPPORTED_QUEUES
   autoSelectGroups = BUILTIN_AUTO_SELECT_GROUPS
 
-  notice: AkariNotice | null = null
-  contactChannels: AkariContactChannels | null = null
   latestRelease: AkariRelease | null = null
 
   setLatestRelease(value: AkariRelease | null) {
     this.latestRelease = value
   }
 
-  isUpdatingNotice = false
-  isUpdatingContactChannels = false
   isUpdatingLatestRelease = false
   isUpdatingFeatureGates = false
   isUpdatingLeagueServers = false
@@ -51,22 +45,6 @@ export class AkariApiState {
 
   setAutoSelectGroups(value: AkariAutoSelectGroupsConfig) {
     this.autoSelectGroups = value
-  }
-
-  setNotice(value: AkariNotice | null) {
-    this.notice = value
-  }
-
-  setContactChannels(value: AkariContactChannels | null) {
-    this.contactChannels = value
-  }
-
-  setUpdatingNotice(value: boolean) {
-    this.isUpdatingNotice = value
-  }
-
-  setUpdatingContactChannels(value: boolean) {
-    this.isUpdatingContactChannels = value
   }
 
   setUpdatingLatestRelease(value: boolean) {
@@ -95,8 +73,6 @@ export class AkariApiState {
       leagueServers: observableRef,
       supportedQueues: observableRef,
       autoSelectGroups: observableRef,
-      notice: observableRef,
-      contactChannels: observableRef,
       latestRelease: observableRef
     })
   }

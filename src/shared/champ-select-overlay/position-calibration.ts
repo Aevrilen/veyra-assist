@@ -1,3 +1,4 @@
+import type { AutomaticPositionDiagnosticRecord } from './automatic-position/diagnostics'
 import type { ChampSelectOverlaySettings } from './index'
 
 export interface PositionPoint {
@@ -17,6 +18,29 @@ export interface PositionPreview {
   client: { x: number; y: number; width: number; height: number }
   workArea: { x: number; y: number; width: number; height: number }
   counts: { candidates: number; teammates: number }
+  capture?: PositionCaptureEvidence
+  automaticDiagnostics?: AutomaticPositionDiagnosticRecord[]
+  automatic?: {
+    reason: 'suggested' | 'manual-priority' | 'uncertain' | 'unavailable'
+    selection: PositionSelection | null
+  }
+}
+export interface PositionCaptureEvidence {
+  startedAt: number
+  finishedAt: number
+  physicalClient: PositionPreview['client']
+  physicalDisplay: PositionPreview['client']
+  displayId: string
+  scaleFactor: number
+  nativeBeforeAt?: number
+  nativeAfterAt?: number
+  geometryCheck: 'bracketed'
+}
+export interface PositionSample {
+  version: 1
+  imageUrl: string
+  preview: PositionPreview
+  note: string
 }
 export type PositionCalibrationReason =
   | 'idle'
@@ -37,10 +61,41 @@ export interface PositionCalibrationStatus {
   reason: PositionCalibrationReason
   preview: PositionPreview | null
   geometryMismatch: boolean
+  automaticDiagnostics?: AutomaticPositionDiagnosticRecord[]
+}
+
+/** Require an exact physical screen image; never guess offsets from a resized thumbnail. */
+export function positionPreviewCrop(
+  client: PositionPreview['client'],
+  display: PositionPreview['client'],
+  image: { width: number; height: number }
+) {
+  if (
+    image.width !== display.width ||
+    image.height !== display.height ||
+    client.width <= 0 ||
+    client.height <= 0 ||
+    client.x < display.x ||
+    client.y < display.y ||
+    client.x + client.width > display.x + display.width ||
+    client.y + client.height > display.y + display.height
+  )
+    return null
+  return {
+    x: client.x - display.x,
+    y: client.y - display.y,
+    width: client.width,
+    height: client.height
+  }
 }
 
 export function emptyPositionSelection(): PositionSelection {
-  return { candidateFirst: null, teammateFirst: null, candidateNext: null, teammateNext: null }
+  return {
+    candidateFirst: null,
+    teammateFirst: null,
+    candidateNext: null,
+    teammateNext: null
+  }
 }
 
 /** Points are fractions of the actual image element, not viewport or screen coordinates. */

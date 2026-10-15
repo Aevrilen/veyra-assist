@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "strict": true },
+  "include": [
+    "../../src/main/logger/automatic-position-diagnostic.ts",
+    "../../src/main/logger/daily-file-transport.ts",
+    "../../src/main/logger/log-flush.ts",
+    "../../src/main/shards/logger-factory/automatic-position-feedback.ts"
+  ]
+}

@@ -150,12 +150,13 @@ export class FallbackCalibrationController {
     for (const scene of ['cards', 'shop'] as const) {
       const configuration = this._configurations[scene]
       if (methods[scene] || !configuration) {
+        reasons[scene] = methods[scene] ? 'automatic' : 'not-configured'
         this._trackers[scene].reset()
         continue
       }
       const result = this._trackers[scene].evaluate(configuration, frame, Date.now())
       reasons[scene] = result.reason
-      if (!result.shouldUpdate) return { shouldUpdate: false as const }
+      if (!result.shouldUpdate) return { shouldUpdate: false as const, reasons }
       confirmed[scene] = result.visible
       if (!result.visible || !result.rect) continue
       const placement = fallbackPlacement(configuration, result.rect)
