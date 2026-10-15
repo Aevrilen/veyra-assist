@@ -28,7 +28,7 @@
 - `src/renderer/src-main-window/views/toolkit/misc/SummonerProfile.vue` 暂时移除 Seraphine 来源未决的两个非核心个人资料操作及对应按钮，仅涉及清除声望饰章、清除挑战代币。个人资料背景、横幅和表情操作保留；没有删除整个组件。
 - `src/renderer/src-main-window/components/settings-modal/lcu-endpoints.ts` 移除授权记录未明的静态端点列表，保留来源注释并导出空补全。`DebugSettings.vue` 的手填输入、路由校验和添加规则流程保持原样，后续补全待自行生成。
 - 主选人、截图 OCR、装备推荐、LCU 连接和外部更新器逻辑均未修改；本轮未替换素材、未做其他 UI 改造。
-- 公开文档使用“开发者本机实测”，并明确本快照仍基于 `37e2ccc`，没有合入之后单独交付的日志反馈 hotfix。
+- 初次公开文档使用“开发者本机实测”，明确 `37e2ccc` 基线与当时尚未合入的日志反馈 hotfix。后续 1.5.2-beta.1 仅移植日志源码增量，范围和原二进制差异见 [版本说明](releases/1.5.2-beta.1-log-feedback.md)，不恢复此前清理项或私有历史。
 
 上述修改仅位于干净公开副本，没有改动运行开发版。原 MIT、ISC、OFL、Apache 等许可原文及真实归属保留。待公开的 Git 历史从清理后的最终文件树重新起始，避免移除片段残留在公开提交历史中。
 

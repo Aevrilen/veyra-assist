@@ -1,8 +1,11 @@
 import dayjs from 'dayjs'
 import { app } from 'electron'
+import { randomUUID } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 import { createLogger, format, transports } from 'winston'
+
+import { DailyFileTransport, dailyLogFilename } from './daily-file-transport'
 
 const STYLES = {
   reset: '\x1b[0m',
@@ -59,12 +62,15 @@ const LEVEL_COLORS = {
   error: STYLES.red
 }
 
-export function initAppLogger(level: string = 'info') {
+export function getAppLogsDirectory() {
   // Portable updates replace the program directory; keep logs in the writable profile.
-  const logsDir =
-    process.platform === 'darwin' || process.argv.includes('--akari-portable')
-      ? app.getPath('logs')
-      : path.join(path.join(app.getPath('exe'), '..'), 'logs')
+  return process.platform === 'darwin' || process.argv.includes('--akari-portable')
+    ? app.getPath('logs')
+    : path.join(path.join(app.getPath('exe'), '..'), 'logs')
+}
+
+export function initAppLogger(level: string = 'info') {
+  const logsDir = getAppLogsDirectory()
 
   try {
     const stats = fs.statSync(logsDir)
@@ -81,15 +87,12 @@ export function initAppLogger(level: string = 'info') {
     }
   }
 
-  const filename = `LA_${dayjs().format('YYYYMMDD_HHmmssSSS')}.log`
+  const filename = dailyLogFilename()
+  const runId = randomUUID()
 
-  const fileTransport = new transports.File({
-    filename,
-    dirname: logsDir,
+  const fileTransport = new DailyFileTransport(logsDir, {
     level,
-    maxsize: 1024 * 1024 * 128, // 128MB
     format: format.combine(
-      format.timestamp(),
       format.printf(({ level, message, namespace, timestamp }) => {
         return `[${dayjs(timestamp as number).format('YYYY-MM-DD HH:mm:ss:SSS')}] [${namespace}] [${level}] ${message}`
       })
@@ -99,7 +102,6 @@ export function initAppLogger(level: string = 'info') {
   const consoleTransport = new transports.Console({
     level,
     format: format.combine(
-      format.timestamp(),
       format.printf(({ level, message, namespace, timestamp }) => {
         const timestampColored = `${STYLES.white}[${dayjs(timestamp as any).format('YYYY-MM-DD HH:mm:ss:SSS')}]${STYLES.reset}`
         const namespaceColored = `${STYLES.brightBlue}${STYLES.bold}[${namespace}]${STYLES.reset}`
@@ -117,13 +119,34 @@ export function initAppLogger(level: string = 'info') {
   }
 
   const logger = createLogger({
+    format: format.timestamp(),
     transports: [fileTransport, consoleTransport]
   })
+
+  logger.log({ level, namespace: 'app', message: `[run-start] id=${runId} pid=${process.pid}` })
+
+  const finish = () => {
+    const endMessage = `[run-end] id=${runId} pid=${process.pid}`
+    // Winston ends its transports before draining its readable buffer under
+    // backpressure. Wait for our final record to reach the file transport first.
+    const onLogged = (info: { namespace?: string; message: unknown }) => {
+      if (info.namespace !== 'app' || info.message !== endMessage) return
+      fileTransport.off('logged', onLogged)
+      logger.end()
+    }
+    fileTransport.on('logged', onLogged)
+    logger.log({
+      level: fileTransport.level || level,
+      namespace: 'app',
+      message: endMessage
+    })
+  }
 
   return {
     logger,
     logsDir,
     filename,
+    finish,
     setLevel,
     getLevel: () => fileTransport.level || level
   }

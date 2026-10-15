@@ -1,6 +1,6 @@
 {
   "name": "league-akari",
-  "version": "1.5.2-beta",
+  "version": "1.5.2-beta.1",
   "author": {
     "name": "hanxven",
     "email": "hanxven@gmail.com"
@@ -43,6 +43,7 @@
     "tesseract.js": "7.0.0",
     "typeorm": "^1.1.0",
     "winston": "^3.19.0",
+    "winston-transport": "^4.9.0",
     "ws": "^8.21.1",
     "zod": "^4.4.3"
   },

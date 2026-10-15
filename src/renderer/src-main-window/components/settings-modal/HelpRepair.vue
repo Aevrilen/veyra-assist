@@ -15,10 +15,23 @@
       </SettingsRow>
       <SettingsRow
         :label="t('veyraSettings.feedback')"
-        :label-description="t('veyraSettings.feedbackUnavailable')"
+        :label-description="t('veyraSettings.feedbackExportDescription')"
         :label-width="400"
       >
-        <NButton size="small" disabled>{{ t('veyraSettings.unavailable') }}</NButton>
+        <div class="flex flex-col items-end gap-2">
+          <NButton
+            size="small"
+            secondary
+            :loading="exporting"
+            :disabled="exporting"
+            @click="exportFeedback"
+          >
+            {{ t('veyraSettings.feedbackExport') }}
+          </NButton>
+          <div role="status" aria-live="polite" class="max-w-72 text-xs opacity-80">
+            {{ exporting ? t('veyraSettings.feedbackExportProgress') : exportStatus }}
+          </div>
+        </div>
       </SettingsRow>
     </SettingsSection>
     <Client embedded />
@@ -43,7 +56,31 @@ import { useInstance } from '@renderer-shared/shards'
 import { LoggerRenderer } from '@renderer-shared/shards/logger'
 import { useTranslation } from 'i18next-vue'
 import { NButton } from 'naive-ui'
+import { ref } from 'vue'
 import SavedSettings from './storage-settings/SavedSettings.vue'
 const { t } = useTranslation()
 const logger = useInstance(LoggerRenderer)
+const exporting = ref(false)
+const exportStatus = ref('')
+
+async function exportFeedback() {
+  exporting.value = true
+  exportStatus.value = ''
+  try {
+    const result = await logger.exportFeedbackPackage()
+    if (result.status === 'saved') {
+      exportStatus.value = t(
+        result.limited ? 'veyraSettings.feedbackExportLimited' : 'veyraSettings.feedbackExportSaved'
+      )
+      if (!result.revealed)
+        exportStatus.value += ' ' + t('veyraSettings.feedbackExportRevealFailed')
+    } else if (result.status === 'busy') {
+      exportStatus.value = t('veyraSettings.feedbackExportBusy')
+    }
+  } catch {
+    exportStatus.value = t('veyraSettings.feedbackExportFailed')
+  } finally {
+    exporting.value = false
+  }
+}
 </script>

@@ -1,11 +1,12 @@
+import { getAppLogsDirectory } from '@main/logger'
 import { IAkariShardInitDispose, Shard, SharedGlobalShard } from '@shared/akari-shard'
-import { app, shell } from 'electron'
-import path from 'node:path'
+import { type BrowserWindow, shell } from 'electron'
 import { Logger } from 'winston'
 
 import { AkariIpcMain } from '../ipc'
 import { MobxUtilsMain } from '../mobx-utils'
 import { LOGGER_FACTORY_MAIN_NAMESPACE, type LoggerFactoryMainContext } from './context'
+import { FeedbackExportController } from './feedback-export-controller'
 import { LoggerFactoryIpcHandlers } from './ipc-handlers'
 import { LogMessageFormatter } from './log-message-formatter'
 import { LoggerFactoryState } from './state'
@@ -45,7 +46,7 @@ export class LoggerFactoryMain implements IAkariShardInitDispose {
   // 从全局注入的 logger 实例
   private readonly _logger: Logger
   private readonly _logsDir: string
-  private readonly _appDir: string
+  private readonly _feedbackExport: FeedbackExportController
   private readonly _formatter = new LogMessageFormatter()
   private readonly _context: LoggerFactoryMainContext
   private readonly _ipcHandlers: LoggerFactoryIpcHandlers
@@ -55,10 +56,9 @@ export class LoggerFactoryMain implements IAkariShardInitDispose {
     private readonly _ipc: AkariIpcMain,
     private readonly _mobxUtils: MobxUtilsMain
   ) {
-    this._appDir = path.join(app.getPath('exe'), '..')
     // macOS 下写入 .app bundle 会导致权限/签名问题，日志目录应位于用户目录。
-    this._logsDir =
-      process.platform === 'darwin' ? app.getPath('logs') : path.join(this._appDir, 'logs')
+    this._logsDir = getAppLogsDirectory()
+    this._feedbackExport = new FeedbackExportController(this._logsDir)
     this._logger = this._shared.global.logger
 
     this.state.setLogLevel(this._shared.global.getLogLevel())
@@ -79,7 +79,11 @@ export class LoggerFactoryMain implements IAkariShardInitDispose {
   }
 
   openLogsDir() {
-    return shell.showItemInFolder(path.join(this._logsDir, this._shared.global.logFilename))
+    return shell.openPath(this._logsDir)
+  }
+
+  exportFeedbackPackage(parent: BrowserWindow) {
+    return this._feedbackExport.export(parent)
   }
 
   /**

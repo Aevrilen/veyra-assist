@@ -1,3 +1,5 @@
+import { BrowserWindow } from 'electron'
+
 import type { LoggerFactoryMainContext } from './context'
 
 export class LoggerFactoryIpcHandlers {
@@ -30,8 +32,18 @@ export class LoggerFactoryIpcHandlers {
       shared.global.setLogLevel(level)
     })
 
-    ipc.onCall(namespace, 'openLogsDir', () => {
-      loggerFactory.openLogsDir()
+    ipc.onCall(namespace, 'openLogsDir', () => loggerFactory.openLogsDir())
+
+    ipc.onCall(namespace, 'exportFeedbackPackage', (event) => {
+      const parent = BrowserWindow.fromWebContents(event.sender)
+      if (
+        !parent ||
+        event.senderFrame !== event.sender.mainFrame ||
+        !new URL(event.senderFrame.url).pathname.endsWith('/main-window.html')
+      ) {
+        throw new Error('Feedback export is only available from the main window')
+      }
+      return loggerFactory.exportFeedbackPackage(parent)
     })
   }
 }

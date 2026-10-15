@@ -224,7 +224,7 @@ export function bootstrap() {
 
   // 创建全局唯一的日志器
   const logLevel = baseConfig && baseConfig.logLevel ? baseConfig.logLevel : 'info'
-  const { logger, filename: logFilename, setLevel, getLevel } = initAppLogger(logLevel)
+  const { logger, filename: logFilename, setLevel, getLevel, finish } = initAppLogger(logLevel)
 
   // 应用级别的事件总线
   const events = new EventEmitter<AkariAppEventMap>()
@@ -435,7 +435,7 @@ export function bootstrap() {
         })
         dialog.showErrorBox('Error occurred during feature initialization', formatError(error))
         logger.on('finish', () => app.exit(10002))
-        logger.end()
+        finish()
       }
     })
 
@@ -467,7 +467,7 @@ export function bootstrap() {
             namespace: 'app'
           })
           logger.on('finish', () => app.exit()) // 不知为何, 使用 app.quit() 在这里不会生效. 除非包裹 setImmediate 或 setTimeout
-          logger.end()
+          finish()
         })
     })
 
@@ -483,6 +483,6 @@ export function bootstrap() {
     })
     dialog.showErrorBox('Error occurred during application startup', formatError(error))
     logger.on('finish', () => app.exit(10001))
-    logger.end()
+    finish()
   }
 }

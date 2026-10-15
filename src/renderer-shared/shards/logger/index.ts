@@ -1,4 +1,5 @@
 import { Dep, Shard } from '@shared/akari-shard'
+import type { FeedbackExportResult } from '@shared/types/feedback-export'
 
 import { AkariIpcRenderer } from '../ipc'
 import { PiniaMobxUtilsRenderer } from '../pinia-mobx-utils'
@@ -64,6 +65,10 @@ export class LoggerRenderer {
 
   openLogsDir() {
     return this._ipc.call(MAIN_SHARD_NAMESPACE, 'openLogsDir')
+  }
+
+  exportFeedbackPackage(): Promise<FeedbackExportResult> {
+    return this._ipc.call(MAIN_SHARD_NAMESPACE, 'exportFeedbackPackage')
   }
 
   setLogLevel(level: string) {
