@@ -20,4 +20,10 @@
 
 本轮只更新文档和展示资产。没有修改实际发布的 ZIP、EXE、ASAR、Release 附件或标签。下一公开整合版应重新核对源码及界面后更新图片。
 
+## 外观补充预览
+
+[浅色冷灰](../assets/previews/theme-light.png)、[深色石墨](../assets/previews/theme-graphite.png)、[低饱和蓝灰](../assets/previews/theme-blue-gray.png)、[雾紫灰](../assets/previews/theme-mist-violet.png) 均由同一实际首页切换主题后截图，页面内容与开关状态保持一致。
+
+[图片导入设置入口](../assets/previews/appearance-settings.png) 与 [主窗口壁纸效果](../assets/previews/custom-background.png) 使用实际 AppSettings 和 MainWindowBackground 组件。离线适配器模拟文件选择返回值，并把模拟本地路径映射到一张程序绘制的合成风景；没有使用私人图片。演示保留原模式切换、路径保存、居中裁剪及蒙层渲染流程，不代表原生文件对话框或磁盘持久化的实机验收。
+
 功能依据见 [功能索引](FEATURES.md)，数据与素材归属见 [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md)。

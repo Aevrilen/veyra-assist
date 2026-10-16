@@ -18,6 +18,14 @@
 
 旧 Mini 白框弹窗、倒计时和临时按钮停用，不能与原对局悬浮窗混为一谈。内置更新日志提供版本说明，不是自动下载安装器。
 
+## 外观与本地图片
+
+- **四套快捷配色**：浅色冷灰（`light`）、深色石墨（`graphite`）、低饱和蓝灰（`blue-gray`）、雾紫灰（`mist-violet`）。入口在主窗口右上“外观”及“自定义外观”。这四项是快捷主题组，并不表示旧主题下拉框只有四项。依据：[ThemeChoices.vue](https://github.com/Aevrilen/veyra-assist/blob/v1.5.2-beta.3/src/renderer/src-main-window/components/ThemeChoices.vue)、[app-theme.ts](https://github.com/Aevrilen/veyra-assist/blob/v1.5.2-beta.3/src/shared/types/app-theme.ts)。
+- **本地图片导入**：自定义外观 → 背景图片设置 → 自定义壁纸 → 浏览。选择文件后用作主窗口背景，居中裁剪，并可调整蒙层深度。依据：[AppSettings.vue](https://github.com/Aevrilen/veyra-assist/blob/v1.5.2-beta.3/src/renderer/src-main-window/components/settings-modal/AppSettings.vue)、[文件选择 IPC](https://github.com/Aevrilen/veyra-assist/blob/v1.5.2-beta.3/src/main/shards/main-window-ui/ipc-handlers.ts)。
+- **本地保存行为**：保存背景模式、所选原文件路径、修订标记及蒙层深度，后续从该路径读取；不复制原图到程序包。图片仅用于主窗口背景，不能据此称为全应用任意皮肤。依据：[settings-sync.ts](https://github.com/Aevrilen/veyra-assist/blob/v1.5.2-beta.3/src/renderer/src-main-window/shards/main-window-ui/settings-sync.ts)、[background-controller.ts](https://github.com/Aevrilen/veyra-assist/blob/v1.5.2-beta.3/src/renderer/src-main-window/shards/main-window-ui/background-controller.ts)、[MainWindowBackground.vue](https://github.com/Aevrilen/veyra-assist/blob/v1.5.2-beta.3/src/renderer/src-main-window/shards/main-window-ui/MainWindowBackground.vue)。
+
+操作见 [使用说明](USAGE.md#外观与图片导入)，四种配色与合成壁纸效果见 [预览说明](PREVIEWS.md)。
+
 ## 版本与验证
 
 发布程序为 `VeyraAssist-1.5.2-beta.3-0e54d71f-Windows-x64.zip`，公开源码映射 `944f67f62e13f437a322de133d01c021d3dc983c`。原始构建提交、文件校验及测试范围见 [官方 Release](https://github.com/Aevrilen/veyra-assist/releases/tag/v1.5.2-beta.3) 与 [对应版本说明](https://github.com/Aevrilen/veyra-assist/blob/v1.5.2-beta.3/docs/releases/1.5.2-beta.3.md)。
