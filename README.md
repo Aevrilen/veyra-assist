@@ -10,7 +10,7 @@
 
 下载 Release **Assets 中的 `VeyraAssist-1.5.2-beta.3-0e54d71f-Windows-x64.zip`**，完整解压后运行 `启动Veyra.cmd`。GitHub 自动生成的 Source code 是源码，不能直接运行。
 
-本页介绍已发布的 **beta.3**；对应源码见 [v1.5.2-beta.3 / 944f67f](https://github.com/Aevrilen/veyra-assist/tree/v1.5.2-beta.3)。默认分支保留原有开发基线，文档更新不代表程序源码已同步升级。详细变化和验证范围见 [本版说明](https://github.com/Aevrilen/veyra-assist/blob/v1.5.2-beta.3/docs/releases/1.5.2-beta.3.md)。
+下方产品功能与图片介绍已发布的 **beta.3**；对应源码见 [v1.5.2-beta.3 / 944f67f](https://github.com/Aevrilen/veyra-assist/tree/v1.5.2-beta.3)。默认分支由保留的公开基线与已审查的 UI、通用设置增量组成，未同步当前私有识别重构，也没有随本次源码更新发布新程序。beta.3 的详细变化和验证范围见 [本版说明](https://github.com/Aevrilen/veyra-assist/blob/v1.5.2-beta.3/docs/releases/1.5.2-beta.3.md)。
 
 ## 给使用者
 
