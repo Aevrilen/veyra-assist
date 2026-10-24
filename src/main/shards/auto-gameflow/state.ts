@@ -17,7 +17,7 @@ export class AutoGameflowSettings {
 
   playAgainEnabled: boolean = false
 
-  autoAcceptEnabled: boolean = false
+  autoAcceptEnabled: boolean = true
   autoAcceptDelaySeconds: number = 0
 
   autoReconnectEnabled: boolean = false

@@ -10,17 +10,12 @@
       class="relative mb-1 font-['Comfortaa',sans-serif] text-2xl text-gray-800 dark:text-gray-100"
     >
       {{ t('appName', { ns: 'common' }) }}
-
-      <span
-        v-if="showNewVersionBadge"
-        class="bg-akari-500 absolute top-0 right-0 translate-x-[120%] -translate-y-1/6 cursor-pointer rounded px-1 py-px text-xs text-white transition-opacity hover:opacity-80"
-        @click.stop="handleShowUpdateModal"
-        >{{ t('startup.launcher.newVersionAvailable') }}</span
-      >
     </div>
 
     <!-- version -->
     <div class="text-xs text-black/40 dark:text-white/40">v{{ as.version }}</div>
+
+    <StartupQuickSettings />
 
     <!-- spacer -->
     <div class="h-12"></div>
@@ -135,7 +130,6 @@ import { LeagueClientRenderer } from '@renderer-shared/shards/league-client'
 import { useLeagueClientUxStore } from '@renderer-shared/shards/league-client-ux/store'
 import { useLeagueClientStore } from '@renderer-shared/shards/league-client/store'
 import { profileIconUri } from '@renderer-shared/shards/league-client/game-data-assets'
-import { useSelfUpdateStore } from '@renderer-shared/shards/self-update/store'
 import { useSgpStore } from '@renderer-shared/shards/sgp/store'
 import { UxCommandLine } from '@shared/shards/league-client-ux'
 import { getSgpServerId } from '@shared/utils/sgp'
@@ -145,8 +139,8 @@ import { NEllipsis, NIcon, NScrollbar, NSpin, useMessage } from 'naive-ui'
 import { computed } from 'vue'
 
 import { useLeagueClientPeekStore } from '@main-window/shards/league-client-peek/store'
+import StartupQuickSettings from '@main-window/components/startup-quick-settings/StartupQuickSettings.vue'
 import { PlayerTabsRenderer } from '@main-window/shards/player-tabs'
-import { SimpleNotificationsRenderer } from '@main-window/shards/simple-notifications'
 import { useDetectedClientLaunchItems } from '@main-window/components/game-launcher/useDetectedClientLaunchItems'
 
 const { t } = useTranslation()
@@ -157,34 +151,14 @@ const lcuxs = useLeagueClientUxStore()
 const lcps = useLeagueClientPeekStore()
 const sgps = useSgpStore()
 
-const sus = useSelfUpdateStore()
-
 const lc = useInstance(LeagueClientRenderer)
 const detectedClients = useDetectedClientLaunchItems()
 const pt = useInstance(PlayerTabsRenderer)
-const sn = useInstance(SimpleNotificationsRenderer)
 
 const message = useMessage()
 const { masked, summonerName: streamerSummonerName } = useStreamerModeMaskedText()
 
 const { navigateToTabByPuuid } = pt.useNavigateToTab()
-
-const showNewVersionBadge = computed(() => {
-  const release = sus.releaseInfo
-  if (!release?.isNew || !release.isUpdateSupported) {
-    return false
-  }
-
-  if (sus.settings.ignoreVersion === release.version) {
-    return false
-  }
-
-  return true
-})
-
-const handleShowUpdateModal = () => {
-  sn.showNewReleaseModal()
-}
 
 const handleOpenSelfTab = () => {
   if (lcs.summoner.me) {

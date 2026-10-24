@@ -4,6 +4,8 @@
 
 > **开发中 / 半成品 · 测试版。** 当前提供 Windows x64 预发布。
 
+> **部分开源**：2026-10-24 已同步经白名单审查的战绩 UI、通用快捷设置与测试，提供可运行的模拟结果接口；当前识别重构实现保留私有。默认分支保留旧公开基线及其许可，不代表最新完整程序源码。范围、历史公开限制和运行示例见 [开源边界](docs/SOURCE_BOUNDARY.md) 与 [导出清单](public-export.json)。本次没有更新 Release 或程序附件。
+
 **[下载 1.5.2-beta.3](https://github.com/Aevrilen/veyra-assist/releases/tag/v1.5.2-beta.3)** · [开始使用](docs/USAGE.md) · [功能索引](docs/FEATURES.md) · [路线图 / Todo](docs/ROADMAP.md)
 
 下载 Release **Assets 中的 `VeyraAssist-1.5.2-beta.3-0e54d71f-Windows-x64.zip`**，完整解压后运行 `启动Veyra.cmd`。GitHub 自动生成的 Source code 是源码，不能直接运行。

@@ -113,6 +113,8 @@ playerTabs:
     failedToLoadSummonerTitle: Failed to Load Summoner
     failedToLoadSummonerContent: 'Unable to load summoner information: {{reason}}'
     failedToLoadMatchHistoryTitle: Failed to Load Match History
+    retryMatchHistory: Retry loading
+    matchHistoryNotLoaded: Match history not loaded yet
     failedToLoadMatchHistoryContent: 'Unable to load match history: {{reason}}'
     failedToLoadRankedStatsTitle: Failed to Load Ranked Stats
     failedToLoadRankedStatsContent: 'Unable to load ranked stats: {{reason}}'
@@ -142,6 +144,51 @@ playerTabs:
     failedToLaunchReplay: 'Failed to launch replay: {{reason}}'
     failedToDownloadReplay: 'Failed to download replay: {{reason}}'
   matchHistory:
+    ledger:
+      columns:
+        champion: Champion
+        queue: Mode
+        kda: K/D/A
+        killParticipation: KP
+        damageShare: Damage
+        duration: Duration
+        replay: Replay
+      pageScope: Page {{page}}
+      loadedMatches_one: '{{count}} match loaded'
+      loadedMatches_other: '{{count}} matches loaded'
+      matchingMatches_one: '{{count}} matches the filter'
+      matchingMatches_other: '{{count}} match the filter'
+      dataSource: 'Source: {{source}}'
+      keyboardHint: '↑ ↓ to move · Enter to open · Esc to close'
+      today: Today
+      yesterday: Yesterday
+      dayWins_one: '{{count}} win'
+      dayWins_other: '{{count}} wins'
+      dayLosses_one: '{{count}} loss'
+      dayLosses_other: '{{count}} losses'
+      kdaValue: '{{value}} KDA'
+      killParticipationValue: 'KP {{value}}%'
+      damageShareValue: 'DMG {{value}}%'
+      replayUnknown: Replay status unknown (not checked yet or still checking)
+      replayCrossRegion: Replays are not checked for cross-region players
+    inspector:
+      detailsFailed: Match details could not be loaded.
+      retryDetails: Retry
+      close: Close
+      backToList: Back to list
+      previous: Previous match
+      next: Next match
+      position: '{{current}} / {{total}}'
+      expand: Full width
+      collapse: Exit full width
+      detailViews: Detail views
+      participantHint: Click a player to open their match history · middle-click opens it in the background
+      openPlayer: 'Open match history of {{name}} (middle-click: background)'
+      currentPlayer: current player
+      teamKills_one: '{{count}} kill'
+      teamKills_other: '{{count}} kills'
+      teamGold: 'Gold {{value}}'
+      selectionClosed: The selected match is no longer in the current results, so its details were closed
     pagination: Pagination
     sidebar:
       open: Open match history sidebar

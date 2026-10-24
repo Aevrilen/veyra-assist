@@ -1,59 +1,83 @@
 <template>
-  <div ref="playerTabRootEl" class="relative h-full">
-    <NScrollbar x-scrollable :theme-overrides="{ width: '8px' }" ref="scrollbarEl">
-      <div ref="layoutContainerEl" class="@container w-full">
-        <div class="mx-auto w-full max-w-191 pt-10 pb-4 @[1064px]:max-w-266">
-          <PlayerTabHeader class="mb-6 h-28 px-4" />
+  <div ref="playerTabRootEl" class="relative flex h-full" @keydown="handleRootKeydown">
+    <div class="relative h-full min-w-0 flex-1" :inert="isInspectorCovering || undefined">
+      <NScrollbar x-scrollable :theme-overrides="{ width: '8px' }" ref="scrollbarEl">
+        <div ref="layoutContainerEl" class="@container w-full">
+          <div class="mx-auto w-full max-w-191 pt-10 pb-4 @[1064px]:max-w-266">
+            <PlayerTabHeader class="mb-6 h-28 px-4" />
 
-          <div class="box-border px-4 @[764px]:px-0">
-            <div ref="stickySentinelEl" class="h-0 w-full"></div>
+            <div class="box-border px-4 @[764px]:px-0">
+              <div ref="stickySentinelEl" class="h-0 w-full"></div>
 
-            <div
-              class="grid grid-cols-1 items-start gap-3 @[1064px]:grid-cols-[300px_minmax(0,1fr)]"
-            >
-              <StickyBox v-if="!isCompactLayout" class="w-75" :offset-top="8" :offset-bottom="8">
-                <PlayerTabSidebarContent />
-              </StickyBox>
+              <div
+                class="grid grid-cols-1 items-start gap-3 @[1064px]:grid-cols-[300px_minmax(0,1fr)]"
+              >
+                <StickyBox v-if="!isCompactLayout" class="w-75" :offset-top="8" :offset-bottom="8">
+                  <PlayerTabSidebarContent />
+                </StickyBox>
 
-              <div class="min-w-0">
-                <div
-                  v-if="isCompactLayout"
-                  class="sticky top-2 z-10 mb-2 flex min-w-0 items-start gap-2"
-                >
-                  <NTooltip placement="bottom-start">
-                    <template #trigger>
-                      <NButton
-                        class="shrink-0"
-                        size="small"
-                        secondary
-                        circle
-                        :focusable="false"
-                        :aria-label="t('playerTabs.matchHistory.sidebar.open')"
-                        @click="showSidebarDrawer = true"
-                      >
-                        <template #icon>
-                          <NIcon><PanelLeftExpand20Regular /></NIcon>
-                        </template>
-                      </NButton>
-                    </template>
-                    {{ t('playerTabs.matchHistory.sidebar.open') }}
-                  </NTooltip>
+                <div class="min-w-0">
+                  <div
+                    v-if="isCompactLayout"
+                    class="sticky top-2 z-10 mb-2 flex min-w-0 items-start gap-2"
+                  >
+                    <NTooltip placement="bottom-start">
+                      <template #trigger>
+                        <NButton
+                          class="shrink-0"
+                          size="small"
+                          secondary
+                          circle
+                          :focusable="false"
+                          :aria-label="t('playerTabs.matchHistory.sidebar.open')"
+                          @click="showSidebarDrawer = true"
+                        >
+                          <template #icon>
+                            <NIcon><PanelLeftExpand20Regular /></NIcon>
+                          </template>
+                        </NButton>
+                      </template>
+                      {{ t('playerTabs.matchHistory.sidebar.open') }}
+                    </NTooltip>
 
-                  <MatchHistoryPagination
-                    class="min-w-0 flex-1"
-                    :is-floating="!frozenSentinelVisible"
-                  />
+                    <MatchHistoryPagination
+                      class="min-w-0 flex-1"
+                      :is-floating="!frozenSentinelVisible"
+                    />
+                  </div>
+
+                  <MatchHistoryList />
                 </div>
-
-                <MatchHistoryList />
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </NScrollbar>
+      </NScrollbar>
 
-    <CollectModeProgress />
+      <CollectModeProgress />
+
+      <div
+        :class="{
+          'pointer-events-auto opacity-80': shouldShowScrollToTopButton,
+          'pointer-events-none opacity-0': !shouldShowScrollToTopButton
+        }"
+        class="absolute! right-8 bottom-8 z-10 transition-opacity hover:opacity-100"
+      >
+        <NButton size="large" type="primary" circle :focusable="false" @click="scrollToTop">
+          <NIcon>
+            <ArrowUp20Regular />
+          </NIcon>
+        </NButton>
+      </div>
+    </div>
+
+    <MatchInspector
+      :presentation="isInspectorCovering ? 'cover' : 'docked'"
+      :wide="rootWidth >= MATCH_INSPECTOR_WIDE_MIN_WIDTH"
+      :hide-privacy="as.settings.streamerMode"
+      :can-dry-run-ongoing-game="canDryRunOngoingGame"
+      @dry-run-ongoing-game="handleDryRunOngoingGame"
+    />
 
     <NDrawer
       v-if="isCompactLayout"
@@ -67,20 +91,6 @@
         <PlayerTabSidebarContent />
       </NDrawerContent>
     </NDrawer>
-
-    <div
-      :class="{
-        'pointer-events-auto opacity-80': shouldShowScrollToTopButton,
-        'pointer-events-none opacity-0': !shouldShowScrollToTopButton
-      }"
-      class="absolute! right-8 bottom-8 z-10 transition-opacity hover:opacity-100"
-    >
-      <NButton size="large" type="primary" circle :focusable="false" @click="scrollToTop">
-        <NIcon>
-          <ArrowUp20Regular />
-        </NIcon>
-      </NButton>
-    </div>
 
     <ConnectedMatchPreviewer
       v-model:show="showPreviewModal"
@@ -126,11 +136,15 @@ import { PlayerTabsRenderer } from '@main-window/shards/player-tabs'
 import { usePlayerTabsStore } from '@main-window/shards/player-tabs/store'
 
 import GlobalStateTracker from './GlobalStateTracker'
-import { PLAYER_TAB_WIDE_MIN_WIDTH } from './constants'
+import {
+  MATCH_INSPECTOR_DOCK_MIN_WIDTH,
+  MATCH_INSPECTOR_WIDE_MIN_WIDTH,
+  PLAYER_TAB_WIDE_MIN_WIDTH
+} from './constants'
 import { providePlayerTab } from './context'
 import { useFreezeValue } from './utils/freeze'
 import MatchHistoryList from './widgets/MatchHistoryList.vue'
-import { provideMatchHistoryCardViewport } from './widgets/match-history-card'
+import { MatchInspector, provideMatchInspector } from './widgets/match-inspector'
 import MatchHistoryPagination from './widgets/match-history-pagination'
 import PlayerTabHeader from './widgets/PlayerTabHeader.vue'
 import CollectModeProgress from './widgets/match-history-filters/CollectModeProgress.vue'
@@ -157,6 +171,7 @@ const { navigateToTabByPuuid } = pt.useNavigateToTab()
 const playerTabRootEl = useTemplateRef('playerTabRootEl')
 const layoutContainerEl = useTemplateRef('layoutContainerEl')
 const { width: layoutWidth } = useElementSize(layoutContainerEl)
+const { width: rootWidth } = useElementSize(playerTabRootEl)
 const isCompactLayout = computed(() => layoutWidth.value < PLAYER_TAB_WIDE_MIN_WIDTH)
 const showSidebarDrawer = ref(false)
 
@@ -170,9 +185,41 @@ const isInvisible = computed(() => {
   return !isCurrentTab.value || !isActivated.value
 })
 
-provideMatchHistoryCardViewport({
-  active: () => !isInvisible.value
+const isInspectorOverlay = computed(() => rootWidth.value < MATCH_INSPECTOR_DOCK_MIN_WIDTH)
+
+const inspector = provideMatchInspector({
+  rootEl: playerTabRootEl,
+  isOverlay: isInspectorOverlay
 })
+
+// compact screens and full-width reading cover the ledger; the covered region becomes inert
+const isInspectorCovering = computed(
+  () => !!inspector.selection.value && (isInspectorOverlay.value || inspector.isReading.value)
+)
+
+const handleRootKeydown = (event: KeyboardEvent) => {
+  if (
+    event.key !== 'Escape' ||
+    event.defaultPrevented ||
+    !inspector.selection.value ||
+    showSidebarDrawer.value
+  ) {
+    return
+  }
+
+  const target = event.target as HTMLElement | null
+  if (target?.closest('input, textarea, select, [contenteditable="true"]')) {
+    return
+  }
+
+  event.preventDefault()
+
+  if (inspector.isReading.value) {
+    inspector.exitReading()
+  } else {
+    inspector.close({ restoreFocus: true })
+  }
+}
 
 const scrollbarEl = useTemplateRef('scrollbarEl')
 const stickySentinelEl = useTemplateRef('stickySentinelEl')

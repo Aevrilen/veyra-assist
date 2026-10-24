@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "publicBase": "a1909024032b3bad0034e441d861b2a562e85127",
+  "policy": "Only exact reviewed source bytes in this list may be exported. Review any new file or hash before updating this manifest. Existing public baseline history is not a new private-source export.",
+  "sourceFiles": [
+    {
+      "path": "src/main/shards/auto-gameflow/defaults.test.ts",
+      "sourceSha256": "9bd879d617e9491bd1a5e65041ee5ee2b877637d730cd8dd2fc635109d86c426"
+    },
+    {
+      "path": "src/main/shards/auto-gameflow/state.ts",
+      "sourceSha256": "474c06c395249da9230d153e1248e440ae060861c75ed844e161897a92287479"
+    },
+    {
+      "path": "src/renderer-shared/components/match-card/MatchCardDetails.vue",
+      "sourceSha256": "6ad39dba2ff60cfcc65e5a2e391f503b1fa0f8153f9394121c6f49a5b3b3fcd6"
+    },
+    {
+      "path": "src/renderer-shared/components/match-card/utils/tabs.ts",
+      "sourceSha256": "14d505e4df6df7f6b69450a109c25319b2a04c561134e29f30df3a4148151eae"
+    },
+    {
+      "path": "src/renderer-shared/shards/auto-gameflow/store.test.ts",
+      "sourceSha256": "042406e2d8211def45e3f55e95d0605c59699d7599ca1cfcf6045661427bf6aa"
+    },
+    {
+      "path": "src/renderer-shared/shards/auto-gameflow/store.ts",
+      "sourceSha256": "cdaf48fb1704399476fad4b9365f8c502b3b97719ee28166f2fb3e0dae509a1d"
+    },
+    {
+      "path": "src/renderer/src-main-window/components/startup-quick-settings/StartupQuickSettings.test.ts",
+      "sourceSha256": "a822167a82e855e7ad38ff409cd2d6cefef1350322731cefdbb47b5c22c98484"
+    },
+    {
+      "path": "src/renderer/src-main-window/components/startup-quick-settings/StartupQuickSettings.vue",
+      "sourceSha256": "43fd47f32b9ae6fa4c2fbb75f5950f4632401d6d700bd62a39b16dfac05888a9"
+    },
+    {
+      "path": "src/renderer/src-main-window/views/player-tabs/components/StartupPane.vue",
+      "sourceSha256": "357ad6a918f03a3771bdf167e4059116bf85ef54c037155d8b6142af33b7ead4"
+    },
+    {
+      "path": "src/renderer/src-main-window/views/player-tabs/components/player-tab/PlayerTab.vue",
+      "sourceSha256": "4415611d45c9b6a978fe976ed67fcfb5e0ecfc6a7f5af683a7b225e1a5030a33"
+    },
+    {
+      "path": "src/renderer/src-main-window/views/player-tabs/components/player-tab/constants.ts",
+      "sourceSha256": "f0c03131dfde6687106daf3376155031df6539bf0a470559ff484465d6387bfa"
+    },
+    {
+      "path": "src/renderer/src-main-window/views/player-tabs/components/player-tab/data/match-history-details.test.ts",
+      "sourceSha256": "4d81cc864577de97f8c7e805ff6de9416df4468f31fb89535d936d2c0a78720e"
+    },
+    {
+      "path": "src/renderer/src-main-window/views/player-tabs/components/player-tab/data/match-history.ts",
+      "sourceSha256": "92d71084aa1d9810b7d01888d8e09908e6950bb8915fefe20dcf738316450471"
+    },
+    {
+      "path": "src/renderer/src-main-window/views/player-tabs/components/player-tab/widgets/MatchHistoryList.error.test.ts",
+      "sourceSha256": "4401f8a13147fd54a6fe8c524c5f1618e7fb751466f50dbf565a2b8be54928f7"
+    },
+    {
+      "path": "src/renderer/src-main-window/views/player-tabs/components/player-tab/widgets/MatchHistoryList.vue",
+      "sourceSha256": "bbdbb252440c9a180e2f36bccdeca05787c90fd920fd4a4d96ba83cf385058c3"
+    },
+    {
+      "path": "src/renderer/src-main-window/views/player-tabs/components/player-tab/widgets/match-inspector/MatchInspector.test.ts",
+      "sourceSha256": "8995b7eacc03ebf689b3734f97257d38ef3cae511f42b264495e821fca797a0d"
+    },
+    {
+      "path": "src/renderer/src-main-window/views/player-tabs/components/player-tab/widgets/match-inspector/MatchInspector.vue",
+      "sourceSha256": "2cc2a56fc1a3785d1968f626074a85b78b0c23d680f4311f58a4be2fb7fba00f"
+    },
+    {
+      "path": "src/renderer/src-main-window/views/player-tabs/components/player-tab/widgets/match-inspector/MatchInspectorBody.vue",
+      "sourceSha256": "5affd88fbee0040dd474bd4263544e19b29f72f1618face78185e3b48ef99fa8"
+    },
+    {
+      "path": "src/renderer/src-main-window/views/player-tabs/components/player-tab/widgets/match-inspector/MatchInspectorGame.vue",
+      "sourceSha256": "a8f92afc8f7a26d956a908b659e4aaf642e1337ee26525fda29d09700d5e25cc"
+    },
+    {
+      "path": "src/renderer/src-main-window/views/player-tabs/components/player-tab/widgets/match-inspector/MatchInspectorRoster.vue",
+      "sourceSha256": "14e254db049e7b3e32a3d6701bd97c913400bb9d4ee9b93822bf3439c77b23b8"
+    },
+    {
+      "path": "src/renderer/src-main-window/views/player-tabs/components/player-tab/widgets/match-inspector/index.ts",
+      "sourceSha256": "b8dba522330646780c25017d64cbcccf81c3f7af7908cd97d05883393571d609"
+    },
+    {
+      "path": "src/renderer/src-main-window/views/player-tabs/components/player-tab/widgets/match-inspector/selection.ts",
+      "sourceSha256": "ff45ee423b2244720aa013a6dfe4548ed6605e7ab8a6ac69f4193376acf0bf20"
+    },
+    {
+      "path": "src/renderer/src-main-window/views/player-tabs/components/player-tab/widgets/match-ledger/MatchLedgerRow.vue",
+      "sourceSha256": "06177f1bebe41cc4467e4fbe3904dd4746a7f4d66d00de2968094f4b59cbb337"
+    },
+    {
+      "path": "src/renderer/src-main-window/views/player-tabs/components/player-tab/widgets/match-ledger/ledger-entries.ts",
+      "sourceSha256": "fb28bfa492c4ef7ad88bef05500932034a843ef6c7f404a4c39c076f15656287"
+    },
+    {
+      "path": "src/shared/i18n/en/renderer/player.yaml",
+      "sourceSha256": "06650dcfac4c1084ebf817ab1c8b2194496fe06bc60fd39b936549cf677f1c9c"
+    },
+    {
+      "path": "src/shared/i18n/zh-CN/renderer/player.yaml",
+      "sourceSha256": "fc8b5b8289e6bd043320c9609b1be5e7ef9fdbbacf0bfb80354bf68bcc1449b6"
+    }
+  ]
+}

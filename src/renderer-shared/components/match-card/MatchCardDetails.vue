@@ -82,7 +82,7 @@ import { Games24Filled, Replay20Filled, Replay20Regular } from '@vicons/fluent'
 import { useTranslation } from 'i18next-vue'
 import { NButton, NIcon } from 'naive-ui'
 import { NTooltip } from 'naive-ui'
-import { computed, ref, watchEffect } from 'vue'
+import { computed, ref } from 'vue'
 
 import { useMatchCard } from './context'
 import MatchCardBuildsTab from './tabs/MatchCardBuildsTab.vue'
@@ -91,6 +91,7 @@ import MatchCardEventsTab from './tabs/MatchCardEventsTab.vue'
 import MatchCardRunesTab from './tabs/MatchCardRunesTab.vue'
 import MatchCardSummaryTab from './tabs/MatchCardSummaryTab.vue'
 import MatchCardTimelineTab from './tabs/timeline/MatchCardTimelineTab.vue'
+import { useMatchCardTabs, useReplayButtonTitle } from './utils/tabs'
 import { useCardBorderClass } from './utils/theme'
 import TabSwitch from './widgets/TabSwitch.vue'
 
@@ -117,70 +118,10 @@ const team = computed(() => {
   return teams.value.teamStatMap[selfStats.value.teamIdentifier]
 })
 
-const perksAvailable = computed(() => {
-  return participants.value.some((p) =>
-    p.perks.styles.some((s) => s.selections.some((s) => s.perk !== 0))
-  )
-})
-
 const selectedTab = ref('summary')
-const tabs = computed(() => {
-  return [
-    {
-      label: t('matchCard.tabs.summary'),
-      value: 'summary'
-    },
-    {
-      label: t('matchCard.tabs.details'),
-      value: 'details'
-    },
-    {
-      label: t('matchCard.tabs.runes'),
-      value: 'runes',
-      show: perksAvailable.value
-    },
-    {
-      label: t('matchCard.tabs.events'),
-      value: 'events'
-    },
-    {
-      label: t('matchCard.tabs.builds'),
-      value: 'builds',
-      show: basicInfo.value.dataSource === 'sgp'
-    },
-    {
-      label: t('matchCard.tabs.timeline'),
-      value: 'timeline'
-    }
-  ].filter((tab) => tab.show ?? true)
-})
+const tabs = useMatchCardTabs(selectedTab)
 
-watchEffect(() => {
-  if (basicInfo.value.dataSource !== 'sgp' && selectedTab.value === 'builds') {
-    selectedTab.value = 'summary'
-  }
-})
-
-const replayButtonTitle = computed(() => {
-  if (!replayState.value) {
-    return t('matchCard.replay.label')
-  }
-
-  switch (replayState.value.state) {
-    case 'download':
-      return t('matchCard.replay.download')
-    case 'watch':
-      return t('matchCard.replay.watch')
-    case 'incompatible':
-      return t('matchCard.replay.unavailable')
-    case 'downloading':
-      return t('matchCard.replay.downloading', { progress: replayState.value.downloadProgress })
-    case 'checking':
-      return t('matchCard.replay.checking')
-    default:
-      return t('matchCard.replay.label')
-  }
-})
+const replayButtonTitle = useReplayButtonTitle()
 
 const cardBorderClass = useCardBorderClass()
 </script>

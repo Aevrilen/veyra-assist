@@ -1,5 +1,11 @@
 export const PLAYER_TAB_WIDE_MIN_WIDTH = 1064
 
+/** Below this player tab width the match inspector covers the tab instead of docking beside it */
+export const MATCH_INSPECTOR_DOCK_MIN_WIDTH = 960
+
+/** At or above this player tab width the docked match inspector uses its wider size */
+export const MATCH_INSPECTOR_WIDE_MIN_WIDTH = 1400
+
 export const ENCOUNTERED_GAMES_PAGE_SIZE = 10
 
 export const CHAMPION_MASTERY_TOP_COUNT = 8

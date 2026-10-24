@@ -112,6 +112,8 @@ playerTabs:
     failedToLoadSummonerTitle: 加载召唤师失败
     failedToLoadSummonerContent: 无法加载召唤师信息：{{reason}}
     failedToLoadMatchHistoryTitle: 加载战绩失败
+    retryMatchHistory: 重试加载
+    matchHistoryNotLoaded: 战绩尚未加载
     failedToLoadMatchHistoryContent: 无法加载战绩：{{reason}}
     failedToLoadRankedStatsTitle: 加载排位统计失败
     failedToLoadRankedStatsContent: 无法加载排位统计：{{reason}}
@@ -141,6 +143,46 @@ playerTabs:
     failedToLaunchReplay: 无法拉起回放：{{reason}}
     failedToDownloadReplay: 无法下载回放：{{reason}}
   matchHistory:
+    ledger:
+      columns:
+        champion: 英雄
+        queue: 模式
+        kda: K/D/A
+        killParticipation: 参团
+        damageShare: 伤害
+        duration: 时长
+        replay: 回放
+      pageScope: 第 {{page}} 页
+      loadedMatches_other: 已载入 {{count}} 场
+      matchingMatches_other: 符合筛选 {{count}} 场
+      dataSource: 数据源 {{source}}
+      keyboardHint: ↑ ↓ 切换 · Enter 打开 · Esc 关闭
+      today: 今天
+      yesterday: 昨天
+      dayWins_other: '{{count}} 胜'
+      dayLosses_other: '{{count}} 负'
+      kdaValue: '{{value}} KDA'
+      killParticipationValue: 参团 {{value}}%
+      damageShareValue: 伤害 {{value}}%
+      replayUnknown: 回放状态未知（尚未查询或查询中）
+      replayCrossRegion: 跨区数据源：未查询回放
+    inspector:
+      detailsFailed: 暂时无法载入对局详情。
+      retryDetails: 重试
+      close: 关闭
+      backToList: 返回列表
+      previous: 上一场
+      next: 下一场
+      position: '{{current}} / {{total}}'
+      expand: 全宽阅读
+      collapse: 收起全宽
+      detailViews: 详情视图
+      participantHint: 点击玩家名打开战绩 · 中键在后台打开
+      openPlayer: 打开 {{name}} 的战绩（中键：后台打开）
+      currentPlayer: 当前玩家
+      teamKills_other: '{{count}} 击杀'
+      teamGold: 经济 {{value}}
+      selectionClosed: 所选对局不在当前结果中，详情已关闭
     pagination: 分页
     sidebar:
       open: 展开战绩侧栏

@@ -24,6 +24,7 @@ import {
   computed,
   inject,
   markRaw,
+  onScopeDispose,
   provide,
   ref,
   shallowRef,
@@ -97,6 +98,9 @@ export interface MatchHistoryPage {
   /** 加载状态图 */
   detailsLoading: Record<number, boolean>
 
+  /** Safe UI status; raw errors stay in the development logger. */
+  detailsErrors: Record<number, 'load-failed'>
+
   /** 服务器查询参数 */
   queryParams: MatchHistoryQueryParams
 
@@ -118,8 +122,10 @@ export type MatchHistoryContext = {
   analysis: Ref<AggregatedAnalysis | null>
   relationship: Ref<Record<string, GameRelationship>>
   isLoading: Ref<boolean>
+  hasLoadError: Ref<boolean>
   collectState: Ref<MatchHistoryCollectState | null>
   loadMatchHistory: (params?: MatchHistoryQueryParams) => Promise<void>
+  retryMatchHistory: () => Promise<void>
   loadMatchHistoryByPageSize: (count: number) => Promise<void>
   collectMatchHistory: (params: MatchHistoryCollectParams) => Promise<void>
   stopCollectMatchHistory: () => void
@@ -169,6 +175,8 @@ export function provideMatchHistory(
   const { t } = useTranslation()
 
   const isLoading = ref(false)
+  const hasLoadError = ref(false)
+  let retryLastLoad: (() => Promise<void>) | null = null
 
   /**
    * 从 0 开始（而不是 1，至于为什么提到这一点，是因为其他页面的分页逻辑，都是从 1 开始的）
@@ -178,6 +186,25 @@ export function provideMatchHistory(
   const collectState = ref<MatchHistoryCollectState | null>(null)
 
   const page = ref<MatchHistoryPage | null>(null)
+
+  let contextRevision = 0
+  let disposed = false
+  watch(
+    [puuid, sgpServerId, preferredSource, isCrossRegion],
+    () => {
+      contextRevision++
+      page.value = null
+      isLoading.value = false
+      hasLoadError.value = false
+      retryLastLoad = null
+      collectState.value = null
+    },
+    { flush: 'sync' }
+  )
+  onScopeDispose(() => {
+    disposed = true
+    contextRevision++
+  })
 
   const shouldContinueCollecting = () => {
     return !!page.value && !!collectState.value && !collectState.value.isStopping
@@ -268,13 +295,18 @@ export function provideMatchHistory(
   }
 
   const loadReplayMetadata = async (games: LcuOrSgpGameSummary[]) => {
+    const owner = page.value
+    const revision = contextRevision
+    const current = () => !disposed && revision === contextRevision && page.value === owner
+    if (!owner) return
     const { data: conf } = await lc.api.replays.getConfiguration()
 
-    if (!conf.isReplaysEnabled) {
+    if (!current() || !conf.isReplaysEnabled) {
       return
     }
 
     const task = async (game: LcuOrSgpGameSummary) => {
+      if (!current()) return
       let gameId = 0
       let gameMeta = {
         gameVersion: '',
@@ -310,54 +342,57 @@ export function provideMatchHistory(
 
       const { data } = await lc.api.replays.getMetadata(gameId)
 
-      if (page.value) {
-        page.value.replayMetadata[gameId] = markRaw(data)
+      if (current()) {
+        owner.replayMetadata[gameId] = markRaw(data)
       }
     }
 
     await Promise.all(games.map((g) => lcuReplayMetadataQueue.add(() => task(g))))
   }
 
-  const loadGameDetails = async (games: LcuOrSgpGameSummary[]) => {
-    const task = async (game: LcuOrSgpGameSummary) => {
-      if (!page.value || page.value.detailsLoading[game.gameId]) {
-        return
+  const loadPageDetails = async (
+    owner: MatchHistoryPage,
+    gameId: number,
+    source: 'lcu' | 'sgp',
+    revision: number,
+    serverId: string
+  ) => {
+    const current = () => !disposed && contextRevision === revision && page.value === owner
+    if (!current() || owner.detailsLoading[gameId]) return
+    owner.detailsLoading[gameId] = true
+    delete owner.detailsErrors[gameId]
+    try {
+      const { data } =
+        source === 'sgp'
+          ? await sgp.api.matchHistoryQuery.getGameDetailsByGameId(gameId, {
+              __sgpServerId: serverId
+            })
+          : await lc.api.matchHistory.getTimeline(gameId)
+      if (current())
+        owner.details[gameId] = markRaw({ source, gameId, data } as LcuOrSgpGameDetails)
+    } catch (error) {
+      if (current()) {
+        owner.detailsErrors[gameId] = 'load-failed'
+        log.error(componentName, error)
       }
-
-      if (
-        page.value.details[game.gameId] &&
-        page.value.details[game.gameId].source === game.source
-      ) {
-        return
-      }
-
-      try {
-        let wrappedGame: LcuOrSgpGameDetails
-
-        if (game.source === 'sgp') {
-          const { data } = await sgp.api.matchHistoryQuery.getGameDetailsByGameId(game.gameId, {
-            __sgpServerId: sgpServerId.value
-          })
-
-          wrappedGame = markRaw({ source: 'sgp', gameId: game.gameId, data })
-        } else {
-          const { data } = await lc.api.matchHistory.getTimeline(game.gameId)
-          wrappedGame = markRaw({ source: 'lcu', gameId: game.gameId, data })
-        }
-
-        if (page.value) {
-          page.value.details[game.gameId] = wrappedGame
-        }
-      } catch (error) {
-        log.warn(componentName, error)
-      } finally {
-        if (page.value) {
-          page.value.detailsLoading[game.gameId] = false
-        }
-      }
+    } finally {
+      if (current()) owner.detailsLoading[gameId] = false
     }
+  }
 
-    await Promise.all(games.map((g) => gameDetailsQueue.add(() => task(g))))
+  const loadGameDetails = async (games: LcuOrSgpGameSummary[]) => {
+    const owner = page.value
+    if (!owner) return
+    const revision = contextRevision
+    const serverId = sgpServerId.value
+    await Promise.all(
+      games.map((game) =>
+        gameDetailsQueue.add(async () => {
+          if (owner.details[game.gameId]?.source === game.source) return
+          await loadPageDetails(owner, game.gameId, game.source, revision, serverId)
+        })
+      )
+    )
   }
 
   const completeLcuGame = async (g: Game): Promise<LcuGameSummary> => {
@@ -375,7 +410,9 @@ export function provideMatchHistory(
   }
 
   const loadMatchHistory = async (params: MatchHistoryQueryParams = {}) => {
-    if (isLoading.value) return
+    if (disposed || isLoading.value) return
+    const revision = contextRevision
+    const current = () => !disposed && revision === contextRevision
 
     const decision = dataSourceDecision.value
     logDataSourceDecision(decision)
@@ -411,6 +448,7 @@ export function provideMatchHistory(
           }
         )
 
+        if (!current()) return
         const games = data.games
           .filter((g) => g.json) // 有时候服务器内容错误，没有这个 json 字段，原因不明
           .map(
@@ -434,7 +472,8 @@ export function provideMatchHistory(
           games: markRaw(games),
           replayMetadata: {}, // must be shallow
           details: prevDetails,
-          detailsLoading: {}, // must be shallow
+          detailsLoading: {},
+          detailsErrors: {}, // must be shallow
           queryParams: params,
           isLoadedByCollectMode: false
         }
@@ -447,6 +486,7 @@ export function provideMatchHistory(
           startIndex + count - 1
         )
 
+        if (!current()) return
         const games = data.games.games
           .filter((g) => !!g && typeof g.gameId === 'number')
           .map((g) => markRaw({ source: 'lcu', data: g, gameId: g.gameId }) as LcuOrSgpGameSummary)
@@ -458,17 +498,18 @@ export function provideMatchHistory(
             }
 
             const complete = await completeLcuGame(g.data)
-            pts.gameSummaryLruMap.set(`lcu:${complete.gameId}`, markRaw(complete))
+            current() && pts.gameSummaryLruMap.set(`lcu:${complete.gameId}`, markRaw(complete))
             return markRaw(complete) as LcuOrSgpGameSummary
           })
         )
 
         completedGames.forEach((g) => {
           if (g.source === 'lcu') {
-            pts.gameSummaryLruMap.set(`lcu:${g.gameId}`, markRaw(g))
+            current() && pts.gameSummaryLruMap.set(`lcu:${g.gameId}`, markRaw(g))
           }
         })
 
+        if (!current()) return
         const prevDetails = completedGames.reduce(
           (acc, g) => {
             const details = page.value?.details[g.gameId]
@@ -484,7 +525,8 @@ export function provideMatchHistory(
           games: markRaw(completedGames),
           replayMetadata: {}, // must be shallow
           details: prevDetails,
-          detailsLoading: {}, // must be shallow
+          detailsLoading: {},
+          detailsErrors: {}, // must be shallow
           queryParams: params,
           isLoadedByCollectMode: false
         }
@@ -495,7 +537,12 @@ export function provideMatchHistory(
       if (!isCrossRegion.value) {
         loadReplayMetadata(page.value.games)
       }
+      hasLoadError.value = false
+      retryLastLoad = null
     } catch (error: any) {
+      if (!current()) return
+      hasLoadError.value = true
+      retryLastLoad = () => loadMatchHistory(params)
       notification.error({
         title: () => t('playerTabs.profile.failedToLoadMatchHistoryTitle'),
         content: () =>
@@ -504,12 +551,14 @@ export function provideMatchHistory(
       })
       log.error(componentName, error)
     } finally {
-      isLoading.value = false
+      if (current()) isLoading.value = false
     }
   }
 
   const collectMatchHistory = async (params: MatchHistoryCollectParams) => {
-    if (isLoading.value) return
+    if (disposed || isLoading.value) return
+    const revision = contextRevision
+    const current = () => !disposed && revision === contextRevision
 
     const decision = dataSourceDecision.value
     logDataSourceDecision(decision, 'match history collection')
@@ -550,6 +599,7 @@ export function provideMatchHistory(
           replayMetadata: {},
           details: {},
           detailsLoading: {},
+          detailsErrors: {},
           queryParams: collectPageQueryParams,
           isLoadedByCollectMode: true,
           collectModeSettings,
@@ -559,6 +609,7 @@ export function provideMatchHistory(
         }
 
         while (
+          current() &&
           page.value.games.length < params.expectedCount &&
           collectState.value.currentIteration < collectState.value.params.maxIteration &&
           shouldContinueCollecting()
@@ -574,7 +625,7 @@ export function provideMatchHistory(
             }
           )
 
-          if (!shouldContinueCollecting()) {
+          if (!current() || !shouldContinueCollecting()) {
             break
           }
 
@@ -614,6 +665,7 @@ export function provideMatchHistory(
           replayMetadata: {},
           details: {},
           detailsLoading: {},
+          detailsErrors: {},
           queryParams: collectPageQueryParams,
           isLoadedByCollectMode: true,
           collectModeSettings,
@@ -623,6 +675,7 @@ export function provideMatchHistory(
         }
 
         while (
+          current() &&
           page.value.games.length < params.expectedCount &&
           collectState.value.currentIteration < collectState.value.params.maxIteration &&
           shouldContinueCollecting()
@@ -635,7 +688,7 @@ export function provideMatchHistory(
               1
           )
 
-          if (!shouldContinueCollecting()) {
+          if (!current() || !shouldContinueCollecting()) {
             break
           }
 
@@ -662,12 +715,12 @@ export function provideMatchHistory(
               }
 
               const complete = await completeLcuGame(g.data)
-              pts.gameSummaryLruMap.set(`lcu:${complete.gameId}`, markRaw(complete))
+              current() && pts.gameSummaryLruMap.set(`lcu:${complete.gameId}`, markRaw(complete))
               return markRaw(complete) as LcuOrSgpGameSummary
             })
           )
 
-          if (!shouldContinueCollecting()) {
+          if (!current() || !shouldContinueCollecting()) {
             break
           }
 
@@ -683,7 +736,14 @@ export function provideMatchHistory(
           collectState.value.currentIteration++
         }
       }
+      if (current()) {
+        hasLoadError.value = false
+        retryLastLoad = null
+      }
     } catch (error: any) {
+      if (!current()) return
+      hasLoadError.value = true
+      retryLastLoad = () => collectMatchHistory(params)
       notification.error({
         title: () => t('playerTabs.profile.failedToLoadMatchHistoryTitle'),
         content: () =>
@@ -692,10 +752,12 @@ export function provideMatchHistory(
       })
       log.error(componentName, error)
     } finally {
-      isLoading.value = false
-      collectState.value = null
+      if (current()) isLoading.value = false
+      if (current()) collectState.value = null
     }
   }
+
+  const retryMatchHistory = () => (retryLastLoad ?? loadMatchHistory)()
 
   const loadMatchHistoryByPageSize = (count: number) => {
     if (count <= MATCH_HISTORY_MAX_REGULAR_PAGE_SIZE) {
@@ -732,34 +794,14 @@ export function provideMatchHistory(
   }
 
   const loadDetails = async (gameId: number) => {
-    if (!page.value || page.value.detailsLoading[gameId]) return
-
+    const owner = page.value
+    if (!owner || owner.detailsLoading[gameId]) return
     const decision = dataSourceDecision.value
     logDataSourceDecision(decision, 'match history details')
-
-    if (decision.type !== 'load') {
-      return
-    }
-
-    page.value.detailsLoading[gameId] = true
-
-    try {
-      if (decision.source === 'sgp') {
-        const { data } = await sgp.api.matchHistoryQuery.getGameDetailsByGameId(gameId, {
-          __sgpServerId: sgpServerId.value
-        })
-
-        page.value.details[gameId] = markRaw({ source: 'sgp', gameId, data })
-      } else {
-        const { data } = await lc.api.matchHistory.getTimeline(gameId)
-
-        page.value.details[gameId] = markRaw({ source: 'lcu', gameId, data })
-      }
-    } catch (error) {
-      log.error(componentName, error)
-    } finally {
-      page.value.detailsLoading[gameId] = false
-    }
+    if (decision.type !== 'load') return
+    const game = owner.games.find((game) => game.gameId === gameId)
+    if (!game || game.source !== decision.source) return
+    await loadPageDetails(owner, gameId, game.source, contextRevision, sgpServerId.value)
   }
 
   const message = useMessage()
@@ -860,8 +902,10 @@ export function provideMatchHistory(
     analysis,
     relationship,
     isLoading,
+    hasLoadError,
     collectState,
     loadMatchHistory,
+    retryMatchHistory,
     loadMatchHistoryByPageSize,
     collectMatchHistory,
     stopCollectMatchHistory,
@@ -876,8 +920,10 @@ export function provideMatchHistory(
     analysis,
     relationship,
     isLoading,
+    hasLoadError,
     collectState,
     loadMatchHistory,
+    retryMatchHistory,
     loadMatchHistoryByPageSize,
     collectMatchHistory,
     stopCollectMatchHistory,
