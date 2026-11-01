@@ -2,15 +2,15 @@
 
 基于 [League Akari](https://github.com/LeagueAkari/LeagueAkari) 二次开发的《英雄联盟》桌面辅助工具，提供选人辅助、局内海克斯识别与装备推荐，以及战绩查询和自动化功能。
 
-> **开发中 / 半成品 · 测试版。** 当前提供 Windows x64 预发布。
+> **开发中 / 半成品。** 当前提供 Windows x64 版本。
 
-> **部分开源**：2026-10-24 已同步经白名单审查的战绩 UI、通用快捷设置与测试，提供可运行的模拟结果接口；当前识别重构实现保留私有。默认分支保留旧公开基线及其许可，不代表最新完整程序源码。范围、历史公开限制和运行示例见 [开源边界](docs/SOURCE_BOUNDARY.md) 与 [导出清单](public-export.json)。本次没有更新 Release 或程序附件。
+> **部分开源**：2026-10-24 已同步经白名单审查的战绩 UI、通用快捷设置与测试，提供可运行的模拟结果接口；当前识别重构实现保留私有。默认分支保留旧公开基线及其许可，不代表最新完整程序源码。范围、历史公开限制和运行示例见 [开源边界](docs/SOURCE_BOUNDARY.md) 与 [导出清单](public-export.json)。
 
-**[下载 1.5.2-beta.3](https://github.com/Aevrilen/veyra-assist/releases/tag/v1.5.2-beta.3)** · [开始使用](docs/USAGE.md) · [功能索引](docs/FEATURES.md) · [路线图 / Todo](docs/ROADMAP.md)
+**[下载 1.0.20](https://github.com/Aevrilen/veyra-assist/releases/tag/v1.0.20)** · [历史版本 1.5.2-beta.3](https://github.com/Aevrilen/veyra-assist/releases/tag/v1.5.2-beta.3) · [开始使用](docs/USAGE.md) · [功能索引](docs/FEATURES.md) · [路线图 / Todo](docs/ROADMAP.md)
 
-下载 Release **Assets 中的 `VeyraAssist-1.5.2-beta.3-0e54d71f-Windows-x64.zip`**，完整解压后运行 `启动Veyra.cmd`。GitHub 自动生成的 Source code 是源码，不能直接运行。
+首次安装请选择 Release Assets 中的 `Veyra-Assist-1.0.20-Setup.exe`；已有匹配运行环境请选择 `Veyra-Assist-1.0.20-Business-Update.exe`，并继续使用原安装目录。请同时阅读随包说明。GitHub 自动生成的 Source code 是源码，不能直接作为安装包运行。
 
-下方产品功能与图片介绍已发布的 **beta.3**；对应源码见 [v1.5.2-beta.3 / 944f67f](https://github.com/Aevrilen/veyra-assist/tree/v1.5.2-beta.3)。默认分支由保留的公开基线与已审查的 UI、通用设置增量组成，未同步当前私有识别重构，也没有随本次源码更新发布新程序。beta.3 的详细变化和验证范围见 [本版说明](https://github.com/Aevrilen/veyra-assist/blob/v1.5.2-beta.3/docs/releases/1.5.2-beta.3.md)。
+1.0.20 新增装备推荐面板样式调节。[beta.3 源码](https://github.com/Aevrilen/veyra-assist/tree/v1.5.2-beta.3)及[本版说明](https://github.com/Aevrilen/veyra-assist/blob/v1.5.2-beta.3/docs/releases/1.5.2-beta.3.md)仍供查阅。
 
 ## 给使用者
 
@@ -20,7 +20,7 @@
 | ------------ | ---------------------------------------------------------------------- |
 | 首页         | 对局悬浮窗、自动接受、自动匹配三个快捷开关，与设置页同步保存           |
 | 选人         | 支持布局中的自动定位、候选英雄胜率与登场率、队友近期战绩及当前英雄统计 |
-| 局内         | 海克斯标题本地 OCR 与统计浮层；热门装备、鞋子、核心组合和出门装推荐    |
+| 局内         | 海克斯标题本地 OCR 与统计浮层；热门装备、鞋子、核心组合和出门装推荐，装备面板支持样式调节 |
 | 对局与战绩   | 双方对局面板、召唤师查询、战绩筛选与详情，包括符文、构建和时间线       |
 | 自动化与工具 | 自动接受和匹配、选禁英雄及英雄配置；功能搜索、内置离线更新日志         |
 | Debug 反馈   | 帮助与修复中的日志目录和反馈 ZIP 导出，由用户检查后私下提交            |
@@ -29,49 +29,39 @@
 
 **外观自定义**：提供浅色冷灰、深色石墨、低饱和蓝灰、雾紫灰四套快捷配色；可在“自定义外观 → 背景图片设置 → 自定义壁纸 → 浏览”选择本地图片作为主窗口背景，并调整蒙层深度。程序保存图片路径和设置，请保留原文件。操作见 [使用说明](docs/USAGE.md#外观与图片导入)。
 
+**装备面板样式**：局内装备推荐标题右侧提供“样式调节”入口。面板大小可在 75%–125% 间以 5% 为步长调整，背景透明度可单独设置，偏好会保存。
+
 ### 界面预览
 
-以下为 beta.3 对应实际渲染组件的**界面演示**，玩家 ID、战绩和统计均为人工模拟。局内图组合展示原浮层。图片来源与组件核对见 [预览说明](docs/PREVIEWS.md)。
+以下为实机画面，部分个人信息已处理。画面展示不同场景，具体数值会随对局和数据变化。
 
-**主页快捷开关**：常用设置集中在首页，右下角可查看本地更新日志。
+**自定义外观**：主题配色与背景图片设置入口。
 
-<img src="assets/previews/home.png" alt="beta.3 首页快捷开关，界面演示" width="960" />
+<img src="assets/previews/real-2.png" alt="自定义外观页面中的主题配色和背景图片设置入口" width="960" />
 
-**四套配色，同一首页**：点击图片可查看完整尺寸。
+**选人辅助**：选人画面显示队友近期统计和候选英雄统计浮窗。
 
-| 浅色冷灰                                                                                         | 深色石墨                                                                                       |
-| ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
-| <img src="assets/previews/theme-light.png" alt="浅色冷灰，同一首页界面演示" width="460" />       | <img src="assets/previews/theme-graphite.png" alt="深色石墨，同一首页界面演示" width="460" />  |
-| **低饱和蓝灰**                                                                                   | **雾紫灰**                                                                                     |
-| <img src="assets/previews/theme-blue-gray.png" alt="低饱和蓝灰，同一首页界面演示" width="460" /> | <img src="assets/previews/theme-mist-violet.png" alt="雾紫灰，同一首页界面演示" width="460" /> |
+<img src="assets/previews/real-3.png" alt="选人画面中的队友近期统计和候选英雄统计浮窗" width="960" />
 
-**本地图片导入**：实际背景图片设置入口，以及安全合成壁纸在主窗口的应用效果。演示仅模拟文件选择与本地资源读取，保留原设置和背景渲染组件。
+**局内海克斯**：在海克斯选项下方查看胜率与选取率。
 
-<img src="assets/previews/appearance-settings.png" alt="实际自定义壁纸设置，模拟选择安全合成图片" width="960" />
+<img src="assets/previews/real-1.png" alt="局内海克斯选项下方显示胜率和选取率" width="960" />
 
-<img src="assets/previews/custom-background.png" alt="安全合成壁纸应用于主窗口，界面演示" width="960" />
+**装备推荐**：在局内查看装备分类及推荐；标题右侧提供样式调节入口。
 
-**选人辅助**：对局面板汇总双方玩家的近期表现；支持的选人布局可自动定位统计浮层。
+<img src="assets/previews/real-5.png" alt="游戏商店旁的装备推荐面板，展示出门装和右上角样式调节入口" width="960" />
 
-<img src="assets/previews/champ-select.png" alt="选人阶段双方对局面板，全部玩家与战绩为人工模拟" width="960" />
+**战绩面板**：查看历史对局、队列筛选和玩家统计。
 
-<img src="assets/previews/candidate-overlay.png" alt="真实候选英雄统计组件与人工模拟候选席背景，数值仅供界面演示" width="960" />
-
-**局内海克斯与装备**：海克斯统计条与装备推荐面板，可切换装备分类并收起面板。
-
-<img src="assets/previews/in-game.png" alt="海克斯统计与装备推荐原浮层组合，统计为人工模拟" width="960" />
-
-**战绩面板**：查看历史对局、队列筛选与玩家统计，展开对局可继续查看详细数据。
-
-<img src="assets/previews/match-history.png" alt="战绩查询面板，玩家和对局数据全部为人工模拟" width="960" />
+<img src="assets/previews/real-4.png" alt="战绩页面，显示队列筛选、玩家统计和历史对局列表" width="960" />
 
 ### 安装与使用
 
-1. 下载当前 [beta.3 程序 ZIP 和随包说明](https://github.com/Aevrilen/veyra-assist/releases/tag/v1.5.2-beta.3)，退出旧实例，完整解压到新的、较短目录。
-2. 运行 `启动Veyra.cmd`，登录游戏客户端，确认连接状态，在首页按需设置快捷开关。
+1. 从 [1.0.20 Release](https://github.com/Aevrilen/veyra-assist/releases/tag/v1.0.20) 下载适合的安装包并阅读随包说明。首次安装选择 Setup；已有匹配运行环境选择 Business Update，继续使用原安装目录。
+2. 启动 Veyra，登录游戏客户端，确认连接状态，按需设置快捷开关。
 3. 进入选人或支持的局内场景后使用辅助界面；选人自动定位时保持客户端前台、窗口稳定。
 
-当前面向 **Windows x64**。局内自动窗口映射覆盖 1920×1080 和 2560×1440、窗口完整落在单个显示器内的场景；4K 与不同缩放比例适配仍在评估。macOS 尚无 Veyra 功能验收，Linux 暂无支持承诺。更多说明见 [使用说明](docs/USAGE.md)。
+当前面向 **Windows x64**。不同分辨率与系统缩放下的适配仍在完善；macOS 尚无 Veyra 功能验收，Linux 暂无支持承诺。更多说明见 [使用说明](docs/USAGE.md)。
 
 ### 路线图 / Todo
 
@@ -86,7 +76,7 @@
 7. 完善识别流程的全自动化。
 8. 新增统一一键显示／隐藏快捷键。
 
-先推进识别稳定性、性能档与 4K / DPI 适配，再完善自动化和快捷操作，随后是 UI 与构筑导入、英雄与特殊组合推荐，数据评分最后。beta.3 的选人自动定位已发布，不能据此将整体自动化目标勾为完成；近期继续整合已离线验证的 OCR、缓存迁移和启动修复。应用内自动更新与差分下载暂缓，当前继续手动发包和 GitHub Releases。
+掌盟数据链仍在研究，尚未接入。差分下载仍待完善。
 
 后续公开版本将同步更新仓库主页、功能状态、预览和包内说明。完整进度见 [路线图](docs/ROADMAP.md)。
 
@@ -118,3 +108,5 @@
 保留 Akari 的 [MIT LICENSE](LICENSE) 及原作者 Hanxven 的版权声明，另保留适用的 ISC、OFL、Apache 等许可与真实归属。文件级来源、素材归属和公开整理记录见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。版权许可与商标使用分别说明。
 
 本项目与 Riot Games、腾讯、Akari 上游及第三方数据提供方无官方合作或认可关系。游戏名称、商标和相关资源归各权利人所有；不承诺游戏更新、反作弊或平台规则兼容性。
+
+
